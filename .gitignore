@@ -1,0 +1,12 @@
+.project
+.settings/*
+
+initcopy/target/*
+initcopy/.settings/*
+initcopy/.classpath
+initcopy/.project
+
+transfer/.settings/*
+transfer/.classpath
+transfer/.project
+transfer/target/*
