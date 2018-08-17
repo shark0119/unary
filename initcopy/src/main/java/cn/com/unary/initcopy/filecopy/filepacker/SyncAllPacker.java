@@ -8,12 +8,12 @@ import java.util.List;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import api.UnaryTClient;
 import cn.com.unary.initcopy.InitCopyContext;
 import cn.com.unary.initcopy.dao.FileManager;
 import cn.com.unary.initcopy.entity.Constants.PackType;
 import cn.com.unary.initcopy.entity.FileInfo;
 import cn.com.unary.initcopy.filecopy.io.AbstractFileInput;
-import cn.com.unary.initcopy.mock.UnaryTransferClient;
 
 /**
  * 文件打包与解析，同时包括源端打包和目标端解包
@@ -58,7 +58,7 @@ public class SyncAllPacker implements Packer {
 	protected AbstractFileInput input;
 	protected FileManager ifm;
 	protected InitCopyContext ctx;
-	protected UnaryTransferClient utc;
+	protected UnaryTClient utc;
 	
 	private static int PACK_SIZE ;	// 每个包的大小
 	private boolean isReady = false;	// 是否可以开始打包解析
@@ -177,7 +177,7 @@ public class SyncAllPacker implements Packer {
 	public void setInput(AbstractFileInput input) {		this.input = input;	}
 	public void setIfm(FileManager ifm) {		this.ifm = ifm;	}
 	public void setContext(InitCopyContext context) {		this.ctx = context;	}
-	public void setUtc(UnaryTransferClient utc) {		
+	public void setUtc(UnaryTClient utc) {		
 		this.utc = utc;	
 		PACK_SIZE = utc.getMaxPackSize();
 	}

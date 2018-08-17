@@ -1,6 +1,7 @@
 package cn.com.unary.initcopy.server;
 
-import cn.com.unary.initcopy.mock.UnaryProcess;
+import api.UnaryChannel;
+import api.UnaryProcess;
 
 /**
  * 目标端处理文件数据包
@@ -10,8 +11,8 @@ import cn.com.unary.initcopy.mock.UnaryProcess;
 public class FileDataServerProcess implements UnaryProcess{
 
 	@Override
-	public void process(byte[] data) {
-		// TODO Auto-generated method stub
+	public void process(UnaryChannel channel) {
+		
 	}
 	
 }

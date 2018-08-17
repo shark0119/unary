@@ -1,5 +1,6 @@
 package cn.com.unary.initcopy.config;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 
@@ -11,6 +12,8 @@ import org.springframework.context.annotation.Scope;
 
 import com.alibaba.druid.pool.DruidDataSource;
 
+import api.UnaryProcess;
+import api.UnaryTClient;
 import cn.com.unary.initcopy.InitCopyContext;
 import cn.com.unary.initcopy.dao.FileManager;
 import cn.com.unary.initcopy.dao.RamFileManager;
@@ -21,8 +24,6 @@ import cn.com.unary.initcopy.filecopy.io.AbstractFileInput;
 import cn.com.unary.initcopy.filecopy.io.AbstractFileOutput;
 import cn.com.unary.initcopy.filecopy.io.JavaNioFileInput;
 import cn.com.unary.initcopy.filecopy.io.JavaNioFileOutput;
-import cn.com.unary.initcopy.mock.UnaryProcess;
-import cn.com.unary.initcopy.mock.UnaryTransferClient;
 
 /**
  * 用于 Spring 创建 Beans
@@ -88,11 +89,19 @@ public class BeanConfig {
 		return new SqliteFileManager();
 	}
 	@Bean
-	public UnaryTransferClient utc () {
-		return new UnaryTransferClient() {
-			public void start(String ip, int port) {			}
+	public UnaryTClient utc () {
+		return new UnaryTClient() {
+			@Override
+			public void stopClient() throws IOException {			}
+			@Override
+			public void startClient() throws IOException {			}
+			@Override
 			public void setProcess(UnaryProcess process) {			}
-			public void sendData(byte[] data) {			}
+			@Override
+			public int sendData(byte[] data) {				return 0;			}
+			@Override
+			public int sendData(byte[] data, int time) {				return 0;			}
+			@Override
 			public int getMaxPackSize() {				return 0;			}
 		};
 	}
@@ -101,7 +110,7 @@ public class BeanConfig {
 			InitCopyContext context,
 			@Value("#{sqliteFileManager}")FileManager ifm,
 			AbstractFileInput afi,
-			UnaryTransferClient utc) {
+			UnaryTClient utc) {
 		SyncAllPacker safar = new SyncAllPacker();
 		safar.setContext(context);
 		safar.setIfm(ifm);

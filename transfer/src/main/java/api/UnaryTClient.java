@@ -8,4 +8,5 @@ public interface UnaryTClient {
 	int sendData (byte[] data);
 	void startClient () throws IOException;
 	void stopClient () throws IOException;
+	int getMaxPackSize();
 }

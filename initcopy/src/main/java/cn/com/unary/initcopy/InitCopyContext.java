@@ -2,8 +2,8 @@ package cn.com.unary.initcopy;
 
 import java.io.IOException;
 
+import api.UnaryTServer;
 import cn.com.unary.initcopy.client.InitCopyGrpcServer;
-import cn.com.unary.initcopy.mock.UnaryTransferServer;
 import cn.com.unary.initcopy.server.FileDataServerProcess;
 import cn.com.unary.initcopy.server.TaskControlGrpcServer;
 
@@ -26,7 +26,7 @@ public class InitCopyContext {
 	protected static int innerGrpcPort = 6002; 
 	
 	private static Boolean isActive = Boolean.FALSE;
-	private static UnaryTransferServer uts;
+	private static UnaryTServer uts;
 	
 	/**
 	 * 初始化相关变量；
@@ -58,7 +58,7 @@ public class InitCopyContext {
 	}
 	
 	public void destory () {		uts = null;	}
-	public UnaryTransferServer getUts() {		return uts;	}
+	public UnaryTServer getUts() {		return uts;	}
 	
 	private void clientInit () throws IOException, InterruptedException {
 		// 启动向外部提供任务管理的 GRPC 服务（源端）
@@ -66,7 +66,7 @@ public class InitCopyContext {
 	}
 	private void serverInit () throws IOException, InterruptedException {
 		// 启动和初始化传输模块（目标端）
-		uts.start(transPort);
+		uts.startServer ();
 		uts.setProcess(new FileDataServerProcess());
 		// 启动内部控制任务信息的 GRPC 服务（目标端）
 		TaskControlGrpcServer.activate(innerGrpcPort);
