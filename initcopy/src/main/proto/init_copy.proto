@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "com.cn.unary.initcopy.grpc";
+option java_outer_classname = "InitCopy";
+
+import "init_copy_entity.proto";
+
+package com.cn.unary.initcopy.grpc;
+
+service TaskService { 
+    rpc Add (com.cn.unary.initcopy.grpc.entity.SyncTask) returns (com.cn.unary.initcopy.grpc.entity.TaskState) {};
+    rpc Query (com.cn.unary.initcopy.grpc.entity.QueryTask) returns (com.cn.unary.initcopy.grpc.entity.TaskState) {};
+    rpc Delete (com.cn.unary.initcopy.grpc.entity.DeleteTask) returns (com.cn.unary.initcopy.grpc.entity.TaskState) {};
+    rpc Modify (com.cn.unary.initcopy.grpc.entity.ModifyTask) returns (com.cn.unary.initcopy.grpc.entity.TaskState) {};
+}

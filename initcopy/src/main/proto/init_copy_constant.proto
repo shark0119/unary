@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "com.cn.unary.initcopy.grpc.constant";
+option java_outer_classname = "IC_Constant";
+
+package com.cn.unary.initcopy.grpc.constant;
+
+enum SyncType { //同步方式
+    SYNC_ALL = 0;      //全同步
+    SYNC_TIME_DIFF = 1; //根据修改时间比较
+    SYNC_DATA_DIFF = 2; //计算hash，同步不同的块
+}
+
+enum CompressType { //压缩类型
+    COMPRESS_NONE = 0;   //不压缩
+    COMPRESS_ZLIB = 1;  //使用zlib压缩
+}
+
+enum EncryptType { //加密类型
+    ENCRYPT_NONE = 0;   //不加密
+    ENCRYPT_AES = 1;    //使用AES加密
+}
+
+enum PackType { //打包类型
+    PACK_NONE = 0;      //不打包
+    PACK_FORMAT = 1;   //打包类型
+}

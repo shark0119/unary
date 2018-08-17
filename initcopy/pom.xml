@@ -10,6 +10,34 @@ http://maven.apache.org/maven-v4_0_0.xsd">
 	<artifactId>initcopy</artifactId>
 	<packaging>jar</packaging>
 	<name>init copy provide rpc service to COPY</name>
+
+	<dependencies>
+		<!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-api -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>1.7.25</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+			<version>2.9.5</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.xerial/sqlite-jdbc -->
+		<dependency>
+			<groupId>org.xerial</groupId>
+			<artifactId>sqlite-jdbc</artifactId>
+			<version>3.8.11.2</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/com.alibaba/druid -->
+		<dependency>
+			<groupId>com.alibaba</groupId>
+			<artifactId>druid</artifactId>
+			<version>1.1.10</version>
+		</dependency>
+	</dependencies>
+	
 	<build>
 		<pluginManagement>
 			<plugins>
@@ -23,6 +51,4 @@ http://maven.apache.org/maven-v4_0_0.xsd">
 			</plugins>
 		</pluginManagement>
 	</build>
-	<dependencies>
-	</dependencies>
 </project>

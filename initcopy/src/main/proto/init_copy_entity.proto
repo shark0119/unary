@@ -1,0 +1,58 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "com.cn.unary.initcopy.grpc.entity";
+option java_outer_classname = "IC_Entity";
+
+import "init_copy_constant.proto";
+
+package com.cn.unary.initcopy.grpc.entity;
+
+message SyncTarget {  //目标端IP及端口信息
+    string ip = 1; //目标端IP
+    int32 port = 2;   //目标端端口号
+}
+
+message SyncTask { //同步任务
+    string taskId = 1; //任务ID
+    SyncTarget targetInfo = 2; // 目标端IP及端口信息
+    com.cn.unary.initcopy.grpc.constant.SyncType syncType = 3;    //同步方式
+    com.cn.unary.initcopy.grpc.constant.CompressType compressType = 4; //压缩方式
+    com.cn.unary.initcopy.grpc.constant.EncryptType encryptType = 5; //加密方式
+    com.cn.unary.initcopy.grpc.constant.PackType packType = 6;       //打包类型
+    int32 speedLimit = 7;  //限速 以M为单位  0为不限速
+    string TargetDir = 8;     //要同步的目标目录
+    repeated string file = 9; //要同步的源文件
+}
+
+message ProgressInfo { //进度信息
+    int32 stage = 1;        //阶段
+    int32 progress = 2;     //进度百分比   0到100之间的数值
+    sint64 totalFileNum = 3;    //需要同步的文件总数
+    sint64 totalFileSize = 4;   //需要同步的文件总大小 以字节为单位
+    sint64 syncedFileNum = 5;   //已经同步的文件总数
+    sint64 syncedFileSize =6;   //已经同步的文件总大小
+    string syncingFileName = 7; //当前正在同步的文件
+}
+
+message QueryTask {
+	string taskId = 1;
+}
+
+message TaskState { // 任务状态
+	bool success = 1;	// 是否成功
+    int32 code = 2;    // 代码
+    string msg = 3;    // 信息
+    string taskId = 4;  //对应的任务id
+    ProgressInfo progressInfo = 5; //进度信息
+}
+
+message ModifyTask { // 修改任务 只支持修改限速
+    string taskId = 1; //对应的任务id
+    int32  speedLimit = 2;  //限速 以M为单位  0为不限速
+}
+
+message DeleteTask { //删除任务信息 
+    string taskId = 1;
+    bool deleteFile = 2;//目标端是否删除备份的文件
+}
