@@ -239,7 +239,7 @@ public  final class SyncTask extends
    * <code>optional .cn.com.unary.initcopy.grpc.constant.SyncType syncType = 3;</code>
    */
   public cn.com.unary.initcopy.grpc.constant.SyncType getSyncType() {
-    cn.com.unary.initcopy.grpc.constant.SyncType result = cn.com.unary.initcopy.grpc.constant.SyncType.valueOf(syncType_);
+    cn.com.unary.initcopy.grpc.constant.SyncType result = cn.com.unary.initcopy.grpc.constant.SyncType.forNumber(syncType_);
     return result == null ? cn.com.unary.initcopy.grpc.constant.SyncType.UNRECOGNIZED : result;
   }
 
@@ -263,7 +263,7 @@ public  final class SyncTask extends
    * <code>optional .cn.com.unary.initcopy.grpc.constant.CompressType compressType = 4;</code>
    */
   public cn.com.unary.initcopy.grpc.constant.CompressType getCompressType() {
-    cn.com.unary.initcopy.grpc.constant.CompressType result = cn.com.unary.initcopy.grpc.constant.CompressType.valueOf(compressType_);
+    cn.com.unary.initcopy.grpc.constant.CompressType result = cn.com.unary.initcopy.grpc.constant.CompressType.forNumber(compressType_);
     return result == null ? cn.com.unary.initcopy.grpc.constant.CompressType.UNRECOGNIZED : result;
   }
 
@@ -287,7 +287,7 @@ public  final class SyncTask extends
    * <code>optional .cn.com.unary.initcopy.grpc.constant.EncryptType encryptType = 5;</code>
    */
   public cn.com.unary.initcopy.grpc.constant.EncryptType getEncryptType() {
-    cn.com.unary.initcopy.grpc.constant.EncryptType result = cn.com.unary.initcopy.grpc.constant.EncryptType.valueOf(encryptType_);
+    cn.com.unary.initcopy.grpc.constant.EncryptType result = cn.com.unary.initcopy.grpc.constant.EncryptType.forNumber(encryptType_);
     return result == null ? cn.com.unary.initcopy.grpc.constant.EncryptType.UNRECOGNIZED : result;
   }
 
@@ -311,7 +311,7 @@ public  final class SyncTask extends
    * <code>optional .cn.com.unary.initcopy.grpc.constant.PackType packType = 6;</code>
    */
   public cn.com.unary.initcopy.grpc.constant.PackType getPackType() {
-    cn.com.unary.initcopy.grpc.constant.PackType result = cn.com.unary.initcopy.grpc.constant.PackType.valueOf(packType_);
+    cn.com.unary.initcopy.grpc.constant.PackType result = cn.com.unary.initcopy.grpc.constant.PackType.forNumber(packType_);
     return result == null ? cn.com.unary.initcopy.grpc.constant.PackType.UNRECOGNIZED : result;
   }
 
@@ -1127,7 +1127,7 @@ public  final class SyncTask extends
      * <code>optional .cn.com.unary.initcopy.grpc.constant.SyncType syncType = 3;</code>
      */
     public cn.com.unary.initcopy.grpc.constant.SyncType getSyncType() {
-      cn.com.unary.initcopy.grpc.constant.SyncType result = cn.com.unary.initcopy.grpc.constant.SyncType.valueOf(syncType_);
+      cn.com.unary.initcopy.grpc.constant.SyncType result = cn.com.unary.initcopy.grpc.constant.SyncType.forNumber(syncType_);
       return result == null ? cn.com.unary.initcopy.grpc.constant.SyncType.UNRECOGNIZED : result;
     }
     /**
@@ -1191,7 +1191,7 @@ public  final class SyncTask extends
      * <code>optional .cn.com.unary.initcopy.grpc.constant.CompressType compressType = 4;</code>
      */
     public cn.com.unary.initcopy.grpc.constant.CompressType getCompressType() {
-      cn.com.unary.initcopy.grpc.constant.CompressType result = cn.com.unary.initcopy.grpc.constant.CompressType.valueOf(compressType_);
+      cn.com.unary.initcopy.grpc.constant.CompressType result = cn.com.unary.initcopy.grpc.constant.CompressType.forNumber(compressType_);
       return result == null ? cn.com.unary.initcopy.grpc.constant.CompressType.UNRECOGNIZED : result;
     }
     /**
@@ -1255,7 +1255,7 @@ public  final class SyncTask extends
      * <code>optional .cn.com.unary.initcopy.grpc.constant.EncryptType encryptType = 5;</code>
      */
     public cn.com.unary.initcopy.grpc.constant.EncryptType getEncryptType() {
-      cn.com.unary.initcopy.grpc.constant.EncryptType result = cn.com.unary.initcopy.grpc.constant.EncryptType.valueOf(encryptType_);
+      cn.com.unary.initcopy.grpc.constant.EncryptType result = cn.com.unary.initcopy.grpc.constant.EncryptType.forNumber(encryptType_);
       return result == null ? cn.com.unary.initcopy.grpc.constant.EncryptType.UNRECOGNIZED : result;
     }
     /**
@@ -1319,7 +1319,7 @@ public  final class SyncTask extends
      * <code>optional .cn.com.unary.initcopy.grpc.constant.PackType packType = 6;</code>
      */
     public cn.com.unary.initcopy.grpc.constant.PackType getPackType() {
-      cn.com.unary.initcopy.grpc.constant.PackType result = cn.com.unary.initcopy.grpc.constant.PackType.valueOf(packType_);
+      cn.com.unary.initcopy.grpc.constant.PackType result = cn.com.unary.initcopy.grpc.constant.PackType.forNumber(packType_);
       return result == null ? cn.com.unary.initcopy.grpc.constant.PackType.UNRECOGNIZED : result;
     }
     /**

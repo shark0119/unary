@@ -9,7 +9,7 @@ import cn.com.unary.initcopy.entity.Constants.PackType;
  * @author shark
  *
  */
-public interface Packer {
+public interface Packer extends AutoCloseable {
 	/**
 	 * 开始文件读取打包，并向目标端发送数据包
 	 * @param fileIds 文件的UUID

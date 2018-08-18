@@ -5,16 +5,12 @@ public final class Constants {
 	public static class GlobalVar {
 		public static int MAX_PACK_SIZE = 4096;
 	}
-	private Constants () {};
+	private Constants () {}
 	
-	public static enum MODE {
-		SERVER, CLIENT
-	}
-	
-	public static enum RequestType {
+	public enum RequestType {
 		ADD, QUERY, DELETE,
 	}
-	public static enum FileType {
+	public enum FileType {
 		REGULAR_FILE, DIR, SYMBOLIC_LINK, OTHER,
 	}
 	public static enum PackType {
@@ -22,7 +18,7 @@ public final class Constants {
 		RSYNC_JAVA(0x02),	// 差异复制- rsync
 		;
 		private byte value;
-		private PackType (int b) {			value = (byte)b;		}
+		PackType (int b) {			value = (byte)b;		}
 		public static PackType valueOf(byte b) {
 			for (PackType type : PackType.values()) {
 				if (type.value == b) {

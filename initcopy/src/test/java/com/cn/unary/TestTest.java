@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -106,6 +107,12 @@ public class TestTest {
 			e.printStackTrace();
 		}
 		
+	}
+	@Test
+	public void test7() {
+		int i = 50000;
+		ByteBuffer buffer = ByteBuffer.allocate(4);
+		buffer.putInt(i);
 	}
 }
 

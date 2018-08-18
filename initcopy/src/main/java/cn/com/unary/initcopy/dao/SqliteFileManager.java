@@ -45,7 +45,7 @@ public class SqliteFileManager extends AbstractLogable implements FileManager {
 		try (
 			Connection conn = dds.getConnection();
 			Statement stmt = conn.createStatement();
-			ResultSet rset = stmt.executeQuery(sb.toString());
+			ResultSet rset = stmt.executeQuery(sb.toString())
 		){
 			return BeanConvertUtil.deSerFromResult(rset);
 		} catch (SQLException e) {
@@ -59,7 +59,7 @@ public class SqliteFileManager extends AbstractLogable implements FileManager {
 
 		try (
 			Connection conn = dds.getConnection();
-			Statement stmt = conn.createStatement();
+			Statement stmt = conn.createStatement()
 		){
 			stmt.execute(BeanConvertUtil.serToSql(fi));
 		} catch (SQLException e) {
@@ -85,7 +85,7 @@ public class SqliteFileManager extends AbstractLogable implements FileManager {
 		try (
 			Connection conn = dds.getConnection();
 			Statement stmt = conn.createStatement();
-			ResultSet rset = stmt.executeQuery(sb.toString());
+			ResultSet rset = stmt.executeQuery(sb.toString())
 		){
 			stmt.execute(sb.toString());
 		} catch (SQLException e) {

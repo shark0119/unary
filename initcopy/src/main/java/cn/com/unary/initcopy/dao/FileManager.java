@@ -13,25 +13,24 @@ import cn.com.unary.initcopy.entity.FileInfo;
 public interface FileManager {
 	/**
 	 * 根据指定的文件 ID 集合查询出文件信息集合
-	 * @param fileIds
+	 * @param fileIds 文件ID
 	 * @return Id为空时返回空集合
-	 * @throws IOException 
 	 */
 	List<FileInfo> query (String...fileIds);
 	/**
 	 * 保存文件实体信息
-	 * @param fi
+	 * @param fi 文件信息实体
 	 */
 	void save (FileInfo fi);
 	/**
 	 * 保存传进来的数据，如无文件Id，则做新增操作，自动生成Id。
 	 * 如有文件Id，则做保存操作。
-	 * @param bfis
+	 * @param fis 文件信息实体
 	 */
 	void save (List<FileInfo> fis);
 	/**
 	 * 根据文件Id集合删除文件实体信息
-	 * @param fileIds
+	 * @param fileIds 文件ID
 	 */
 	void delete (String...fileIds);
 }

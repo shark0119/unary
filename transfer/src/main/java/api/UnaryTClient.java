@@ -2,11 +2,11 @@ package api;
 
 import java.io.IOException;
 
-public interface UnaryTClient {
-	void setProcess (UnaryProcess process);
-	int sendData (byte[] data, int time);
-	int sendData (byte[] data);
-	void startClient () throws IOException;
-	void stopClient () throws IOException;
-	int getMaxPackSize();
+public abstract class UnaryTClient {
+	public abstract void setProcess (UnaryProcess process);
+	public abstract int sendData(byte[] data, int time);
+	public abstract int sendData(byte[] data);
+	public abstract void startClient() throws IOException;
+	public abstract void stopClient() throws IOException;
+	public static int MAX_PACK_SIZE = 1000;
 }

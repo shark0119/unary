@@ -24,8 +24,9 @@ public class JavaNioFileInput extends AbstractFileInput {
 			if (buffer.hasRemaining()) 
 				this.finished();
 		} catch (IOException e) {
-			// TODO logger exception
-			throw new UnaryIOException("ERROR CODE 0X01: file read error.", e);
+			logger.error("ERROR CODE 0X01: file open error.", e);
+			throw new UnaryIOException("ERROR CODE 0X01: file open error.", e);
+			// TODO 是否算是重复日志
 		}
 		return buffer.array();
 	}

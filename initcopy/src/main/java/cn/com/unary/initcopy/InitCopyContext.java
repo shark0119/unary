@@ -37,7 +37,7 @@ public class InitCopyContext {
 	 * @param transPort 文件数据传输端口
 	 * @param grpcPort 服务监听的端口
 	 * @param innerGrpcPort 内部服务的监听端口 
-	 * @throws InterruptedException 
+	 * @throws InterruptedException 服务被中断
 	 * @throws IOException 端口占用
 	 */
 	public void start (int transPort, int grpcPort, int innerGrpcPort) throws IOException, InterruptedException{

@@ -36,8 +36,8 @@ public class MD5FileUtil {
 	 * 小于2G文件
 	 * 
 	 * @param fis 文件输入流
-	 * @return
-	 * @throws IOException
+	 * @return DONT KNOW
+	 * @throws IOException 文件IO异常
 	 */
 	private static String getMD5Lt2G(File file, FileInputStream fis) throws IOException {
 		// 加密码
@@ -52,10 +52,9 @@ public class MD5FileUtil {
 	/**
 	 * 超过2G文件的md5算法
 	 * 
-	 * @param fileName
-	 * @param InputStream
-	 * @return
-	 * @throws Exception
+	 * @param fis 文件输入流
+	 * @return DONT KNOW
+	 * @throws Exception 文件IO异常
 	 */
 	private static String getMD5Gt2G(InputStream fis) throws IOException {
 		// 自定义文件块读写大小，一般为4M，对于小文件多的情况可以降低
@@ -99,8 +98,8 @@ public class MD5FileUtil {
 	/**
 	 * 生成字节流的md5校验值
 	 * 
-	 * @param s
-	 * @return
+	 * @param bytes 字节数据
+	 * @return MD5校验码
 	 */
 	public static String getMD5String(byte[] bytes) {
 		messagedigest.update(bytes);
@@ -113,7 +112,7 @@ public class MD5FileUtil {
 	 * @param file
 	 *            文件路径
 	 * @return MD5码返回
-	 * @throws IOException
+	 * @throws IOException 文件IO异常
 	 */
 	public static String getFileMD5(File file) throws IOException {
 		String encrStr = "";

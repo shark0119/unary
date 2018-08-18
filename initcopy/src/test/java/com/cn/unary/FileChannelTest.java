@@ -35,7 +35,7 @@ public class FileChannelTest {
 		try {
 			Files.deleteIfExists(path);
 		} catch (IOException ex) {
-			System.err.println(ex);
+			ex.printStackTrace();
 		}
 	}
 
@@ -66,7 +66,7 @@ public class FileChannelTest {
 			elapsedTime = System.nanoTime() - startTime;
 			System.out.println("Elapsed Time is " + (elapsedTime / 1000000000.0) + " seconds");
 		} catch (IOException ex) {
-			System.err.println(ex);
+			ex.printStackTrace();
 		}
 	}
 	// FileChannel and direct buffer
@@ -96,7 +96,7 @@ public class FileChannelTest {
 			elapsedTime = System.nanoTime() - startTime;
 			System.out.println("Elapsed Time is " + (elapsedTime / 1000000000.0) + " seconds");
 		} catch (IOException ex) {
-			System.err.println(ex);
+			ex.printStackTrace();
 		}
 	}
 	// FileChannel.transferTo()
@@ -114,7 +114,7 @@ public class FileChannelTest {
 			elapsedTime = System.nanoTime() - startTime;
 			System.out.println("Elapsed Time is " + (elapsedTime / 1000000000.0) + " seconds");
 		} catch (IOException ex) {
-			System.err.println(ex);
+			ex.printStackTrace();
 		}
 	}
 	// FileChannel.transferFrom()
@@ -132,7 +132,7 @@ public class FileChannelTest {
 			elapsedTime = System.nanoTime() - startTime;
 			System.out.println("Elapsed Time is " + (elapsedTime / 1000000000.0) + " seconds");
 		} catch (IOException ex) {
-			System.err.println(ex);
+			ex.printStackTrace();
 		}
 	}
 	// FileChannel.map
@@ -152,7 +152,7 @@ public class FileChannelTest {
 			elapsedTime = System.nanoTime() - startTime;
 			System.out.println("Elapsed Time is " + (elapsedTime / 1000000000.0) + " seconds");
 		} catch (IOException ex) {
-			System.err.println(ex);
+			ex.printStackTrace();
 		}
 	}
 	// Buffered Stream I/O
@@ -173,7 +173,7 @@ public class FileChannelTest {
 			elapsedTime = System.nanoTime() - startTime;
 			System.out.println("Elapsed Time is " + (elapsedTime / 1000000000.0) + " seconds");
 		} catch (IOException ex) {
-			System.err.println(ex);
+			ex.printStackTrace();
 		}
 	}
 	@Test
@@ -193,7 +193,7 @@ public class FileChannelTest {
 			elapsedTime = System.nanoTime() - startTime;
 			System.out.println("Elapsed Time is " + (elapsedTime / 1000000000.0) + " seconds");
 		} catch (IOException ex) {
-			System.err.println(ex);
+			ex.printStackTrace();
 		}
 
 		deleteCopied(copy_to);
@@ -207,7 +207,7 @@ public class FileChannelTest {
 			elapsedTime = System.nanoTime() - startTime;
 			System.out.println("Elapsed Time is " + (elapsedTime / 1000000000.0) + " seconds");
 		} catch (IOException e) {
-			System.err.println(e);
+			e.printStackTrace();
 		}
 
 	}
@@ -223,7 +223,7 @@ public class FileChannelTest {
 			elapsedTime = System.nanoTime() - startTime;
 			System.out.println("Elapsed Time is " + (elapsedTime / 1000000000.0) + " seconds");
 		} catch (IOException e) {
-			System.err.println(e);
+			e.printStackTrace();
 		}
 
 		deleteCopied(copy_to);
@@ -240,7 +240,7 @@ public class FileChannelTest {
 			elapsedTime = System.nanoTime() - startTime;
 			System.out.println("Elapsed Time is " + (elapsedTime / 1000000000.0) + " seconds");
 		} catch (IOException e) {
-			System.err.println(e);
+			e.printStackTrace();
 		}
 	}
 }

@@ -4,7 +4,7 @@ import cn.com.unary.initcopy.grpc.constant.SyncType;
 
 public class FileReadOption {
 	public static final FileReadOption DEFAULT 
-		= new FileReadOption(SyncType.SYNC_ALL);;
+		= new FileReadOption(SyncType.SYNC_ALL);
 	private SyncType syncType;
 	
 	public FileReadOption(SyncType syncType) {

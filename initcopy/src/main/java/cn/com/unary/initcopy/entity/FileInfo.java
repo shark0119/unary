@@ -30,12 +30,21 @@ public class FileInfo extends BaseFileInfo{
 	public int getFinishPackIndex() {		return finishPackIndex;	}
 	public void setFinishPackIndex(int finishPackIndex) {		this.finishPackIndex = finishPackIndex;	}
 	
-	public FileAttr newFileAttr () {		return new FileAttr();	}
+	public static FileAttr newFileAttr () {		return new FileAttr();	}
 
 	@Override
 	public String toString() {
 		return "FileInfo [fileType=" + fileType + ", beginPackIndex=" + beginPackIndex + ", finishPackIndex="
 				+ finishPackIndex + ", attr=" + attr + "]";
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof FileInfo) {
+			if (((FileInfo) obj).getId().equals(this.getId()))
+				return true;
+		}
+		return false;
 	}
 
 	public static class FileAttr {

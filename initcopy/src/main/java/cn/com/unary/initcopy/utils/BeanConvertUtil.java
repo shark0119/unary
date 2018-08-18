@@ -24,8 +24,8 @@ public class BeanConvertUtil {
 	 * 将初始化时发送的文件信息转化为文件信息实体。FileInfo 包含了文件除内容以外所有的信息。
 	 * 但本函数不初始化以下属性：
 	 * seqs
-	 * @param bfi
-	 * @return
+	 * @param bfi 初始化时需要的文件基础信息
+	 * @return 文件的待同步信息
 	 * @throws IOException 由于读文件导致的 IO 异常
 	 */
 	public static FileInfo readFromBaseFileInfo (BaseFileInfo bfi) throws IOException {
