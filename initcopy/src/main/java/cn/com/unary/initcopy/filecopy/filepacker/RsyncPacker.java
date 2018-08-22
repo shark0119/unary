@@ -21,7 +21,7 @@ import java.util.Map;
  *
  * @author shark
  */
-@Component("rsyncPacker")
+// @Component("rsyncPacker")
 public class RsyncPacker implements SyncDiffPacker {
 
     private final Map<String, FileInfo> fiMap = new HashMap<>();
@@ -65,7 +65,7 @@ public class RsyncPacker implements SyncDiffPacker {
     }
 
     @Override
-    public void close() throws IOException {
+    public void close() throws Exception {
         if (afi != null) {
             afi.close();
         }

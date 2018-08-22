@@ -1,56 +1,45 @@
 package cn.com.unary.initcopy.filecopy.io;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 
 import cn.com.unary.initcopy.exception.UnaryIOException;
 import cn.com.unary.initcopy.utils.AbstractLogable;
+import io.netty.buffer.ByteBuf;
 
 public abstract class AbstractFileInput extends AbstractLogable implements AutoCloseable {
 
-	private String currentFileName;
-	protected FileChannel currentFileChannel ;
-	// 判断文件是否读取完毕
-	protected boolean finish = false;
-	
-	public void setFile(String fileName) {
-		if (!finish) {
-			try {
-				currentFileChannel.close();
-			} catch (IOException e) {
-				throw new UnaryIOException("ERROR CODE 0X06: Resource close exception.", e);
-			}
-			logger.warn("File {1} was discarded after it was not read.", currentFileName);
-		}
-		try {
-			currentFileChannel = FileChannel.open(
-					Paths.get(fileName),
-					StandardOpenOption.READ);
-			currentFileName = fileName;
-			finish = false;
-		} catch (IOException e) {
-			throw new UnaryIOException("ERROR CODE 0X01: file open error.", e);
-		}
-	}
+    /**
+     * 打开文件，如果上个文件没有读完，关闭资源并做日志记录。
+     *
+     * @param fileName 要打开的文件名
+     * @return 当前对象
+     * @throws IOException 发生IO错误
+     */
+    public abstract AbstractFileInput openFile (String fileName) throws IOException;
 
-	/**
-	 * 读取文件，返回能读取到的数据，如果读到文件尾，返回长度为0的字节数组
-	 * 为了兼容 NIO 中的零拷贝方式
-	 * @param size 期望读取到的个数
-	 * @return 返回读到的字节数组
-	 */
-	public abstract byte[] read(int size);
+    /**
+     * 从文件中读取数据
+     *
+     * @param buffer 文件数据容器，默认读取 {@link ByteBuffer#remaining()}个字节
+     * @return 读取到有效数据返回 true，否则返回 false 表示未读到有效数据
+     * @throws IOException 文件读取发生异常
+     */
+	public abstract boolean read (ByteBuffer buffer) throws IOException;
 
-	@Override
-	public void close() throws IOException {
-		if (currentFileChannel != null) {
-			currentFileChannel.close();
-		}
-	}
+    /**
+     * @see FileChannel#position(long)
+     */
+    public abstract AbstractFileInput position(long position) throws IOException;
 
-	protected void finished () {
-		finish = true;
-	}
+    /**
+     * 读取文件，返回能读取到的数据，如果读到文件尾，返回长度为0的字节数组
+     * 为了兼容 NIO 中的零拷贝方式，取决于 JNI 能否实现异常处理和Java 类映射。
+     * @param size 期望读取到的个数
+     * @return 返回读到的字节数组
+     */
+    /*public abstract byte[] read(int size);*/
 }

@@ -3,12 +3,22 @@ package com.cn.unary.filetest;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.nio.ByteBuffer;
 import java.nio.MappedByteBuffer;
+import java.nio.channels.FileChannel;
+import java.nio.file.OpenOption;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 
+import cn.com.unary.initcopy.utils.CommonUtils;
 import org.junit.Test;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import javax.xml.bind.SchemaOutputResolver;
 
 public class FileCopyTest {
 
@@ -148,4 +158,47 @@ public class FileCopyTest {
 	public void test4 () {
 		MappedByteBuffer mbb = null;
 	}
+
+	@Test
+	public void test5 () throws IOException {
+		Path path = Paths.get("G:\\temp\\test.txt");
+		FileChannel channel = FileChannel.open(path, StandardOpenOption.WRITE);
+        byte[] data = {57,58,59,60,61,62,65,66};
+		ByteBuffer buffer = ByteBuffer.allocate(8);
+
+        System.out.println("buffer position:" + buffer.position());
+        System.out.println("buffer limit:" + buffer.limit());
+        System.out.println("buffer remaining:" + buffer.remaining());
+        System.out.println("buffer length:" + buffer.array().length);
+		buffer.put(data);
+        System.out.println();
+        System.out.println("buffer position:" + buffer.position());
+        System.out.println("buffer limit:" + buffer.limit());
+        System.out.println("buffer remaining:" + buffer.remaining());
+        System.out.println("buffer length:" + buffer.array().length);
+		buffer.flip();
+        System.out.println();
+        System.out.println("buffer position:" + buffer.position());
+        System.out.println("buffer limit:" + buffer.limit());
+        System.out.println("buffer remaining:" + buffer.remaining());
+        System.out.println("buffer array length:" + buffer.array().length);
+
+        channel.position(10);
+		channel.write(buffer);
+
+        System.out.println(channel.position());
+        channel.truncate(5);
+		channel.force(true);
+
+		channel.close();
+	}
+	@Test
+    public void test6 () throws IOException {
+        Path path = Paths.get("G:\\temp\\test.txt");
+        FileChannel channel = FileChannel.open(path, StandardOpenOption.WRITE);
+
+        channel.position(2);
+        channel.truncate(2);
+        channel.close();
+    }
 }

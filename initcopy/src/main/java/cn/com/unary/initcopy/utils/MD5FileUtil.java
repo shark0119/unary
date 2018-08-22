@@ -9,11 +9,8 @@ import java.nio.channels.FileChannel;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-public class MD5FileUtil {
-	private static final Logger logger = LoggerFactory.getLogger(MD5FileUtil.class);
+public class MD5FileUtil extends AbstractLogable{
 
 	private MD5FileUtil () {}
 	/**

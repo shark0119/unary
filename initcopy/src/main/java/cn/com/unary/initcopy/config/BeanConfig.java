@@ -101,23 +101,9 @@ public class BeanConfig {
 			public int sendData(byte[] data) {				return 0;			}
 			@Override
 			public int sendData(byte[] data, int time) {				return 0;			}
-			@Override
-			public int getMaxPackSize() {				return 0;			}
 		};
 	}
-	@Bean
-	public Packer syncAllFilePackAndResolve (
-			InitCopyContext context,
-			@Value("#{sqliteFileManager}")FileManager ifm,
-			AbstractFileInput afi,
-			UnaryTClient utc) {
-		SyncAllPacker safar = new SyncAllPacker();
-		safar.setContext(context);
-		safar.setIfm(ifm);
-		safar.setInput(afi);
-		safar.setUtc(utc);
-		return safar;
-	}
+
 	
 	/*@Bean
 	// @Scope("singleton")
