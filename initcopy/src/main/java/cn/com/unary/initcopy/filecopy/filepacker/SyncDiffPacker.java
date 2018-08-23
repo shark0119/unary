@@ -15,5 +15,5 @@ public interface SyncDiffPacker extends Packer{
 	 *
 	 * @param diffFileInfo 目标端文件的校验数据
 	 */
-	void setFileDiffInfos(List<DiffFileInfo> diffFileInfo);
+	SyncDiffPacker setFileDiffInfos(List<DiffFileInfo> diffFileInfo);
 }

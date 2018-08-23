@@ -1,27 +1,34 @@
 package cn.com.unary.initcopy.server;
 
 import java.io.IOException;
+
 /**
  * 初始化复制目标端服务的启动类
- * 1.启动内部控制任务GRPC服务
- * 2.设置监听端口，接收外部文件数据包
- * @author shark
  *
+ * 1.启动内部控制任务GRPC服务
+ * 2.设置传输模块监听端口，接收外部文件数据包
+ *
+ * @author Shark.Yin
+ * @since 1.0
  */
 public class InitCopyServer {
-	private InitCopyServer () {}
-	
-	public void start () throws IOException {
-		
+	private InitCopyServer() {}
+
+	public static void blockUntilShutdown () {
+
 	}
 
-	public void blockUntilShutdown () {
-		
-	}
-	
-	public static void activate() throws IOException, InterruptedException  {
-		InitCopyServer server = new InitCopyServer();
-		server.start();
-		server.blockUntilShutdown();
+    /**
+     *
+     * 1.启动内部控制任务GRPC服务
+     * 2.设置传输模块监听端口，接收外部文件数据包
+     *
+     * @throws IOException 发生IO错误，端口占用等。
+     * @throws InterruptedException 服务被异常中断
+     */
+	public static void start(int grpcPort, int transferPort) throws IOException, InterruptedException  {
+
+
+	    blockUntilShutdown();
 	}
 }

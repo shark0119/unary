@@ -15,7 +15,7 @@ public  final class FileBaseInfo extends
     super(builder);
   }
   private FileBaseInfo() {
-    hash_ = "";
+    checkSum_ = "";
     modifyTime_ = 0L;
     fileSize_ = 0L;
     fullName_ = "";
@@ -49,7 +49,7 @@ public  final class FileBaseInfo extends
           case 10: {
             java.lang.String s = input.readStringRequireUtf8();
 
-            hash_ = s;
+            checkSum_ = s;
             break;
           }
           case 16: {
@@ -91,24 +91,24 @@ public  final class FileBaseInfo extends
             cn.com.unary.initcopy.grpc.entity.FileBaseInfo.class, cn.com.unary.initcopy.grpc.entity.FileBaseInfo.Builder.class);
   }
 
-  public static final int HASH_FIELD_NUMBER = 1;
-  private volatile java.lang.Object hash_;
+  public static final int CHECKSUM_FIELD_NUMBER = 1;
+  private volatile java.lang.Object checkSum_;
   /**
    * <pre>
    * 校验码
    * </pre>
    *
-   * <code>optional string hash = 1;</code>
+   * <code>optional string checkSum = 1;</code>
    */
-  public java.lang.String getHash() {
-    java.lang.Object ref = hash_;
+  public java.lang.String getCheckSum() {
+    java.lang.Object ref = checkSum_;
     if (ref instanceof java.lang.String) {
       return (java.lang.String) ref;
     } else {
       com.google.protobuf.ByteString bs = 
           (com.google.protobuf.ByteString) ref;
       java.lang.String s = bs.toStringUtf8();
-      hash_ = s;
+      checkSum_ = s;
       return s;
     }
   }
@@ -117,16 +117,16 @@ public  final class FileBaseInfo extends
    * 校验码
    * </pre>
    *
-   * <code>optional string hash = 1;</code>
+   * <code>optional string checkSum = 1;</code>
    */
   public com.google.protobuf.ByteString
-      getHashBytes() {
-    java.lang.Object ref = hash_;
+      getCheckSumBytes() {
+    java.lang.Object ref = checkSum_;
     if (ref instanceof java.lang.String) {
       com.google.protobuf.ByteString b = 
           com.google.protobuf.ByteString.copyFromUtf8(
               (java.lang.String) ref);
-      hash_ = b;
+      checkSum_ = b;
       return b;
     } else {
       return (com.google.protobuf.ByteString) ref;
@@ -213,8 +213,8 @@ public  final class FileBaseInfo extends
 
   public void writeTo(com.google.protobuf.CodedOutputStream output)
                       throws java.io.IOException {
-    if (!getHashBytes().isEmpty()) {
-      com.google.protobuf.GeneratedMessageV3.writeString(output, 1, hash_);
+    if (!getCheckSumBytes().isEmpty()) {
+      com.google.protobuf.GeneratedMessageV3.writeString(output, 1, checkSum_);
     }
     if (modifyTime_ != 0L) {
       output.writeSInt64(2, modifyTime_);
@@ -232,8 +232,8 @@ public  final class FileBaseInfo extends
     if (size != -1) return size;
 
     size = 0;
-    if (!getHashBytes().isEmpty()) {
-      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, hash_);
+    if (!getCheckSumBytes().isEmpty()) {
+      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, checkSum_);
     }
     if (modifyTime_ != 0L) {
       size += com.google.protobuf.CodedOutputStream
@@ -262,8 +262,8 @@ public  final class FileBaseInfo extends
     cn.com.unary.initcopy.grpc.entity.FileBaseInfo other = (cn.com.unary.initcopy.grpc.entity.FileBaseInfo) obj;
 
     boolean result = true;
-    result = result && getHash()
-        .equals(other.getHash());
+    result = result && getCheckSum()
+        .equals(other.getCheckSum());
     result = result && (getModifyTime()
         == other.getModifyTime());
     result = result && (getFileSize()
@@ -280,8 +280,8 @@ public  final class FileBaseInfo extends
     }
     int hash = 41;
     hash = (19 * hash) + getDescriptorForType().hashCode();
-    hash = (37 * hash) + HASH_FIELD_NUMBER;
-    hash = (53 * hash) + getHash().hashCode();
+    hash = (37 * hash) + CHECKSUM_FIELD_NUMBER;
+    hash = (53 * hash) + getCheckSum().hashCode();
     hash = (37 * hash) + MODIFYTIME_FIELD_NUMBER;
     hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
         getModifyTime());
@@ -408,7 +408,7 @@ public  final class FileBaseInfo extends
     }
     public Builder clear() {
       super.clear();
-      hash_ = "";
+      checkSum_ = "";
 
       modifyTime_ = 0L;
 
@@ -438,7 +438,7 @@ public  final class FileBaseInfo extends
 
     public cn.com.unary.initcopy.grpc.entity.FileBaseInfo buildPartial() {
       cn.com.unary.initcopy.grpc.entity.FileBaseInfo result = new cn.com.unary.initcopy.grpc.entity.FileBaseInfo(this);
-      result.hash_ = hash_;
+      result.checkSum_ = checkSum_;
       result.modifyTime_ = modifyTime_;
       result.fileSize_ = fileSize_;
       result.fullName_ = fullName_;
@@ -483,8 +483,8 @@ public  final class FileBaseInfo extends
 
     public Builder mergeFrom(cn.com.unary.initcopy.grpc.entity.FileBaseInfo other) {
       if (other == cn.com.unary.initcopy.grpc.entity.FileBaseInfo.getDefaultInstance()) return this;
-      if (!other.getHash().isEmpty()) {
-        hash_ = other.hash_;
+      if (!other.getCheckSum().isEmpty()) {
+        checkSum_ = other.checkSum_;
         onChanged();
       }
       if (other.getModifyTime() != 0L) {
@@ -523,21 +523,21 @@ public  final class FileBaseInfo extends
       return this;
     }
 
-    private java.lang.Object hash_ = "";
+    private java.lang.Object checkSum_ = "";
     /**
      * <pre>
      * 校验码
      * </pre>
      *
-     * <code>optional string hash = 1;</code>
+     * <code>optional string checkSum = 1;</code>
      */
-    public java.lang.String getHash() {
-      java.lang.Object ref = hash_;
+    public java.lang.String getCheckSum() {
+      java.lang.Object ref = checkSum_;
       if (!(ref instanceof java.lang.String)) {
         com.google.protobuf.ByteString bs =
             (com.google.protobuf.ByteString) ref;
         java.lang.String s = bs.toStringUtf8();
-        hash_ = s;
+        checkSum_ = s;
         return s;
       } else {
         return (java.lang.String) ref;
@@ -548,16 +548,16 @@ public  final class FileBaseInfo extends
      * 校验码
      * </pre>
      *
-     * <code>optional string hash = 1;</code>
+     * <code>optional string checkSum = 1;</code>
      */
     public com.google.protobuf.ByteString
-        getHashBytes() {
-      java.lang.Object ref = hash_;
+        getCheckSumBytes() {
+      java.lang.Object ref = checkSum_;
       if (ref instanceof String) {
         com.google.protobuf.ByteString b = 
             com.google.protobuf.ByteString.copyFromUtf8(
                 (java.lang.String) ref);
-        hash_ = b;
+        checkSum_ = b;
         return b;
       } else {
         return (com.google.protobuf.ByteString) ref;
@@ -568,15 +568,15 @@ public  final class FileBaseInfo extends
      * 校验码
      * </pre>
      *
-     * <code>optional string hash = 1;</code>
+     * <code>optional string checkSum = 1;</code>
      */
-    public Builder setHash(
+    public Builder setCheckSum(
         java.lang.String value) {
       if (value == null) {
     throw new NullPointerException();
   }
   
-      hash_ = value;
+      checkSum_ = value;
       onChanged();
       return this;
     }
@@ -585,11 +585,11 @@ public  final class FileBaseInfo extends
      * 校验码
      * </pre>
      *
-     * <code>optional string hash = 1;</code>
+     * <code>optional string checkSum = 1;</code>
      */
-    public Builder clearHash() {
+    public Builder clearCheckSum() {
       
-      hash_ = getDefaultInstance().getHash();
+      checkSum_ = getDefaultInstance().getCheckSum();
       onChanged();
       return this;
     }
@@ -598,16 +598,16 @@ public  final class FileBaseInfo extends
      * 校验码
      * </pre>
      *
-     * <code>optional string hash = 1;</code>
+     * <code>optional string checkSum = 1;</code>
      */
-    public Builder setHashBytes(
+    public Builder setCheckSumBytes(
         com.google.protobuf.ByteString value) {
       if (value == null) {
     throw new NullPointerException();
   }
   checkByteStringIsUtf8(value);
       
-      hash_ = value;
+      checkSum_ = value;
       onChanged();
       return this;
     }

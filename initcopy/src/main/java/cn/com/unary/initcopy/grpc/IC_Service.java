@@ -3,8 +3,8 @@
 
 package cn.com.unary.initcopy.grpc;
 
-public final class InitCopy {
-  private InitCopy() {}
+public final class IC_Service {
+  private IC_Service() {}
   public static void registerAllExtensions(
       com.google.protobuf.ExtensionRegistryLite registry) {
   }
@@ -24,28 +24,28 @@ public final class InitCopy {
   static {
     java.lang.String[] descriptorData = {
       "\n\017init_copy.proto\022\032cn.com.unary.initcopy" +
-      ".grpc\032\026init_copy_entity.proto2\252\003\n\013TaskSe" +
-      "rvice\022b\n\003Add\022+.cn.com.unary.initcopy.grp" +
-      "c.entity.SyncTask\032,.cn.com.unary.initcop" +
-      "y.grpc.entity.TaskState\"\000\022e\n\005Query\022,.cn." +
-      "com.unary.initcopy.grpc.entity.QueryTask" +
-      "\032,.cn.com.unary.initcopy.grpc.entity.Tas" +
-      "kState\"\000\022g\n\006Delete\022-.cn.com.unary.initco" +
-      "py.grpc.entity.DeleteTask\032,.cn.com.unary" +
-      ".initcopy.grpc.entity.TaskState\"\000\022g\n\006Mod",
-      "ify\022-.cn.com.unary.initcopy.grpc.entity." +
-      "ModifyTask\032,.cn.com.unary.initcopy.grpc." +
-      "entity.TaskState\"\0002\325\002\n\022TaskControlServic" +
-      "e\022m\n\004Init\0220.cn.com.unary.initcopy.grpc.e" +
-      "ntity.ClientInitReq\0321.cn.com.unary.initc" +
-      "opy.grpc.entity.ServerInitResp\"\000\022g\n\006Dele" +
-      "te\022-.cn.com.unary.initcopy.grpc.entity.D" +
-      "eleteTask\032,.cn.com.unary.initcopy.grpc.e" +
-      "ntity.TaskState\"\000\022g\n\006Modify\022-.cn.com.una" +
-      "ry.initcopy.grpc.entity.ModifyTask\032,.cn.",
-      "com.unary.initcopy.grpc.entity.TaskState" +
-      "\"\000B(\n\032cn.com.unary.initcopy.grpcB\010InitCo" +
-      "pyP\001b\006proto3"
+      ".grpc\032\026init_copy_entity.proto2\252\003\n\010InitCo" +
+      "py\022c\n\003Add\022+.cn.com.unary.initcopy.grpc.e" +
+      "ntity.SyncTask\032-.cn.com.unary.initcopy.g" +
+      "rpc.entity.ExecResult\"\000\022e\n\005Query\022,.cn.co" +
+      "m.unary.initcopy.grpc.entity.QueryTask\032," +
+      ".cn.com.unary.initcopy.grpc.entity.TaskS" +
+      "tate\"\000\022h\n\006Delete\022-.cn.com.unary.initcopy" +
+      ".grpc.entity.DeleteTask\032-.cn.com.unary.i" +
+      "nitcopy.grpc.entity.ExecResult\"\000\022h\n\006Modi",
+      "fy\022-.cn.com.unary.initcopy.grpc.entity.M" +
+      "odifyTask\032-.cn.com.unary.initcopy.grpc.e" +
+      "ntity.ExecResult\"\0002\320\002\n\013ControlTask\022m\n\004In" +
+      "it\0220.cn.com.unary.initcopy.grpc.entity.C" +
+      "lientInitReq\0321.cn.com.unary.initcopy.grp" +
+      "c.entity.ServerInitResp\"\000\022h\n\006Delete\022-.cn" +
+      ".com.unary.initcopy.grpc.entity.DeleteTa" +
+      "sk\032-.cn.com.unary.initcopy.grpc.entity.E" +
+      "xecResult\"\000\022h\n\006Modify\022-.cn.com.unary.ini" +
+      "tcopy.grpc.entity.ModifyTask\032-.cn.com.un",
+      "ary.initcopy.grpc.entity.ExecResult\"\000B*\n" +
+      "\032cn.com.unary.initcopy.grpcB\nIC_ServiceP" +
+      "\001b\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {

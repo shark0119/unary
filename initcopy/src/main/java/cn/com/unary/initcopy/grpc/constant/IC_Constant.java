@@ -24,14 +24,15 @@ public final class IC_Constant {
   static {
     java.lang.String[] descriptorData = {
       "\n\030init_copy_constant.proto\022#cn.com.unary" +
-      ".initcopy.grpc.constant*@\n\010SyncType\022\014\n\010S" +
-      "YNC_ALL\020\000\022\022\n\016SYNC_TIME_DIFF\020\001\022\022\n\016SYNC_DA" +
-      "TA_DIFF\020\002*4\n\014CompressType\022\021\n\rCOMPRESS_NO" +
-      "NE\020\000\022\021\n\rCOMPRESS_ZLIB\020\001*0\n\013EncryptType\022\020" +
-      "\n\014ENCRYPT_NONE\020\000\022\017\n\013ENCRYPT_AES\020\001**\n\010Pac" +
-      "kType\022\r\n\tPACK_NONE\020\000\022\017\n\013PACK_FORMAT\020\001B4\n" +
-      "#cn.com.unary.initcopy.grpc.constantB\013IC" +
-      "_ConstantP\001b\006proto3"
+      ".initcopy.grpc.constant*\'\n\010SyncType\022\014\n\010S" +
+      "YNC_ALL\020\000\022\r\n\tSYNC_DIFF\020\001*4\n\014CompressType" +
+      "\022\021\n\rCOMPRESS_NONE\020\000\022\021\n\rCOMPRESS_ZLIB\020\001*0" +
+      "\n\013EncryptType\022\020\n\014ENCRYPT_NONE\020\000\022\017\n\013ENCRY" +
+      "PT_AES\020\001**\n\010PackType\022\r\n\tPACK_NONE\020\000\022\017\n\013P" +
+      "ACK_FORMAT\020\001*3\n\nModifyType\022\t\n\005PAUSE\020\000\022\t\n" +
+      "\005START\020\001\022\017\n\013SPEED_LIMIT\020\002B4\n#cn.com.unar" +
+      "y.initcopy.grpc.constantB\013IC_ConstantP\001b" +
+      "\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {

@@ -1,16 +1,25 @@
 syntax = "proto3";
 
 option java_multiple_files = true;
-option java_package = "com.cn.unary.initcopy.grpc";
-option java_outer_classname = "InitCopy";
+option java_package = "cn.com.unary.initcopy.grpc";
+option java_outer_classname = "IC_Service";
 
 import "init_copy_entity.proto";
 
-package com.cn.unary.initcopy.grpc;
+package cn.com.unary.initcopy.grpc;
 
-service TaskService { 
-    rpc Add (com.cn.unary.initcopy.grpc.entity.SyncTask) returns (com.cn.unary.initcopy.grpc.entity.TaskState) {};
-    rpc Query (com.cn.unary.initcopy.grpc.entity.QueryTask) returns (com.cn.unary.initcopy.grpc.entity.TaskState) {};
-    rpc Delete (com.cn.unary.initcopy.grpc.entity.DeleteTask) returns (com.cn.unary.initcopy.grpc.entity.TaskState) {};
-    rpc Modify (com.cn.unary.initcopy.grpc.entity.ModifyTask) returns (com.cn.unary.initcopy.grpc.entity.TaskState) {};
+service InitCopy { 
+    rpc Add (cn.com.unary.initcopy.grpc.entity.SyncTask) returns (cn.com.unary.initcopy.grpc.entity.ExecResult) {};
+    rpc Query (cn.com.unary.initcopy.grpc.entity.QueryTask) returns (cn.com.unary.initcopy.grpc.entity.TaskState) {};
+    rpc Delete (cn.com.unary.initcopy.grpc.entity.DeleteTask) returns (cn.com.unary.initcopy.grpc.entity.ExecResult) {};
+    rpc Modify (cn.com.unary.initcopy.grpc.entity.ModifyTask) returns (cn.com.unary.initcopy.grpc.entity.ExecResult) {};
+}
+
+service ControlTask {
+	// 任务初始化
+	rpc Init (cn.com.unary.initcopy.grpc.entity.ClientInitReq) returns (cn.com.unary.initcopy.grpc.entity.ServerInitResp) {};
+	// 删除任务
+    rpc Delete (cn.com.unary.initcopy.grpc.entity.DeleteTask) returns (cn.com.unary.initcopy.grpc.entity.ExecResult) {};
+    // 修改任务 
+    rpc Modify (cn.com.unary.initcopy.grpc.entity.ModifyTask) returns (cn.com.unary.initcopy.grpc.entity.ExecResult) {};
 }

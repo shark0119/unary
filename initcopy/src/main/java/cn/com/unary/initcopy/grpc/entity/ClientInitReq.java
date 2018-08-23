@@ -189,7 +189,7 @@ public  final class ClientInitReq extends
    * <code>optional .cn.com.unary.initcopy.grpc.constant.SyncType syncType = 4;</code>
    */
   public cn.com.unary.initcopy.grpc.constant.SyncType getSyncType() {
-    cn.com.unary.initcopy.grpc.constant.SyncType result = cn.com.unary.initcopy.grpc.constant.SyncType.forNumber(syncType_);
+    cn.com.unary.initcopy.grpc.constant.SyncType result = cn.com.unary.initcopy.grpc.constant.SyncType.valueOf(syncType_);
     return result == null ? cn.com.unary.initcopy.grpc.constant.SyncType.UNRECOGNIZED : result;
   }
 
@@ -810,7 +810,7 @@ public  final class ClientInitReq extends
      * <code>optional .cn.com.unary.initcopy.grpc.constant.SyncType syncType = 4;</code>
      */
     public cn.com.unary.initcopy.grpc.constant.SyncType getSyncType() {
-      cn.com.unary.initcopy.grpc.constant.SyncType result = cn.com.unary.initcopy.grpc.constant.SyncType.forNumber(syncType_);
+      cn.com.unary.initcopy.grpc.constant.SyncType result = cn.com.unary.initcopy.grpc.constant.SyncType.valueOf(syncType_);
       return result == null ? cn.com.unary.initcopy.grpc.constant.SyncType.UNRECOGNIZED : result;
     }
     /**

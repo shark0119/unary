@@ -11,6 +11,8 @@ import cn.com.unary.initcopy.utils.CommonUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -60,6 +62,7 @@ import java.util.List;
  * @author shark
  */
 @Component("syncAllPacker")
+@Scope("prototype")
 public class SyncAllPacker extends AbstractLogable implements Packer {
 
     // 保留多少个字节来表示数据包头部长度。默认5个字节，4个字节存储了一个整型代表包序号,还有一个字节的解析器种类标识
@@ -71,12 +74,14 @@ public class SyncAllPacker extends AbstractLogable implements Packer {
 
     // ----我来组成分割线，以下是 Spring 容器来管理的实体----
     @Autowired
+    @Qualifier("javaNioInput")
     protected AbstractFileInput input;
     @Autowired
+    @Qualifier("sqliteFileManager")
     protected FileManager ifm;
     @Autowired
     protected InitCopyContext ctx;
-    @Autowired
+
     protected UnaryTClient utc;
 
     // ----我是另外一只分界线，以下是自定义全局变量
@@ -216,6 +221,17 @@ public class SyncAllPacker extends AbstractLogable implements Packer {
     @Override
     public PackType getPackType() {
         return PackType.SYNC_ALL_JAVA;
+    }
+
+    @Override
+    public Packer pause() {
+        return null;
+    }
+
+    @Override
+    public Packer setTransfer(UnaryTClient unaryTClient) {
+        this.utc = utc;
+        return this;
     }
 
     @Override

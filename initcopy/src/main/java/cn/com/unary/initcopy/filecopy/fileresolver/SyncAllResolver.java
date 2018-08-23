@@ -12,6 +12,7 @@ import cn.com.unary.initcopy.utils.PathMapperUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -28,6 +29,7 @@ import java.util.Map;
  * @author shark
  */
 @Component("syncAllResolver")
+@Scope("prototype")
 public class SyncAllResolver extends AbstractLogable implements Resolver {
 
     public static final int PACK_SIZE = SyncAllPacker.PACK_SIZE;

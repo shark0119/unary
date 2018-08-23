@@ -19,9 +19,6 @@ public  final class TaskState extends
     super(builder);
   }
   private TaskState() {
-    success_ = false;
-    code_ = 0;
-    msg_ = "";
     taskId_ = "";
   }
 
@@ -50,29 +47,26 @@ public  final class TaskState extends
             }
             break;
           }
-          case 8: {
-
-            success_ = input.readBool();
-            break;
-          }
-          case 16: {
-
-            code_ = input.readInt32();
-            break;
-          }
-          case 26: {
-            java.lang.String s = input.readStringRequireUtf8();
-
-            msg_ = s;
-            break;
-          }
-          case 34: {
+          case 10: {
             java.lang.String s = input.readStringRequireUtf8();
 
             taskId_ = s;
             break;
           }
-          case 42: {
+          case 18: {
+            cn.com.unary.initcopy.grpc.entity.ExecResult.Builder subBuilder = null;
+            if (execResult_ != null) {
+              subBuilder = execResult_.toBuilder();
+            }
+            execResult_ = input.readMessage(cn.com.unary.initcopy.grpc.entity.ExecResult.parser(), extensionRegistry);
+            if (subBuilder != null) {
+              subBuilder.mergeFrom(execResult_);
+              execResult_ = subBuilder.buildPartial();
+            }
+
+            break;
+          }
+          case 26: {
             cn.com.unary.initcopy.grpc.entity.ProgressInfo.Builder subBuilder = null;
             if (progressInfo_ != null) {
               subBuilder = progressInfo_.toBuilder();
@@ -108,82 +102,14 @@ public  final class TaskState extends
             cn.com.unary.initcopy.grpc.entity.TaskState.class, cn.com.unary.initcopy.grpc.entity.TaskState.Builder.class);
   }
 
-  public static final int SUCCESS_FIELD_NUMBER = 1;
-  private boolean success_;
-  /**
-   * <pre>
-   * 是否成功
-   * </pre>
-   *
-   * <code>optional bool success = 1;</code>
-   */
-  public boolean getSuccess() {
-    return success_;
-  }
-
-  public static final int CODE_FIELD_NUMBER = 2;
-  private int code_;
-  /**
-   * <pre>
-   * 代码
-   * </pre>
-   *
-   * <code>optional int32 code = 2;</code>
-   */
-  public int getCode() {
-    return code_;
-  }
-
-  public static final int MSG_FIELD_NUMBER = 3;
-  private volatile java.lang.Object msg_;
-  /**
-   * <pre>
-   * 信息
-   * </pre>
-   *
-   * <code>optional string msg = 3;</code>
-   */
-  public java.lang.String getMsg() {
-    java.lang.Object ref = msg_;
-    if (ref instanceof java.lang.String) {
-      return (java.lang.String) ref;
-    } else {
-      com.google.protobuf.ByteString bs = 
-          (com.google.protobuf.ByteString) ref;
-      java.lang.String s = bs.toStringUtf8();
-      msg_ = s;
-      return s;
-    }
-  }
-  /**
-   * <pre>
-   * 信息
-   * </pre>
-   *
-   * <code>optional string msg = 3;</code>
-   */
-  public com.google.protobuf.ByteString
-      getMsgBytes() {
-    java.lang.Object ref = msg_;
-    if (ref instanceof java.lang.String) {
-      com.google.protobuf.ByteString b = 
-          com.google.protobuf.ByteString.copyFromUtf8(
-              (java.lang.String) ref);
-      msg_ = b;
-      return b;
-    } else {
-      return (com.google.protobuf.ByteString) ref;
-    }
-  }
-
-  public static final int TASKID_FIELD_NUMBER = 4;
+  public static final int TASKID_FIELD_NUMBER = 1;
   private volatile java.lang.Object taskId_;
   /**
    * <pre>
    *对应的任务id
    * </pre>
    *
-   * <code>optional string taskId = 4;</code>
+   * <code>optional string taskId = 1;</code>
    */
   public java.lang.String getTaskId() {
     java.lang.Object ref = taskId_;
@@ -202,7 +128,7 @@ public  final class TaskState extends
    *对应的任务id
    * </pre>
    *
-   * <code>optional string taskId = 4;</code>
+   * <code>optional string taskId = 1;</code>
    */
   public com.google.protobuf.ByteString
       getTaskIdBytes() {
@@ -218,14 +144,35 @@ public  final class TaskState extends
     }
   }
 
-  public static final int PROGRESSINFO_FIELD_NUMBER = 5;
+  public static final int EXECRESULT_FIELD_NUMBER = 2;
+  private cn.com.unary.initcopy.grpc.entity.ExecResult execResult_;
+  /**
+   * <code>optional .cn.com.unary.initcopy.grpc.entity.ExecResult execResult = 2;</code>
+   */
+  public boolean hasExecResult() {
+    return execResult_ != null;
+  }
+  /**
+   * <code>optional .cn.com.unary.initcopy.grpc.entity.ExecResult execResult = 2;</code>
+   */
+  public cn.com.unary.initcopy.grpc.entity.ExecResult getExecResult() {
+    return execResult_ == null ? cn.com.unary.initcopy.grpc.entity.ExecResult.getDefaultInstance() : execResult_;
+  }
+  /**
+   * <code>optional .cn.com.unary.initcopy.grpc.entity.ExecResult execResult = 2;</code>
+   */
+  public cn.com.unary.initcopy.grpc.entity.ExecResultOrBuilder getExecResultOrBuilder() {
+    return getExecResult();
+  }
+
+  public static final int PROGRESSINFO_FIELD_NUMBER = 3;
   private cn.com.unary.initcopy.grpc.entity.ProgressInfo progressInfo_;
   /**
    * <pre>
    *进度信息
    * </pre>
    *
-   * <code>optional .cn.com.unary.initcopy.grpc.entity.ProgressInfo progressInfo = 5;</code>
+   * <code>optional .cn.com.unary.initcopy.grpc.entity.ProgressInfo progressInfo = 3;</code>
    */
   public boolean hasProgressInfo() {
     return progressInfo_ != null;
@@ -235,7 +182,7 @@ public  final class TaskState extends
    *进度信息
    * </pre>
    *
-   * <code>optional .cn.com.unary.initcopy.grpc.entity.ProgressInfo progressInfo = 5;</code>
+   * <code>optional .cn.com.unary.initcopy.grpc.entity.ProgressInfo progressInfo = 3;</code>
    */
   public cn.com.unary.initcopy.grpc.entity.ProgressInfo getProgressInfo() {
     return progressInfo_ == null ? cn.com.unary.initcopy.grpc.entity.ProgressInfo.getDefaultInstance() : progressInfo_;
@@ -245,7 +192,7 @@ public  final class TaskState extends
    *进度信息
    * </pre>
    *
-   * <code>optional .cn.com.unary.initcopy.grpc.entity.ProgressInfo progressInfo = 5;</code>
+   * <code>optional .cn.com.unary.initcopy.grpc.entity.ProgressInfo progressInfo = 3;</code>
    */
   public cn.com.unary.initcopy.grpc.entity.ProgressInfoOrBuilder getProgressInfoOrBuilder() {
     return getProgressInfo();
@@ -263,20 +210,14 @@ public  final class TaskState extends
 
   public void writeTo(com.google.protobuf.CodedOutputStream output)
                       throws java.io.IOException {
-    if (success_ != false) {
-      output.writeBool(1, success_);
-    }
-    if (code_ != 0) {
-      output.writeInt32(2, code_);
-    }
-    if (!getMsgBytes().isEmpty()) {
-      com.google.protobuf.GeneratedMessageV3.writeString(output, 3, msg_);
-    }
     if (!getTaskIdBytes().isEmpty()) {
-      com.google.protobuf.GeneratedMessageV3.writeString(output, 4, taskId_);
+      com.google.protobuf.GeneratedMessageV3.writeString(output, 1, taskId_);
+    }
+    if (execResult_ != null) {
+      output.writeMessage(2, getExecResult());
     }
     if (progressInfo_ != null) {
-      output.writeMessage(5, getProgressInfo());
+      output.writeMessage(3, getProgressInfo());
     }
   }
 
@@ -285,23 +226,16 @@ public  final class TaskState extends
     if (size != -1) return size;
 
     size = 0;
-    if (success_ != false) {
-      size += com.google.protobuf.CodedOutputStream
-        .computeBoolSize(1, success_);
-    }
-    if (code_ != 0) {
-      size += com.google.protobuf.CodedOutputStream
-        .computeInt32Size(2, code_);
-    }
-    if (!getMsgBytes().isEmpty()) {
-      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(3, msg_);
-    }
     if (!getTaskIdBytes().isEmpty()) {
-      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(4, taskId_);
+      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, taskId_);
+    }
+    if (execResult_ != null) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeMessageSize(2, getExecResult());
     }
     if (progressInfo_ != null) {
       size += com.google.protobuf.CodedOutputStream
-        .computeMessageSize(5, getProgressInfo());
+        .computeMessageSize(3, getProgressInfo());
     }
     memoizedSize = size;
     return size;
@@ -319,14 +253,13 @@ public  final class TaskState extends
     cn.com.unary.initcopy.grpc.entity.TaskState other = (cn.com.unary.initcopy.grpc.entity.TaskState) obj;
 
     boolean result = true;
-    result = result && (getSuccess()
-        == other.getSuccess());
-    result = result && (getCode()
-        == other.getCode());
-    result = result && getMsg()
-        .equals(other.getMsg());
     result = result && getTaskId()
         .equals(other.getTaskId());
+    result = result && (hasExecResult() == other.hasExecResult());
+    if (hasExecResult()) {
+      result = result && getExecResult()
+          .equals(other.getExecResult());
+    }
     result = result && (hasProgressInfo() == other.hasProgressInfo());
     if (hasProgressInfo()) {
       result = result && getProgressInfo()
@@ -342,15 +275,12 @@ public  final class TaskState extends
     }
     int hash = 41;
     hash = (19 * hash) + getDescriptorForType().hashCode();
-    hash = (37 * hash) + SUCCESS_FIELD_NUMBER;
-    hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
-        getSuccess());
-    hash = (37 * hash) + CODE_FIELD_NUMBER;
-    hash = (53 * hash) + getCode();
-    hash = (37 * hash) + MSG_FIELD_NUMBER;
-    hash = (53 * hash) + getMsg().hashCode();
     hash = (37 * hash) + TASKID_FIELD_NUMBER;
     hash = (53 * hash) + getTaskId().hashCode();
+    if (hasExecResult()) {
+      hash = (37 * hash) + EXECRESULT_FIELD_NUMBER;
+      hash = (53 * hash) + getExecResult().hashCode();
+    }
     if (hasProgressInfo()) {
       hash = (37 * hash) + PROGRESSINFO_FIELD_NUMBER;
       hash = (53 * hash) + getProgressInfo().hashCode();
@@ -477,14 +407,14 @@ public  final class TaskState extends
     }
     public Builder clear() {
       super.clear();
-      success_ = false;
-
-      code_ = 0;
-
-      msg_ = "";
-
       taskId_ = "";
 
+      if (execResultBuilder_ == null) {
+        execResult_ = null;
+      } else {
+        execResult_ = null;
+        execResultBuilder_ = null;
+      }
       if (progressInfoBuilder_ == null) {
         progressInfo_ = null;
       } else {
@@ -513,10 +443,12 @@ public  final class TaskState extends
 
     public cn.com.unary.initcopy.grpc.entity.TaskState buildPartial() {
       cn.com.unary.initcopy.grpc.entity.TaskState result = new cn.com.unary.initcopy.grpc.entity.TaskState(this);
-      result.success_ = success_;
-      result.code_ = code_;
-      result.msg_ = msg_;
       result.taskId_ = taskId_;
+      if (execResultBuilder_ == null) {
+        result.execResult_ = execResult_;
+      } else {
+        result.execResult_ = execResultBuilder_.build();
+      }
       if (progressInfoBuilder_ == null) {
         result.progressInfo_ = progressInfo_;
       } else {
@@ -563,19 +495,12 @@ public  final class TaskState extends
 
     public Builder mergeFrom(cn.com.unary.initcopy.grpc.entity.TaskState other) {
       if (other == cn.com.unary.initcopy.grpc.entity.TaskState.getDefaultInstance()) return this;
-      if (other.getSuccess() != false) {
-        setSuccess(other.getSuccess());
-      }
-      if (other.getCode() != 0) {
-        setCode(other.getCode());
-      }
-      if (!other.getMsg().isEmpty()) {
-        msg_ = other.msg_;
-        onChanged();
-      }
       if (!other.getTaskId().isEmpty()) {
         taskId_ = other.taskId_;
         onChanged();
+      }
+      if (other.hasExecResult()) {
+        mergeExecResult(other.getExecResult());
       }
       if (other.hasProgressInfo()) {
         mergeProgressInfo(other.getProgressInfo());
@@ -606,178 +531,13 @@ public  final class TaskState extends
       return this;
     }
 
-    private boolean success_ ;
-    /**
-     * <pre>
-     * 是否成功
-     * </pre>
-     *
-     * <code>optional bool success = 1;</code>
-     */
-    public boolean getSuccess() {
-      return success_;
-    }
-    /**
-     * <pre>
-     * 是否成功
-     * </pre>
-     *
-     * <code>optional bool success = 1;</code>
-     */
-    public Builder setSuccess(boolean value) {
-      
-      success_ = value;
-      onChanged();
-      return this;
-    }
-    /**
-     * <pre>
-     * 是否成功
-     * </pre>
-     *
-     * <code>optional bool success = 1;</code>
-     */
-    public Builder clearSuccess() {
-      
-      success_ = false;
-      onChanged();
-      return this;
-    }
-
-    private int code_ ;
-    /**
-     * <pre>
-     * 代码
-     * </pre>
-     *
-     * <code>optional int32 code = 2;</code>
-     */
-    public int getCode() {
-      return code_;
-    }
-    /**
-     * <pre>
-     * 代码
-     * </pre>
-     *
-     * <code>optional int32 code = 2;</code>
-     */
-    public Builder setCode(int value) {
-      
-      code_ = value;
-      onChanged();
-      return this;
-    }
-    /**
-     * <pre>
-     * 代码
-     * </pre>
-     *
-     * <code>optional int32 code = 2;</code>
-     */
-    public Builder clearCode() {
-      
-      code_ = 0;
-      onChanged();
-      return this;
-    }
-
-    private java.lang.Object msg_ = "";
-    /**
-     * <pre>
-     * 信息
-     * </pre>
-     *
-     * <code>optional string msg = 3;</code>
-     */
-    public java.lang.String getMsg() {
-      java.lang.Object ref = msg_;
-      if (!(ref instanceof java.lang.String)) {
-        com.google.protobuf.ByteString bs =
-            (com.google.protobuf.ByteString) ref;
-        java.lang.String s = bs.toStringUtf8();
-        msg_ = s;
-        return s;
-      } else {
-        return (java.lang.String) ref;
-      }
-    }
-    /**
-     * <pre>
-     * 信息
-     * </pre>
-     *
-     * <code>optional string msg = 3;</code>
-     */
-    public com.google.protobuf.ByteString
-        getMsgBytes() {
-      java.lang.Object ref = msg_;
-      if (ref instanceof String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (java.lang.String) ref);
-        msg_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
-    }
-    /**
-     * <pre>
-     * 信息
-     * </pre>
-     *
-     * <code>optional string msg = 3;</code>
-     */
-    public Builder setMsg(
-        java.lang.String value) {
-      if (value == null) {
-    throw new NullPointerException();
-  }
-  
-      msg_ = value;
-      onChanged();
-      return this;
-    }
-    /**
-     * <pre>
-     * 信息
-     * </pre>
-     *
-     * <code>optional string msg = 3;</code>
-     */
-    public Builder clearMsg() {
-      
-      msg_ = getDefaultInstance().getMsg();
-      onChanged();
-      return this;
-    }
-    /**
-     * <pre>
-     * 信息
-     * </pre>
-     *
-     * <code>optional string msg = 3;</code>
-     */
-    public Builder setMsgBytes(
-        com.google.protobuf.ByteString value) {
-      if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-      
-      msg_ = value;
-      onChanged();
-      return this;
-    }
-
     private java.lang.Object taskId_ = "";
     /**
      * <pre>
      *对应的任务id
      * </pre>
      *
-     * <code>optional string taskId = 4;</code>
+     * <code>optional string taskId = 1;</code>
      */
     public java.lang.String getTaskId() {
       java.lang.Object ref = taskId_;
@@ -796,7 +556,7 @@ public  final class TaskState extends
      *对应的任务id
      * </pre>
      *
-     * <code>optional string taskId = 4;</code>
+     * <code>optional string taskId = 1;</code>
      */
     public com.google.protobuf.ByteString
         getTaskIdBytes() {
@@ -816,7 +576,7 @@ public  final class TaskState extends
      *对应的任务id
      * </pre>
      *
-     * <code>optional string taskId = 4;</code>
+     * <code>optional string taskId = 1;</code>
      */
     public Builder setTaskId(
         java.lang.String value) {
@@ -833,7 +593,7 @@ public  final class TaskState extends
      *对应的任务id
      * </pre>
      *
-     * <code>optional string taskId = 4;</code>
+     * <code>optional string taskId = 1;</code>
      */
     public Builder clearTaskId() {
       
@@ -846,7 +606,7 @@ public  final class TaskState extends
      *对应的任务id
      * </pre>
      *
-     * <code>optional string taskId = 4;</code>
+     * <code>optional string taskId = 1;</code>
      */
     public Builder setTaskIdBytes(
         com.google.protobuf.ByteString value) {
@@ -860,6 +620,123 @@ public  final class TaskState extends
       return this;
     }
 
+    private cn.com.unary.initcopy.grpc.entity.ExecResult execResult_ = null;
+    private com.google.protobuf.SingleFieldBuilderV3<
+        cn.com.unary.initcopy.grpc.entity.ExecResult, cn.com.unary.initcopy.grpc.entity.ExecResult.Builder, cn.com.unary.initcopy.grpc.entity.ExecResultOrBuilder> execResultBuilder_;
+    /**
+     * <code>optional .cn.com.unary.initcopy.grpc.entity.ExecResult execResult = 2;</code>
+     */
+    public boolean hasExecResult() {
+      return execResultBuilder_ != null || execResult_ != null;
+    }
+    /**
+     * <code>optional .cn.com.unary.initcopy.grpc.entity.ExecResult execResult = 2;</code>
+     */
+    public cn.com.unary.initcopy.grpc.entity.ExecResult getExecResult() {
+      if (execResultBuilder_ == null) {
+        return execResult_ == null ? cn.com.unary.initcopy.grpc.entity.ExecResult.getDefaultInstance() : execResult_;
+      } else {
+        return execResultBuilder_.getMessage();
+      }
+    }
+    /**
+     * <code>optional .cn.com.unary.initcopy.grpc.entity.ExecResult execResult = 2;</code>
+     */
+    public Builder setExecResult(cn.com.unary.initcopy.grpc.entity.ExecResult value) {
+      if (execResultBuilder_ == null) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        execResult_ = value;
+        onChanged();
+      } else {
+        execResultBuilder_.setMessage(value);
+      }
+
+      return this;
+    }
+    /**
+     * <code>optional .cn.com.unary.initcopy.grpc.entity.ExecResult execResult = 2;</code>
+     */
+    public Builder setExecResult(
+        cn.com.unary.initcopy.grpc.entity.ExecResult.Builder builderForValue) {
+      if (execResultBuilder_ == null) {
+        execResult_ = builderForValue.build();
+        onChanged();
+      } else {
+        execResultBuilder_.setMessage(builderForValue.build());
+      }
+
+      return this;
+    }
+    /**
+     * <code>optional .cn.com.unary.initcopy.grpc.entity.ExecResult execResult = 2;</code>
+     */
+    public Builder mergeExecResult(cn.com.unary.initcopy.grpc.entity.ExecResult value) {
+      if (execResultBuilder_ == null) {
+        if (execResult_ != null) {
+          execResult_ =
+            cn.com.unary.initcopy.grpc.entity.ExecResult.newBuilder(execResult_).mergeFrom(value).buildPartial();
+        } else {
+          execResult_ = value;
+        }
+        onChanged();
+      } else {
+        execResultBuilder_.mergeFrom(value);
+      }
+
+      return this;
+    }
+    /**
+     * <code>optional .cn.com.unary.initcopy.grpc.entity.ExecResult execResult = 2;</code>
+     */
+    public Builder clearExecResult() {
+      if (execResultBuilder_ == null) {
+        execResult_ = null;
+        onChanged();
+      } else {
+        execResult_ = null;
+        execResultBuilder_ = null;
+      }
+
+      return this;
+    }
+    /**
+     * <code>optional .cn.com.unary.initcopy.grpc.entity.ExecResult execResult = 2;</code>
+     */
+    public cn.com.unary.initcopy.grpc.entity.ExecResult.Builder getExecResultBuilder() {
+      
+      onChanged();
+      return getExecResultFieldBuilder().getBuilder();
+    }
+    /**
+     * <code>optional .cn.com.unary.initcopy.grpc.entity.ExecResult execResult = 2;</code>
+     */
+    public cn.com.unary.initcopy.grpc.entity.ExecResultOrBuilder getExecResultOrBuilder() {
+      if (execResultBuilder_ != null) {
+        return execResultBuilder_.getMessageOrBuilder();
+      } else {
+        return execResult_ == null ?
+            cn.com.unary.initcopy.grpc.entity.ExecResult.getDefaultInstance() : execResult_;
+      }
+    }
+    /**
+     * <code>optional .cn.com.unary.initcopy.grpc.entity.ExecResult execResult = 2;</code>
+     */
+    private com.google.protobuf.SingleFieldBuilderV3<
+        cn.com.unary.initcopy.grpc.entity.ExecResult, cn.com.unary.initcopy.grpc.entity.ExecResult.Builder, cn.com.unary.initcopy.grpc.entity.ExecResultOrBuilder> 
+        getExecResultFieldBuilder() {
+      if (execResultBuilder_ == null) {
+        execResultBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+            cn.com.unary.initcopy.grpc.entity.ExecResult, cn.com.unary.initcopy.grpc.entity.ExecResult.Builder, cn.com.unary.initcopy.grpc.entity.ExecResultOrBuilder>(
+                getExecResult(),
+                getParentForChildren(),
+                isClean());
+        execResult_ = null;
+      }
+      return execResultBuilder_;
+    }
+
     private cn.com.unary.initcopy.grpc.entity.ProgressInfo progressInfo_ = null;
     private com.google.protobuf.SingleFieldBuilderV3<
         cn.com.unary.initcopy.grpc.entity.ProgressInfo, cn.com.unary.initcopy.grpc.entity.ProgressInfo.Builder, cn.com.unary.initcopy.grpc.entity.ProgressInfoOrBuilder> progressInfoBuilder_;
@@ -868,7 +745,7 @@ public  final class TaskState extends
      *进度信息
      * </pre>
      *
-     * <code>optional .cn.com.unary.initcopy.grpc.entity.ProgressInfo progressInfo = 5;</code>
+     * <code>optional .cn.com.unary.initcopy.grpc.entity.ProgressInfo progressInfo = 3;</code>
      */
     public boolean hasProgressInfo() {
       return progressInfoBuilder_ != null || progressInfo_ != null;
@@ -878,7 +755,7 @@ public  final class TaskState extends
      *进度信息
      * </pre>
      *
-     * <code>optional .cn.com.unary.initcopy.grpc.entity.ProgressInfo progressInfo = 5;</code>
+     * <code>optional .cn.com.unary.initcopy.grpc.entity.ProgressInfo progressInfo = 3;</code>
      */
     public cn.com.unary.initcopy.grpc.entity.ProgressInfo getProgressInfo() {
       if (progressInfoBuilder_ == null) {
@@ -892,7 +769,7 @@ public  final class TaskState extends
      *进度信息
      * </pre>
      *
-     * <code>optional .cn.com.unary.initcopy.grpc.entity.ProgressInfo progressInfo = 5;</code>
+     * <code>optional .cn.com.unary.initcopy.grpc.entity.ProgressInfo progressInfo = 3;</code>
      */
     public Builder setProgressInfo(cn.com.unary.initcopy.grpc.entity.ProgressInfo value) {
       if (progressInfoBuilder_ == null) {
@@ -912,7 +789,7 @@ public  final class TaskState extends
      *进度信息
      * </pre>
      *
-     * <code>optional .cn.com.unary.initcopy.grpc.entity.ProgressInfo progressInfo = 5;</code>
+     * <code>optional .cn.com.unary.initcopy.grpc.entity.ProgressInfo progressInfo = 3;</code>
      */
     public Builder setProgressInfo(
         cn.com.unary.initcopy.grpc.entity.ProgressInfo.Builder builderForValue) {
@@ -930,7 +807,7 @@ public  final class TaskState extends
      *进度信息
      * </pre>
      *
-     * <code>optional .cn.com.unary.initcopy.grpc.entity.ProgressInfo progressInfo = 5;</code>
+     * <code>optional .cn.com.unary.initcopy.grpc.entity.ProgressInfo progressInfo = 3;</code>
      */
     public Builder mergeProgressInfo(cn.com.unary.initcopy.grpc.entity.ProgressInfo value) {
       if (progressInfoBuilder_ == null) {
@@ -952,7 +829,7 @@ public  final class TaskState extends
      *进度信息
      * </pre>
      *
-     * <code>optional .cn.com.unary.initcopy.grpc.entity.ProgressInfo progressInfo = 5;</code>
+     * <code>optional .cn.com.unary.initcopy.grpc.entity.ProgressInfo progressInfo = 3;</code>
      */
     public Builder clearProgressInfo() {
       if (progressInfoBuilder_ == null) {
@@ -970,7 +847,7 @@ public  final class TaskState extends
      *进度信息
      * </pre>
      *
-     * <code>optional .cn.com.unary.initcopy.grpc.entity.ProgressInfo progressInfo = 5;</code>
+     * <code>optional .cn.com.unary.initcopy.grpc.entity.ProgressInfo progressInfo = 3;</code>
      */
     public cn.com.unary.initcopy.grpc.entity.ProgressInfo.Builder getProgressInfoBuilder() {
       
@@ -982,7 +859,7 @@ public  final class TaskState extends
      *进度信息
      * </pre>
      *
-     * <code>optional .cn.com.unary.initcopy.grpc.entity.ProgressInfo progressInfo = 5;</code>
+     * <code>optional .cn.com.unary.initcopy.grpc.entity.ProgressInfo progressInfo = 3;</code>
      */
     public cn.com.unary.initcopy.grpc.entity.ProgressInfoOrBuilder getProgressInfoOrBuilder() {
       if (progressInfoBuilder_ != null) {
@@ -997,7 +874,7 @@ public  final class TaskState extends
      *进度信息
      * </pre>
      *
-     * <code>optional .cn.com.unary.initcopy.grpc.entity.ProgressInfo progressInfo = 5;</code>
+     * <code>optional .cn.com.unary.initcopy.grpc.entity.ProgressInfo progressInfo = 3;</code>
      */
     private com.google.protobuf.SingleFieldBuilderV3<
         cn.com.unary.initcopy.grpc.entity.ProgressInfo, cn.com.unary.initcopy.grpc.entity.ProgressInfo.Builder, cn.com.unary.initcopy.grpc.entity.ProgressInfoOrBuilder> 

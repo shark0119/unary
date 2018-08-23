@@ -9,46 +9,10 @@ public interface TaskStateOrBuilder extends
 
   /**
    * <pre>
-   * 是否成功
-   * </pre>
-   *
-   * <code>optional bool success = 1;</code>
-   */
-  boolean getSuccess();
-
-  /**
-   * <pre>
-   * 代码
-   * </pre>
-   *
-   * <code>optional int32 code = 2;</code>
-   */
-  int getCode();
-
-  /**
-   * <pre>
-   * 信息
-   * </pre>
-   *
-   * <code>optional string msg = 3;</code>
-   */
-  java.lang.String getMsg();
-  /**
-   * <pre>
-   * 信息
-   * </pre>
-   *
-   * <code>optional string msg = 3;</code>
-   */
-  com.google.protobuf.ByteString
-      getMsgBytes();
-
-  /**
-   * <pre>
    *对应的任务id
    * </pre>
    *
-   * <code>optional string taskId = 4;</code>
+   * <code>optional string taskId = 1;</code>
    */
   java.lang.String getTaskId();
   /**
@@ -56,17 +20,30 @@ public interface TaskStateOrBuilder extends
    *对应的任务id
    * </pre>
    *
-   * <code>optional string taskId = 4;</code>
+   * <code>optional string taskId = 1;</code>
    */
   com.google.protobuf.ByteString
       getTaskIdBytes();
+
+  /**
+   * <code>optional .cn.com.unary.initcopy.grpc.entity.ExecResult execResult = 2;</code>
+   */
+  boolean hasExecResult();
+  /**
+   * <code>optional .cn.com.unary.initcopy.grpc.entity.ExecResult execResult = 2;</code>
+   */
+  cn.com.unary.initcopy.grpc.entity.ExecResult getExecResult();
+  /**
+   * <code>optional .cn.com.unary.initcopy.grpc.entity.ExecResult execResult = 2;</code>
+   */
+  cn.com.unary.initcopy.grpc.entity.ExecResultOrBuilder getExecResultOrBuilder();
 
   /**
    * <pre>
    *进度信息
    * </pre>
    *
-   * <code>optional .cn.com.unary.initcopy.grpc.entity.ProgressInfo progressInfo = 5;</code>
+   * <code>optional .cn.com.unary.initcopy.grpc.entity.ProgressInfo progressInfo = 3;</code>
    */
   boolean hasProgressInfo();
   /**
@@ -74,7 +51,7 @@ public interface TaskStateOrBuilder extends
    *进度信息
    * </pre>
    *
-   * <code>optional .cn.com.unary.initcopy.grpc.entity.ProgressInfo progressInfo = 5;</code>
+   * <code>optional .cn.com.unary.initcopy.grpc.entity.ProgressInfo progressInfo = 3;</code>
    */
   cn.com.unary.initcopy.grpc.entity.ProgressInfo getProgressInfo();
   /**
@@ -82,7 +59,7 @@ public interface TaskStateOrBuilder extends
    *进度信息
    * </pre>
    *
-   * <code>optional .cn.com.unary.initcopy.grpc.entity.ProgressInfo progressInfo = 5;</code>
+   * <code>optional .cn.com.unary.initcopy.grpc.entity.ProgressInfo progressInfo = 3;</code>
    */
   cn.com.unary.initcopy.grpc.entity.ProgressInfoOrBuilder getProgressInfoOrBuilder();
 }

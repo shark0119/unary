@@ -20,6 +20,7 @@ public  final class ModifyTask extends
   }
   private ModifyTask() {
     taskId_ = "";
+    modifyType_ = 0;
     speedLimit_ = 0;
   }
 
@@ -55,6 +56,12 @@ public  final class ModifyTask extends
             break;
           }
           case 16: {
+            int rawValue = input.readEnum();
+
+            modifyType_ = rawValue;
+            break;
+          }
+          case 24: {
 
             speedLimit_ = input.readInt32();
             break;
@@ -124,14 +131,30 @@ public  final class ModifyTask extends
     }
   }
 
-  public static final int SPEEDLIMIT_FIELD_NUMBER = 2;
+  public static final int MODIFYTYPE_FIELD_NUMBER = 2;
+  private int modifyType_;
+  /**
+   * <code>optional .cn.com.unary.initcopy.grpc.constant.ModifyType modifyType = 2;</code>
+   */
+  public int getModifyTypeValue() {
+    return modifyType_;
+  }
+  /**
+   * <code>optional .cn.com.unary.initcopy.grpc.constant.ModifyType modifyType = 2;</code>
+   */
+  public cn.com.unary.initcopy.grpc.constant.ModifyType getModifyType() {
+    cn.com.unary.initcopy.grpc.constant.ModifyType result = cn.com.unary.initcopy.grpc.constant.ModifyType.valueOf(modifyType_);
+    return result == null ? cn.com.unary.initcopy.grpc.constant.ModifyType.UNRECOGNIZED : result;
+  }
+
+  public static final int SPEEDLIMIT_FIELD_NUMBER = 3;
   private int speedLimit_;
   /**
    * <pre>
    *限速 以M为单位  0为不限速
    * </pre>
    *
-   * <code>optional int32 speedLimit = 2;</code>
+   * <code>optional int32 speedLimit = 3;</code>
    */
   public int getSpeedLimit() {
     return speedLimit_;
@@ -152,8 +175,11 @@ public  final class ModifyTask extends
     if (!getTaskIdBytes().isEmpty()) {
       com.google.protobuf.GeneratedMessageV3.writeString(output, 1, taskId_);
     }
+    if (modifyType_ != cn.com.unary.initcopy.grpc.constant.ModifyType.PAUSE.getNumber()) {
+      output.writeEnum(2, modifyType_);
+    }
     if (speedLimit_ != 0) {
-      output.writeInt32(2, speedLimit_);
+      output.writeInt32(3, speedLimit_);
     }
   }
 
@@ -165,9 +191,13 @@ public  final class ModifyTask extends
     if (!getTaskIdBytes().isEmpty()) {
       size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, taskId_);
     }
+    if (modifyType_ != cn.com.unary.initcopy.grpc.constant.ModifyType.PAUSE.getNumber()) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeEnumSize(2, modifyType_);
+    }
     if (speedLimit_ != 0) {
       size += com.google.protobuf.CodedOutputStream
-        .computeInt32Size(2, speedLimit_);
+        .computeInt32Size(3, speedLimit_);
     }
     memoizedSize = size;
     return size;
@@ -187,6 +217,7 @@ public  final class ModifyTask extends
     boolean result = true;
     result = result && getTaskId()
         .equals(other.getTaskId());
+    result = result && modifyType_ == other.modifyType_;
     result = result && (getSpeedLimit()
         == other.getSpeedLimit());
     return result;
@@ -201,6 +232,8 @@ public  final class ModifyTask extends
     hash = (19 * hash) + getDescriptorForType().hashCode();
     hash = (37 * hash) + TASKID_FIELD_NUMBER;
     hash = (53 * hash) + getTaskId().hashCode();
+    hash = (37 * hash) + MODIFYTYPE_FIELD_NUMBER;
+    hash = (53 * hash) + modifyType_;
     hash = (37 * hash) + SPEEDLIMIT_FIELD_NUMBER;
     hash = (53 * hash) + getSpeedLimit();
     hash = (29 * hash) + unknownFields.hashCode();
@@ -327,6 +360,8 @@ public  final class ModifyTask extends
       super.clear();
       taskId_ = "";
 
+      modifyType_ = 0;
+
       speedLimit_ = 0;
 
       return this;
@@ -352,6 +387,7 @@ public  final class ModifyTask extends
     public cn.com.unary.initcopy.grpc.entity.ModifyTask buildPartial() {
       cn.com.unary.initcopy.grpc.entity.ModifyTask result = new cn.com.unary.initcopy.grpc.entity.ModifyTask(this);
       result.taskId_ = taskId_;
+      result.modifyType_ = modifyType_;
       result.speedLimit_ = speedLimit_;
       onBuilt();
       return result;
@@ -397,6 +433,9 @@ public  final class ModifyTask extends
       if (!other.getTaskId().isEmpty()) {
         taskId_ = other.taskId_;
         onChanged();
+      }
+      if (other.modifyType_ != 0) {
+        setModifyTypeValue(other.getModifyTypeValue());
       }
       if (other.getSpeedLimit() != 0) {
         setSpeedLimit(other.getSpeedLimit());
@@ -516,13 +555,57 @@ public  final class ModifyTask extends
       return this;
     }
 
+    private int modifyType_ = 0;
+    /**
+     * <code>optional .cn.com.unary.initcopy.grpc.constant.ModifyType modifyType = 2;</code>
+     */
+    public int getModifyTypeValue() {
+      return modifyType_;
+    }
+    /**
+     * <code>optional .cn.com.unary.initcopy.grpc.constant.ModifyType modifyType = 2;</code>
+     */
+    public Builder setModifyTypeValue(int value) {
+      modifyType_ = value;
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>optional .cn.com.unary.initcopy.grpc.constant.ModifyType modifyType = 2;</code>
+     */
+    public cn.com.unary.initcopy.grpc.constant.ModifyType getModifyType() {
+      cn.com.unary.initcopy.grpc.constant.ModifyType result = cn.com.unary.initcopy.grpc.constant.ModifyType.valueOf(modifyType_);
+      return result == null ? cn.com.unary.initcopy.grpc.constant.ModifyType.UNRECOGNIZED : result;
+    }
+    /**
+     * <code>optional .cn.com.unary.initcopy.grpc.constant.ModifyType modifyType = 2;</code>
+     */
+    public Builder setModifyType(cn.com.unary.initcopy.grpc.constant.ModifyType value) {
+      if (value == null) {
+        throw new NullPointerException();
+      }
+      
+      modifyType_ = value.getNumber();
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>optional .cn.com.unary.initcopy.grpc.constant.ModifyType modifyType = 2;</code>
+     */
+    public Builder clearModifyType() {
+      
+      modifyType_ = 0;
+      onChanged();
+      return this;
+    }
+
     private int speedLimit_ ;
     /**
      * <pre>
      *限速 以M为单位  0为不限速
      * </pre>
      *
-     * <code>optional int32 speedLimit = 2;</code>
+     * <code>optional int32 speedLimit = 3;</code>
      */
     public int getSpeedLimit() {
       return speedLimit_;
@@ -532,7 +615,7 @@ public  final class ModifyTask extends
      *限速 以M为单位  0为不限速
      * </pre>
      *
-     * <code>optional int32 speedLimit = 2;</code>
+     * <code>optional int32 speedLimit = 3;</code>
      */
     public Builder setSpeedLimit(int value) {
       
@@ -545,7 +628,7 @@ public  final class ModifyTask extends
      *限速 以M为单位  0为不限速
      * </pre>
      *
-     * <code>optional int32 speedLimit = 2;</code>
+     * <code>optional int32 speedLimit = 3;</code>
      */
     public Builder clearSpeedLimit() {
       

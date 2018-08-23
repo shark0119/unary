@@ -26,11 +26,20 @@ public interface ModifyTaskOrBuilder extends
       getTaskIdBytes();
 
   /**
+   * <code>optional .cn.com.unary.initcopy.grpc.constant.ModifyType modifyType = 2;</code>
+   */
+  int getModifyTypeValue();
+  /**
+   * <code>optional .cn.com.unary.initcopy.grpc.constant.ModifyType modifyType = 2;</code>
+   */
+  cn.com.unary.initcopy.grpc.constant.ModifyType getModifyType();
+
+  /**
    * <pre>
    *限速 以M为单位  0为不限速
    * </pre>
    *
-   * <code>optional int32 speedLimit = 2;</code>
+   * <code>optional int32 speedLimit = 3;</code>
    */
   int getSpeedLimit();
 }

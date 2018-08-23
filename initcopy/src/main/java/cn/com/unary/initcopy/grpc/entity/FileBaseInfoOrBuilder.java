@@ -12,18 +12,18 @@ public interface FileBaseInfoOrBuilder extends
    * 校验码
    * </pre>
    *
-   * <code>optional string hash = 1;</code>
+   * <code>optional string checkSum = 1;</code>
    */
-  java.lang.String getHash();
+  java.lang.String getCheckSum();
   /**
    * <pre>
    * 校验码
    * </pre>
    *
-   * <code>optional string hash = 1;</code>
+   * <code>optional string checkSum = 1;</code>
    */
   com.google.protobuf.ByteString
-      getHashBytes();
+      getCheckSumBytes();
 
   /**
    * <pre>

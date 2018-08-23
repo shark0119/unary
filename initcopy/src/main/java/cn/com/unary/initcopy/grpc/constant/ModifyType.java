@@ -4,49 +4,61 @@
 package cn.com.unary.initcopy.grpc.constant;
 
 /**
- * <pre>
- *同步方式
- * </pre>
- *
- * Protobuf enum {@code cn.com.unary.initcopy.grpc.constant.SyncType}
+ * Protobuf enum {@code cn.com.unary.initcopy.grpc.constant.ModifyType}
  */
-public enum SyncType
+public enum ModifyType
     implements com.google.protobuf.ProtocolMessageEnum {
   /**
    * <pre>
-   *全同步
+   *暂停
    * </pre>
    *
-   * <code>SYNC_ALL = 0;</code>
+   * <code>PAUSE = 0;</code>
    */
-  SYNC_ALL(0),
+  PAUSE(0),
   /**
    * <pre>
-   *根据修改时间比较
+   *重启
    * </pre>
    *
-   * <code>SYNC_DIFF = 1;</code>
+   * <code>START = 1;</code>
    */
-  SYNC_DIFF(1),
+  START(1),
+  /**
+   * <pre>
+   * 限速
+   * </pre>
+   *
+   * <code>SPEED_LIMIT = 2;</code>
+   */
+  SPEED_LIMIT(2),
   UNRECOGNIZED(-1),
   ;
 
   /**
    * <pre>
-   *全同步
+   *暂停
    * </pre>
    *
-   * <code>SYNC_ALL = 0;</code>
+   * <code>PAUSE = 0;</code>
    */
-  public static final int SYNC_ALL_VALUE = 0;
+  public static final int PAUSE_VALUE = 0;
   /**
    * <pre>
-   *根据修改时间比较
+   *重启
    * </pre>
    *
-   * <code>SYNC_DIFF = 1;</code>
+   * <code>START = 1;</code>
    */
-  public static final int SYNC_DIFF_VALUE = 1;
+  public static final int START_VALUE = 1;
+  /**
+   * <pre>
+   * 限速
+   * </pre>
+   *
+   * <code>SPEED_LIMIT = 2;</code>
+   */
+  public static final int SPEED_LIMIT_VALUE = 2;
 
 
   public final int getNumber() {
@@ -61,27 +73,28 @@ public enum SyncType
    * @deprecated Use {@link #forNumber(int)} instead.
    */
   @java.lang.Deprecated
-  public static SyncType valueOf(int value) {
+  public static ModifyType valueOf(int value) {
     return forNumber(value);
   }
 
-  public static SyncType forNumber(int value) {
+  public static ModifyType forNumber(int value) {
     switch (value) {
-      case 0: return SYNC_ALL;
-      case 1: return SYNC_DIFF;
+      case 0: return PAUSE;
+      case 1: return START;
+      case 2: return SPEED_LIMIT;
       default: return null;
     }
   }
 
-  public static com.google.protobuf.Internal.EnumLiteMap<SyncType>
+  public static com.google.protobuf.Internal.EnumLiteMap<ModifyType>
       internalGetValueMap() {
     return internalValueMap;
   }
   private static final com.google.protobuf.Internal.EnumLiteMap<
-      SyncType> internalValueMap =
-        new com.google.protobuf.Internal.EnumLiteMap<SyncType>() {
-          public SyncType findValueByNumber(int number) {
-            return SyncType.forNumber(number);
+      ModifyType> internalValueMap =
+        new com.google.protobuf.Internal.EnumLiteMap<ModifyType>() {
+          public ModifyType findValueByNumber(int number) {
+            return ModifyType.forNumber(number);
           }
         };
 
@@ -96,12 +109,12 @@ public enum SyncType
   public static final com.google.protobuf.Descriptors.EnumDescriptor
       getDescriptor() {
     return cn.com.unary.initcopy.grpc.constant.IC_Constant.getDescriptor()
-        .getEnumTypes().get(0);
+        .getEnumTypes().get(4);
   }
 
-  private static final SyncType[] VALUES = values();
+  private static final ModifyType[] VALUES = values();
 
-  public static SyncType valueOf(
+  public static ModifyType valueOf(
       com.google.protobuf.Descriptors.EnumValueDescriptor desc) {
     if (desc.getType() != getDescriptor()) {
       throw new java.lang.IllegalArgumentException(
@@ -115,10 +128,10 @@ public enum SyncType
 
   private final int value;
 
-  private SyncType(int value) {
+  private ModifyType(int value) {
     this.value = value;
   }
 
-  // @@protoc_insertion_point(enum_scope:cn.com.unary.initcopy.grpc.constant.SyncType)
+  // @@protoc_insertion_point(enum_scope:cn.com.unary.initcopy.grpc.constant.ModifyType)
 }
 

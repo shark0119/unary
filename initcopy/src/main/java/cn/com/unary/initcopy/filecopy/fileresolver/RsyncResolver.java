@@ -1,6 +1,8 @@
 package cn.com.unary.initcopy.filecopy.fileresolver;
 
 import cn.com.unary.initcopy.entity.Constants;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 
@@ -10,6 +12,8 @@ import java.io.IOException;
  * @author shark
  *
  */
+@Component("rsyncResolver")
+@Scope("prototype")
 public class RsyncResolver implements Resolver{
 
 	@Override
@@ -19,7 +23,7 @@ public class RsyncResolver implements Resolver{
 
 	@Override
 	public Constants.PackType getPackType() {
-		return null;
+		return Constants.PackType.RSYNC_JAVA;
 	}
 
 	@Override
