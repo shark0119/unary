@@ -3,7 +3,9 @@ package cn.com.unary.initcopy.dao;
 import cn.com.unary.initcopy.entity.FileInfo;
 import cn.com.unary.initcopy.utils.AbstractLogable;
 import cn.com.unary.initcopy.utils.ValidateUtils;
+import org.springframework.stereotype.Repository;
 
+import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -15,8 +17,10 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  * @author shark
  */
+@Repository("RamFileManager")
 public class RamFileManager extends AbstractLogable implements FileManager {
 
+    // key : fileId, field: 文件信息实体
     private static Map<String, FileInfo> fiMap = new ConcurrentHashMap<>();
 
     @Override
@@ -27,7 +31,7 @@ public class RamFileManager extends AbstractLogable implements FileManager {
         for (String id : fileIds) {
             FileInfo fi = fiMap.get(id);
             if (fi == null) {
-                logger.warn("No FileInfo With Id {1}", id);
+                logger.warn("No FileInfo With Id " + id);
                 continue;
             }
             fis.add(fi);
@@ -55,5 +59,16 @@ public class RamFileManager extends AbstractLogable implements FileManager {
         for (String fileId : fileIds) {
             this.delete(fileId);
         }
+    }
+
+    @Override
+    public List<FileInfo> queryByTaskId(int taskId) {
+        List<FileInfo> fileInfos = new ArrayList<>();
+        for (String fileId : fiMap.keySet()) {
+            if (fiMap.get(fileId).getTaskId() == taskId) {
+                fileInfos.add(fiMap.get(fileId));
+            }
+        }
+        return fileInfos;
     }
 }

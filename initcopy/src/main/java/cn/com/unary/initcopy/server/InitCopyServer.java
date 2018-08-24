@@ -1,5 +1,8 @@
 package cn.com.unary.initcopy.server;
 
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+
 import java.io.IOException;
 
 /**
@@ -11,6 +14,8 @@ import java.io.IOException;
  * @author Shark.Yin
  * @since 1.0
  */
+@Component("InitCopyServer")
+@Scope("singleton")
 public class InitCopyServer {
 	private InitCopyServer() {}
 

@@ -1,13 +1,17 @@
 package cn.com.unary.initcopy;
 
+import api.UnaryProcess;
 import api.UnaryTServer;
 import cn.com.unary.initcopy.grpc.GrpcServiceStarter;
 import cn.com.unary.initcopy.grpc.linker.ControlTaskGrpcLinker;
 import cn.com.unary.initcopy.grpc.linker.InitCopyGrpcLinker;
 import cn.com.unary.initcopy.grpc.service.ControlTaskGrpcImpl;
 import cn.com.unary.initcopy.grpc.service.InitCopyGrpcImpl;
-import cn.com.unary.initcopy.server.FileDataServerProcess;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
+import javax.annotation.PreDestroy;
 import java.io.IOException;
 
 /**
@@ -16,7 +20,10 @@ import java.io.IOException;
  *
  * @author shark
  */
+@Component("InitCopyContext")
+@Scope("singleton")
 public class InitCopyContext {
+    public static int CONTROL_TASK_GRPC_PORT = 23456;
     // 全局的属性
     public final static String CHARSET = "UTF-8";
     // 传输模块监听的端口
@@ -25,8 +32,12 @@ public class InitCopyContext {
     protected static int grpcPort;
     // 源端与目标端之间 GRPC 通讯监听的端口
     protected static int innerGrpcPort = 6002;
-    private static Boolean isActive = Boolean.FALSE;
-    private static UnaryTServer uts;
+    @Autowired
+    protected static UnaryTServer uts;
+    private static volatile Boolean isActive = Boolean.FALSE;
+    @Autowired
+    protected UnaryProcess process;
+
     public InitCopyContext() {
     }
 
@@ -51,32 +62,36 @@ public class InitCopyContext {
                     InitCopyContext.transPort = transPort;
                     InitCopyContext.grpcPort = grpcPort;
                     InitCopyContext.innerGrpcPort = innerGrpcPort;
-                    this.clientInit();
-                    this.serverInit();
+                    this.serverInit().clientInit();
                     isActive = Boolean.TRUE;
                 }
             }
         }
     }
 
-    public void destory() {
+    @PreDestroy
+    public void destroy() {
         uts = null;
+        System.out.println("Context destroy");
     }
 
-    public UnaryTServer getUts() {
-        return uts;
+    public InitCopyContext setUts(UnaryTServer uts) {
+        InitCopyContext.uts = uts;
+        return this;
     }
 
-    private void clientInit() throws IOException, InterruptedException {
+    private InitCopyContext clientInit() throws IOException, InterruptedException {
         // 启动向外部提供任务管理的 GRPC 服务（源端）
-        new GrpcServiceStarter(new InitCopyGrpcImpl(new InitCopyGrpcLinker()), grpcPort);
+        new GrpcServiceStarter(new InitCopyGrpcImpl(new InitCopyGrpcLinker()), grpcPort).start();
+        return this;
     }
 
-    private void serverInit() throws IOException, InterruptedException {
+    private InitCopyContext serverInit() throws IOException, InterruptedException {
         // 启动和初始化传输模块（目标端）
         uts.startServer();
-        uts.setProcess(new FileDataServerProcess());
+        uts.setProcess(process);
         // 启动内部控制任务信息的 GRPC 服务（目标端）
-        new GrpcServiceStarter(new ControlTaskGrpcImpl(new ControlTaskGrpcLinker()), grpcPort);
+        new GrpcServiceStarter(new ControlTaskGrpcImpl(new ControlTaskGrpcLinker()), grpcPort).start();
+        return this;
     }
 }

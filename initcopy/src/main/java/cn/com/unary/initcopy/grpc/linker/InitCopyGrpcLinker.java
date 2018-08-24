@@ -5,21 +5,24 @@ import cn.com.unary.initcopy.grpc.entity.*;
 import cn.com.unary.initcopy.utils.AbstractLogable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 /**
  * 作为 GRPC 服务与业务代码通讯的中转站
  * 任务管理中心，初始化复制 GRPC 服务的具体业务逻辑处理
+ * 线程安全
  *
  * @author Shark.Yin
  * @since 1.0
  */
-@Component("initCopyGrpcLinker")
+@Component("InitCopyGrpcLinker")
+@Scope("singleton")
 public class InitCopyGrpcLinker extends AbstractLogable {
 
 
     @Autowired
-    @Qualifier("clientFileCopy")
+    @Qualifier("ClientFileCopy")
     private ClientFileCopy clientFileCopy;
 
 	public ExecResult add (SyncTask task) {

@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
  * @author Shark.Yin
  * @since 1.0
  */
-@Component("controlTaskGrpcLinker")
+@Component("ControlTaskGrpcLinker")
 public class ControlTaskGrpcLinker {
 
     /**

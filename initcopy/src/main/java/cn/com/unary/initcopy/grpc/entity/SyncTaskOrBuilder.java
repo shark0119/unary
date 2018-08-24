@@ -12,18 +12,9 @@ public interface SyncTaskOrBuilder extends
    *任务ID
    * </pre>
    *
-   * <code>optional string taskId = 1;</code>
+   * <code>optional int32 taskId = 1;</code>
    */
-  java.lang.String getTaskId();
-  /**
-   * <pre>
-   *任务ID
-   * </pre>
-   *
-   * <code>optional string taskId = 1;</code>
-   */
-  com.google.protobuf.ByteString
-      getTaskIdBytes();
+  int getTaskId();
 
   /**
    * <pre>

@@ -7,14 +7,12 @@ import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributeView;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileOwnerAttributeView;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 
 import cn.com.unary.initcopy.entity.BaseFileInfo;
 import cn.com.unary.initcopy.entity.Constants.FileType;
 import cn.com.unary.initcopy.entity.FileInfo;
+import cn.com.unary.initcopy.grpc.entity.FileBaseInfo;
 
 public class BeanConvertUtil {
 
@@ -51,23 +49,17 @@ public class BeanConvertUtil {
 		fi.getAttr().setHidden(path.toFile().isHidden());
 		return fi;
 	}
-	
-	public static List<FileInfo> deSerFromResult (ResultSet rset) throws SQLException {
-		List<FileInfo> fis = new ArrayList<>();
-		FileInfo fi ;
-		while (rset.next()) {
-			fi = new FileInfo ();
-			fi.setId(rset.getString("FILE_ID"));
-			fi.setModifyTime(rset.getLong("MODIFY_TIME"));
-			fi.setFileSize(rset.getLong("FILE_SIZE"));
-			fi.setTaskId(rset.getInt("TASK_ID"));
-			fis.add(fi);
-		}
+
+	public static List<BaseFileInfo> takeFromGrpc (List<FileBaseInfo> fbis) {
+
+	    // TODO
 		return null;
 	}
-	public static String serToSql (FileInfo fi) {
-		StringBuilder sb = new StringBuilder ("");
-		
-		return sb.toString();
-	}
+	public static List<FileBaseInfo> takeToGrpc (List<BaseFileInfo> bfis) {
+
+	    return null;
+    }
+    public static BaseFileInfo takeFromGrpc (FileBaseInfo fbis) {
+	    return null;
+    }
 }

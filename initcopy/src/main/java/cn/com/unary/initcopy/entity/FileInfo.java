@@ -2,6 +2,8 @@ package cn.com.unary.initcopy.entity;
 
 import cn.com.unary.initcopy.entity.Constants.FileType;
 
+import java.beans.Transient;
+
 /**
  * 同步过程中需要获取的文件信息相关数据
  * @author shark
@@ -13,6 +15,11 @@ public class FileInfo extends BaseFileInfo{
 	private int beginPackIndex;
 	private int finishPackIndex;
 	private FileAttr attr;
+	private STATE state = STATE.WAIT;
+
+	public enum STATE {
+		WAIT, SYNCING, SYNCED,
+	}
 	
 	public FileInfo () {}
 	public FileInfo (BaseFileInfo bfi) {
@@ -29,8 +36,16 @@ public class FileInfo extends BaseFileInfo{
 	public void setBeginPackIndex(int beginPackIndex) {		this.beginPackIndex = beginPackIndex;	}
 	public int getFinishPackIndex() {		return finishPackIndex;	}
 	public void setFinishPackIndex(int finishPackIndex) {		this.finishPackIndex = finishPackIndex;	}
-	
-	public static FileAttr newFileAttr () {		return new FileAttr();	}
+
+    public String getState() {        return state.toString();    }
+    public void setState(String state) {        this.state = STATE.valueOf(state);    }
+
+    @Transient
+    public STATE getStateEnum () {	    return this.state;    }
+    @Transient
+    public void setState (STATE state) {this.state = state;}
+
+    public static FileAttr newFileAttr () {		return new FileAttr();	}
 
 	@Override
 	public String toString() {

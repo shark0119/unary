@@ -91,7 +91,7 @@ public final class IC_Entity {
       "\n\026init_copy_entity.proto\022!cn.com.unary.i" +
       "nitcopy.grpc.entity\032\030init_copy_constant." +
       "proto\"&\n\nSyncTarget\022\n\n\002ip\030\001 \001(\t\022\014\n\004port\030" +
-      "\002 \001(\005\"\244\003\n\010SyncTask\022\016\n\006taskId\030\001 \001(\t\022A\n\nta" +
+      "\002 \001(\005\"\244\003\n\010SyncTask\022\016\n\006taskId\030\001 \001(\005\022A\n\nta" +
       "rgetInfo\030\002 \001(\0132-.cn.com.unary.initcopy.g" +
       "rpc.entity.SyncTarget\022?\n\010syncType\030\003 \001(\0162" +
       "-.cn.com.unary.initcopy.grpc.constant.Sy" +
@@ -108,15 +108,15 @@ public final class IC_Entity {
       "\022\025\n\rtotalFileSize\030\004 \001(\022\022\025\n\rsyncedFileNum" +
       "\030\005 \001(\022\022\026\n\016syncedFileSize\030\006 \001(\022\022\027\n\017syncin" +
       "gFileName\030\007 \001(\t\"\033\n\tQueryTask\022\016\n\006taskId\030\001",
-      " \001(\t\"\245\001\n\tTaskState\022\016\n\006taskId\030\001 \001(\t\022A\n\nex" +
+      " \001(\005\"\245\001\n\tTaskState\022\016\n\006taskId\030\001 \001(\005\022A\n\nex" +
       "ecResult\030\002 \001(\0132-.cn.com.unary.initcopy.g" +
       "rpc.entity.ExecResult\022E\n\014progressInfo\030\003 " +
       "\001(\0132/.cn.com.unary.initcopy.grpc.entity." +
       "ProgressInfo\"u\n\nModifyTask\022\016\n\006taskId\030\001 \001" +
-      "(\t\022C\n\nmodifyType\030\002 \001(\0162/.cn.com.unary.in" +
+      "(\005\022C\n\nmodifyType\030\002 \001(\0162/.cn.com.unary.in" +
       "itcopy.grpc.constant.ModifyType\022\022\n\nspeed" +
       "Limit\030\003 \001(\005\"0\n\nDeleteTask\022\016\n\006taskId\030\001 \001(" +
-      "\t\022\022\n\ndeleteFile\030\002 \001(\010\"X\n\014FileBaseInfo\022\020\n" +
+      "\005\022\022\n\ndeleteFile\030\002 \001(\010\"X\n\014FileBaseInfo\022\020\n" +
       "\010checkSum\030\001 \001(\t\022\022\n\nmodifyTime\030\002 \001(\022\022\020\n\010f",
       "ileSize\030\003 \001(\022\022\020\n\010fullName\030\004 \001(\t\"\316\001\n\rClie" +
       "ntInitReq\022\016\n\006taskId\030\001 \001(\005\022\021\n\ttotalSize\030\002" +

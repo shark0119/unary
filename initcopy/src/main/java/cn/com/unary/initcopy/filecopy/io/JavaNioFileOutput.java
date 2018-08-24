@@ -1,5 +1,7 @@
 package cn.com.unary.initcopy.filecopy.io;
 
+import org.springframework.stereotype.Component;
+
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
@@ -13,6 +15,7 @@ import java.nio.file.StandardOpenOption;
  * @author Shark.Yin
  * @since 1.0
  */
+@Component("JavaNioFileOutput")
 public class JavaNioFileOutput extends AbstractFileOutput {
 
     protected String currentFileName;

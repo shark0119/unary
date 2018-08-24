@@ -19,7 +19,7 @@ public  final class DeleteTask extends
     super(builder);
   }
   private DeleteTask() {
-    taskId_ = "";
+    taskId_ = 0;
     deleteFile_ = false;
   }
 
@@ -48,10 +48,9 @@ public  final class DeleteTask extends
             }
             break;
           }
-          case 10: {
-            java.lang.String s = input.readStringRequireUtf8();
+          case 8: {
 
-            taskId_ = s;
+            taskId_ = input.readInt32();
             break;
           }
           case 16: {
@@ -83,37 +82,12 @@ public  final class DeleteTask extends
   }
 
   public static final int TASKID_FIELD_NUMBER = 1;
-  private volatile java.lang.Object taskId_;
+  private int taskId_;
   /**
-   * <code>optional string taskId = 1;</code>
+   * <code>optional int32 taskId = 1;</code>
    */
-  public java.lang.String getTaskId() {
-    java.lang.Object ref = taskId_;
-    if (ref instanceof java.lang.String) {
-      return (java.lang.String) ref;
-    } else {
-      com.google.protobuf.ByteString bs = 
-          (com.google.protobuf.ByteString) ref;
-      java.lang.String s = bs.toStringUtf8();
-      taskId_ = s;
-      return s;
-    }
-  }
-  /**
-   * <code>optional string taskId = 1;</code>
-   */
-  public com.google.protobuf.ByteString
-      getTaskIdBytes() {
-    java.lang.Object ref = taskId_;
-    if (ref instanceof java.lang.String) {
-      com.google.protobuf.ByteString b = 
-          com.google.protobuf.ByteString.copyFromUtf8(
-              (java.lang.String) ref);
-      taskId_ = b;
-      return b;
-    } else {
-      return (com.google.protobuf.ByteString) ref;
-    }
+  public int getTaskId() {
+    return taskId_;
   }
 
   public static final int DELETEFILE_FIELD_NUMBER = 2;
@@ -141,8 +115,8 @@ public  final class DeleteTask extends
 
   public void writeTo(com.google.protobuf.CodedOutputStream output)
                       throws java.io.IOException {
-    if (!getTaskIdBytes().isEmpty()) {
-      com.google.protobuf.GeneratedMessageV3.writeString(output, 1, taskId_);
+    if (taskId_ != 0) {
+      output.writeInt32(1, taskId_);
     }
     if (deleteFile_ != false) {
       output.writeBool(2, deleteFile_);
@@ -154,8 +128,9 @@ public  final class DeleteTask extends
     if (size != -1) return size;
 
     size = 0;
-    if (!getTaskIdBytes().isEmpty()) {
-      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, taskId_);
+    if (taskId_ != 0) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeInt32Size(1, taskId_);
     }
     if (deleteFile_ != false) {
       size += com.google.protobuf.CodedOutputStream
@@ -177,8 +152,8 @@ public  final class DeleteTask extends
     cn.com.unary.initcopy.grpc.entity.DeleteTask other = (cn.com.unary.initcopy.grpc.entity.DeleteTask) obj;
 
     boolean result = true;
-    result = result && getTaskId()
-        .equals(other.getTaskId());
+    result = result && (getTaskId()
+        == other.getTaskId());
     result = result && (getDeleteFile()
         == other.getDeleteFile());
     return result;
@@ -192,7 +167,7 @@ public  final class DeleteTask extends
     int hash = 41;
     hash = (19 * hash) + getDescriptorForType().hashCode();
     hash = (37 * hash) + TASKID_FIELD_NUMBER;
-    hash = (53 * hash) + getTaskId().hashCode();
+    hash = (53 * hash) + getTaskId();
     hash = (37 * hash) + DELETEFILE_FIELD_NUMBER;
     hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
         getDeleteFile());
@@ -318,7 +293,7 @@ public  final class DeleteTask extends
     }
     public Builder clear() {
       super.clear();
-      taskId_ = "";
+      taskId_ = 0;
 
       deleteFile_ = false;
 
@@ -387,9 +362,8 @@ public  final class DeleteTask extends
 
     public Builder mergeFrom(cn.com.unary.initcopy.grpc.entity.DeleteTask other) {
       if (other == cn.com.unary.initcopy.grpc.entity.DeleteTask.getDefaultInstance()) return this;
-      if (!other.getTaskId().isEmpty()) {
-        taskId_ = other.taskId_;
-        onChanged();
+      if (other.getTaskId() != 0) {
+        setTaskId(other.getTaskId());
       }
       if (other.getDeleteFile() != false) {
         setDeleteFile(other.getDeleteFile());
@@ -420,71 +394,28 @@ public  final class DeleteTask extends
       return this;
     }
 
-    private java.lang.Object taskId_ = "";
+    private int taskId_ ;
     /**
-     * <code>optional string taskId = 1;</code>
+     * <code>optional int32 taskId = 1;</code>
      */
-    public java.lang.String getTaskId() {
-      java.lang.Object ref = taskId_;
-      if (!(ref instanceof java.lang.String)) {
-        com.google.protobuf.ByteString bs =
-            (com.google.protobuf.ByteString) ref;
-        java.lang.String s = bs.toStringUtf8();
-        taskId_ = s;
-        return s;
-      } else {
-        return (java.lang.String) ref;
-      }
+    public int getTaskId() {
+      return taskId_;
     }
     /**
-     * <code>optional string taskId = 1;</code>
+     * <code>optional int32 taskId = 1;</code>
      */
-    public com.google.protobuf.ByteString
-        getTaskIdBytes() {
-      java.lang.Object ref = taskId_;
-      if (ref instanceof String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (java.lang.String) ref);
-        taskId_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
-    }
-    /**
-     * <code>optional string taskId = 1;</code>
-     */
-    public Builder setTaskId(
-        java.lang.String value) {
-      if (value == null) {
-    throw new NullPointerException();
-  }
-  
+    public Builder setTaskId(int value) {
+      
       taskId_ = value;
       onChanged();
       return this;
     }
     /**
-     * <code>optional string taskId = 1;</code>
+     * <code>optional int32 taskId = 1;</code>
      */
     public Builder clearTaskId() {
       
-      taskId_ = getDefaultInstance().getTaskId();
-      onChanged();
-      return this;
-    }
-    /**
-     * <code>optional string taskId = 1;</code>
-     */
-    public Builder setTaskIdBytes(
-        com.google.protobuf.ByteString value) {
-      if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-      
-      taskId_ = value;
+      taskId_ = 0;
       onChanged();
       return this;
     }

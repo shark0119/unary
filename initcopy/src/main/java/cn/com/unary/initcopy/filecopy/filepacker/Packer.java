@@ -10,6 +10,27 @@ import java.util.List;
  * 全复制文件打包
  * 非线程安全
  *
+ * <p>
+ * 包格式
+ * **********************************
+ * *	当前任务Id()					*
+ * *	数据包序号(4字节)  			*
+ * **********************************
+ * *	解析器种类标识(一个字节)		*
+ * **********************************
+ * *	文件数据包		 			*
+ * **********************************
+ * *								*
+ * *	文件数据包					*
+ * *								*
+ * **********************************
+ * *								*
+ * *								*
+ * *	文件数据包					*
+ * *								*
+ * *								*
+ * **********************************
+ *
  * @author shark
  */
 public interface Packer extends AutoCloseable {
@@ -21,6 +42,13 @@ public interface Packer extends AutoCloseable {
     void start(List<String> fileIds) throws IOException;
 
     /**
+     * 将某个暂停的任务恢复过来，继续同步
+     *
+     * @param taskId 任务Id
+     * @throws Exception 无法从暂停状态中将其恢复
+     */
+    void restore (int taskId) throws Exception;
+    /**
      * 返回打包种类
      *
      * @return 打包策略
@@ -30,7 +58,9 @@ public interface Packer extends AutoCloseable {
     /**
      * 暂停当前打包进程
      */
-    Packer pause ();
+    void pause();
 
-    Packer setTransfer (UnaryTClient unaryTClient);
+    Packer setTransfer(UnaryTClient unaryTClient);
+
+    Packer setTaskId(int taskId);
 }

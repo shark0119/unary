@@ -27,22 +27,22 @@ public class GrpcTest {
 	}
 
 	public void add() {
-		SyncTask request = SyncTask.newBuilder().setTaskId("TaskId....").build();
+		SyncTask request = SyncTask.newBuilder().setTaskId(11).build();
 		ExecResult state = blockingStub.add(request);
 		System.out.println(state.getMsg());
 	}
 	public void query() {
-		QueryTask request = QueryTask.newBuilder().setTaskId("TaskId....").build();
+		QueryTask request = QueryTask.newBuilder().setTaskId(11).build();
 		TaskState state = blockingStub.query(request);
 		System.out.println(state.getExecResult().getMsg());
 	}
 	public void delete() {
-		DeleteTask request = DeleteTask.newBuilder().setTaskId("TaskId....").build();
+		DeleteTask request = DeleteTask.newBuilder().setTaskId(11).build();
 		ExecResult state = blockingStub.delete(request);
 		System.out.println(state.getMsg());
 	}
 	public void modify() {
-		ModifyTask request = ModifyTask.newBuilder().setTaskId("TaskId....").build();
+		ModifyTask request = ModifyTask.newBuilder().setTaskId(11).build();
 		ExecResult state = blockingStub.modify(request);
 		System.out.println(state.getMsg());
 	}

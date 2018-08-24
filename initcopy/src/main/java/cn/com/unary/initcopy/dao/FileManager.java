@@ -33,4 +33,6 @@ public interface FileManager {
 	 * @param fileIds 文件ID
 	 */
 	void delete (String...fileIds);
+
+	List<FileInfo> queryByTaskId(int taskId);
 }

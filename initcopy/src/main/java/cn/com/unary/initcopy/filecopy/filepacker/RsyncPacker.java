@@ -23,7 +23,7 @@ import java.util.Map;
  *
  * @author shark
  */
-@Component("rsyncPacker")
+@Component("RsyncPacker")
 @Scope("prototype")
 public class RsyncPacker implements SyncDiffPacker {
 
@@ -31,10 +31,9 @@ public class RsyncPacker implements SyncDiffPacker {
     private final Map<String, DiffFileInfo> dfiMap = new HashMap<>();
     private final List<String> readFileIds = new ArrayList<>();
     @Autowired
-    @Qualifier("javaNioFileInput")
+    @Qualifier("JavaNioFileInput")
     protected AbstractFileInput afi;
     @Autowired
-    @Qualifier("sqliteFileManager")
     protected FileManager fm;
     protected UnaryTClient unaryTClient;
 
@@ -57,6 +56,11 @@ public class RsyncPacker implements SyncDiffPacker {
     }
 
     @Override
+    public void restore(int taskId) throws Exception {
+
+    }
+
+    @Override
     public SyncDiffPacker setFileDiffInfos(List<DiffFileInfo> diffFileInfo) {
         ValidateUtils.requireNotEmpty(diffFileInfo);
         for (DiffFileInfo dfi : diffFileInfo) {
@@ -67,13 +71,18 @@ public class RsyncPacker implements SyncDiffPacker {
     }
 
     @Override
+    public SyncDiffPacker setTaskId(int taskId) {
+        return null;
+    }
+
+    @Override
     public PackType getPackType() {
         return PackType.RSYNC_JAVA;
     }
 
     @Override
-    public Packer pause() {
-        return null;
+    public void pause() {
+
     }
 
     @Override

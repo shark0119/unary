@@ -1,5 +1,7 @@
 package cn.com.unary.initcopy.filecopy.io;
 
+import org.springframework.stereotype.Component;
+
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
@@ -12,6 +14,7 @@ import java.util.Objects;
  *
  * @author shark
  */
+@Component("JavaNioFileInput")
 public class JavaNioFileInput extends AbstractFileInput {
 
     protected FileChannel currentFileChannel;

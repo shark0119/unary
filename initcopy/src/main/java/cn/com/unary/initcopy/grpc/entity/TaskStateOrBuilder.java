@@ -12,18 +12,9 @@ public interface TaskStateOrBuilder extends
    *对应的任务id
    * </pre>
    *
-   * <code>optional string taskId = 1;</code>
+   * <code>optional int32 taskId = 1;</code>
    */
-  java.lang.String getTaskId();
-  /**
-   * <pre>
-   *对应的任务id
-   * </pre>
-   *
-   * <code>optional string taskId = 1;</code>
-   */
-  com.google.protobuf.ByteString
-      getTaskIdBytes();
+  int getTaskId();
 
   /**
    * <code>optional .cn.com.unary.initcopy.grpc.entity.ExecResult execResult = 2;</code>

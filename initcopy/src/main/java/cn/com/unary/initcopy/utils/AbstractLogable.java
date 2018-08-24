@@ -1,7 +1,6 @@
 package cn.com.unary.initcopy.utils;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.log4j.Logger;
 
 /**
  * 获取日志类
@@ -12,6 +11,7 @@ public abstract class AbstractLogable {
     protected static Logger logger;
 
     public AbstractLogable() {
-        logger = LoggerFactory.getLogger(this.getClass());
+        logger = Logger.getLogger(this.getClass());
+        // logger = LoggerFactory.getLogger(this.getClass());
     }
 }

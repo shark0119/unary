@@ -28,7 +28,7 @@ import java.util.Map;
  *
  * @author shark
  */
-@Component("syncAllResolver")
+@Component("SyncAllResolver")
 @Scope("prototype")
 public class SyncAllResolver extends AbstractLogable implements Resolver {
 
@@ -43,7 +43,6 @@ public class SyncAllResolver extends AbstractLogable implements Resolver {
     // 文件信息长度，当被截断时，暂存此处
     private final ByteBuffer fileInfoLenBuf = ByteBuffer.allocate(FILE_INFO_LENGTH);
     @Autowired
-    @Qualifier("sqliteFileManager")
     protected FileManager fm;
     @Autowired
     private AbstractFileOutput output;
@@ -63,7 +62,7 @@ public class SyncAllResolver extends AbstractLogable implements Resolver {
         packIndex = CommonUtils.byteArrayToInt(data);
         readPackIndex.add(packIndex);
         // get pack info
-        if (!PackType.valueOf(data[4]).equals(getPackType())) {
+        if (!PackType.valueOf(data[HEAD_LENGTH-1]).equals(getPackType())) {
             throw new IllegalStateException("ERROR 0x05 : Bad data pack format. Wrong Resolver");
         }
         int currentPos = HEAD_LENGTH;

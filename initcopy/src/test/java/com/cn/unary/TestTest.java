@@ -8,6 +8,7 @@ import java.nio.ByteBuffer;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.UUID;
 
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -110,37 +111,8 @@ public class TestTest {
 	}
 	@Test
 	public void test7() {
-		int i = 50000;
-		ByteBuffer buffer = ByteBuffer.allocate(4);
-		buffer.putInt(i);
+		int length = UUID.randomUUID().toString().length();
+		System.out.println(length);
 	}
-}
 
-class Te {
-	public static final Te t = new Te("static final var assign ");
-	static {
-		System.out.println("static block execute");
-	}
-	Te(){
-		System.out.println("constructor begin");
-	}
-	Te(String str){
-		System.out.println("constructor begin " + str);
-	}
-	public static String staticFun () {
-		return "";
-	}
-	public String fun () {
-		return "";
-	}
-	public String fun (Te t) {
-		return "";
-	}
-	public String fun2 (Te t) {return "";}
-	public Void nonShow () {
-		return null;
-	}
-	public static void show () {
-		System.out.println("dsdfsdf");
-	}
 }

@@ -12,7 +12,7 @@ import java.io.IOException;
  * @author shark
  *
  */
-@Component("rsyncResolver")
+@Component("RsyncResolver")
 @Scope("prototype")
 public class RsyncResolver implements Resolver{
 

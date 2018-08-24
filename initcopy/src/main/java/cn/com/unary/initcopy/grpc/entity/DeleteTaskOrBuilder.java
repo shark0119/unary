@@ -8,14 +8,9 @@ public interface DeleteTaskOrBuilder extends
     com.google.protobuf.MessageOrBuilder {
 
   /**
-   * <code>optional string taskId = 1;</code>
+   * <code>optional int32 taskId = 1;</code>
    */
-  java.lang.String getTaskId();
-  /**
-   * <code>optional string taskId = 1;</code>
-   */
-  com.google.protobuf.ByteString
-      getTaskIdBytes();
+  int getTaskId();
 
   /**
    * <pre>

@@ -24,7 +24,7 @@ import cn.com.unary.initcopy.utils.ValidateUtils;
  *
  */
 // TODO use AOP to log
-@Repository
+// @Repository("SqliteFileManager")
 public class SqliteFileManager extends AbstractLogable implements FileManager {
 
 	@Autowired
@@ -91,5 +91,11 @@ public class SqliteFileManager extends AbstractLogable implements FileManager {
 		} catch (SQLException e) {
 			throw new InfoPersistenceException("ERROR 0x02: Batch Delete Error", e);
 		} 
+	}
+
+	@Override
+	public List<FileInfo> queryByTaskId(int taskId) {
+		// TODO
+		return null;
 	}
 }
