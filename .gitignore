@@ -11,3 +11,5 @@ transfer/.settings/*
 transfer/.classpath
 transfer/.project
 transfer/target/*
+
+*.iml
