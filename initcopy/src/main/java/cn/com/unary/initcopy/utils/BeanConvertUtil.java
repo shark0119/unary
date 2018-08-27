@@ -7,6 +7,7 @@ import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributeView;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileOwnerAttributeView;
+import java.util.ArrayList;
 import java.util.List;
 
 import cn.com.unary.initcopy.entity.BaseFileInfo;
@@ -51,15 +52,36 @@ public class BeanConvertUtil {
 	}
 
 	public static List<BaseFileInfo> takeFromGrpc (List<FileBaseInfo> fbis) {
-
-	    // TODO
-		return null;
+	    List<BaseFileInfo> bfis = new ArrayList<>();
+	    for(FileBaseInfo fbi : fbis) {
+	        bfis.add(takeFromGrpc(fbi));
+	    }
+		return bfis;
 	}
 	public static List<FileBaseInfo> takeToGrpc (List<BaseFileInfo> bfis) {
+	    List<FileBaseInfo> fbis = new ArrayList<>();
+	    for(BaseFileInfo bfi : bfis) {
+	        fbis.add(takeToGrpc(bfi));
+	    }
+	    return fbis;
+    }
+    public static BaseFileInfo takeFromGrpc (FileBaseInfo fbi) {
+        BaseFileInfo bfi = new BaseFileInfo();
+        bfi.setFileSize(fbi.getFileSize());
+        bfi.setFullName(fbi.getFullName());
+        bfi.setModifyTime(fbi.getModifyTime());
+        // TODO set file id and task id
+	    return bfi;
+    }
 
-	    return null;
+    public static FileBaseInfo takeToGrpc (BaseFileInfo bfi) {
+        FileBaseInfo.Builder builder = FileBaseInfo.newBuilder();
+        builder.setFileSize(bfi.getFileSize())
+                .setFullName(bfi.getFullName())
+                .setModifyTime(bfi.getModifyTime())
+        // TODO set file id and task id
+        ;
+        return builder.build();
     }
-    public static BaseFileInfo takeFromGrpc (FileBaseInfo fbis) {
-	    return null;
-    }
+
 }

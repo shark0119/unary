@@ -7,6 +7,7 @@ import java.sql.Statement;
 import java.util.List;
 import java.util.Objects;
 
+import cn.com.unary.initcopy.utils.BeanExactUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -47,7 +48,7 @@ public class SqliteFileManager extends AbstractLogable implements FileManager {
 			Statement stmt = conn.createStatement();
 			ResultSet rset = stmt.executeQuery(sb.toString())
 		){
-			return BeanConvertUtil.deSerFromResult(rset);
+			return BeanExactUtil.deSerFromResult(rset);
 		} catch (SQLException e) {
 			throw new InfoPersistenceException("ERROR 0x02: QUERY Error", e);
 		}
@@ -56,12 +57,11 @@ public class SqliteFileManager extends AbstractLogable implements FileManager {
 	@Override
 	public void save(FileInfo fi) {
 		Objects.requireNonNull(fi);
-
 		try (
 			Connection conn = dds.getConnection();
 			Statement stmt = conn.createStatement()
 		){
-			stmt.execute(BeanConvertUtil.serToSql(fi));
+			stmt.execute(BeanExactUtil.serToSql(fi));
 		} catch (SQLException e) {
 			throw new InfoPersistenceException("ERROR 0x02: Save Error", e);
 		}
