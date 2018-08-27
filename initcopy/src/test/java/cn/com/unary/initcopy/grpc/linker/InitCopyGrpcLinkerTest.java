@@ -39,16 +39,19 @@ public class InitCopyGrpcLinkerTest extends AbstractLogable {
     @Test
     public void add() throws IOException, InterruptedException {
         // 启动服务端
-        context.start(10,10,20);
+        context.start(34567,34568,34569);
         // 客户端添加任务。
         SyncTask.Builder builder = SyncTask.newBuilder();
-        List<String> files = new ArrayList<>();
+        List<String> syncFiles = new ArrayList<>();
+        syncFiles.add("C:\\Users\\shark\\Desktop\\文件\\Shadowsocks-4.0.10.zip");
         builder.setTaskId(1)
                 .setSyncType(SyncType.SYNC_ALL)
                 .setTargetDir("G:/")
-                .addAllFile(files)
+                .addAllFile(syncFiles)
                 .setTargetInfo(SyncTarget.newBuilder().setIp("localhost").setPort(80).build());
+        logger.debug("Start add a task.");
         ExecResult result = linker.add(builder.build());
+        logger.debug("Task finish");
         Objects.requireNonNull(result);
     }
 

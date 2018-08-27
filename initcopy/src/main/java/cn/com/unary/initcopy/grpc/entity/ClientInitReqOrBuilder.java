@@ -17,9 +17,9 @@ public interface ClientInitReqOrBuilder extends
    *总大小
    * </pre>
    *
-   * <code>optional int32 totalSize = 2;</code>
+   * <code>optional sint64 totalSize = 2;</code>
    */
-  int getTotalSize();
+  long getTotalSize();
 
   /**
    * <pre>

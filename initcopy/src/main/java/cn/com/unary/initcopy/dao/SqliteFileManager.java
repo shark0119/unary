@@ -98,4 +98,9 @@ public class SqliteFileManager extends AbstractLogable implements FileManager {
 		// TODO
 		return null;
 	}
+
+	@Override
+	public boolean taskFinished(int taskId) {
+		return false;
+	}
 }

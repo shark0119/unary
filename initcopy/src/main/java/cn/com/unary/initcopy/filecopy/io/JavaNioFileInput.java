@@ -28,8 +28,7 @@ public class JavaNioFileInput extends AbstractFileInput {
         }
         int expected = buffer.remaining();
         int size = currentFileChannel.read(buffer);
-        logger.debug("CurrentTask " + Thread.currentThread().getName()
-                + ". Got " + size + " byte from file " + currentFileName);
+        logger.debug("Got " + size + " byte from file " + currentFileName);
         return expected > size;
     }
 
@@ -42,14 +41,12 @@ public class JavaNioFileInput extends AbstractFileInput {
     @Override
     public AbstractFileInput openFile(String fileName) throws IOException {
         this.close();
-        logger.debug("CurrentTask " + Thread.currentThread().getName()
-                + ". File change to" + fileName + ".");
+        logger.debug("File change to " + fileName + ".");
         currentFileChannel = FileChannel.open(
                 Paths.get(fileName),
                 StandardOpenOption.READ);
         currentFileName = fileName;
-        logger.debug("CurrentTask " + Thread.currentThread().getName()
-                + ". Open new file {2}" + currentFileName);
+        logger.debug("Open new file " + currentFileName);
         return this;
     }
 

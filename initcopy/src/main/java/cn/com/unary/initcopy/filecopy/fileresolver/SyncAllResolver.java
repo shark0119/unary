@@ -43,6 +43,7 @@ public class SyncAllResolver extends AbstractLogable implements Resolver {
     // 文件信息长度，当被截断时，暂存此处
     private final ByteBuffer fileInfoLenBuf = ByteBuffer.allocate(FILE_INFO_LENGTH);
     @Autowired
+    @Qualifier("serverFM")
     protected FileManager fm;
     @Autowired
     private AbstractFileOutput output;
@@ -51,6 +52,8 @@ public class SyncAllResolver extends AbstractLogable implements Resolver {
     // 当前读取的包序号
     private int packIndex;
     private String backupPath;
+    private int taskId;
+    private FileInfo currentFile;
 
     public SyncAllResolver setBackupPath(String backupPath) {
         this.backupPath = backupPath;
@@ -58,7 +61,7 @@ public class SyncAllResolver extends AbstractLogable implements Resolver {
     }
 
     @Override
-    public void process(byte[] data) {
+    public boolean process(byte[] data) {
         packIndex = CommonUtils.byteArrayToInt(data);
         readPackIndex.add(packIndex);
         // get pack info
@@ -94,6 +97,11 @@ public class SyncAllResolver extends AbstractLogable implements Resolver {
                 break;
             default:
                 throw new IllegalStateException("Program error. Unexpected state " + stage);
+        }
+        if (fm.taskFinished(taskId)) {
+            return false;
+        } else {
+            return true;
         }
     }
 
@@ -171,13 +179,16 @@ public class SyncAllResolver extends AbstractLogable implements Resolver {
      * @param remainingSize 当前包的可读取字节数
      */
     private void initCopyFile(int remainingSize) throws IOException {
-        FileInfo fileInfo;
-        logger.debug("CurrentTask "+Thread.currentThread().getName()+". A file info json start transfer to FileInfo");
+        if (currentFile != null) {
+            currentFile.setState(FileInfo.STATE.SYNCED);
+            fm.save(currentFile);
+        }
+        logger.debug("A file info json start transfer to FileInfo");
         try {
-            fileInfo = mapper.readValue(this.fileInfo.array(), FileInfo.class);
+            currentFile = mapper.readValue(this.fileInfo.array(), FileInfo.class);
             packValidDataSize.put(packIndex, remainingSize);
-            long fileSize = fileInfo.getFileSize();
-            fileInfo.setBeginPackIndex(packIndex);
+            long fileSize = currentFile.getFileSize();
+            currentFile.setBeginPackIndex(packIndex);
             if (fileSize > remainingSize) {
                 fileSize -= remainingSize;
                 int packSize = (int) (fileSize % (PACK_SIZE - HEAD_LENGTH));
@@ -186,15 +197,16 @@ public class SyncAllResolver extends AbstractLogable implements Resolver {
                     packValidDataSize.put(packIndex + i, PACK_SIZE - HEAD_LENGTH);
                 }
                 packValidDataSize.put(packIndex + packSize, (int) fileSize);
-                fileInfo.setFinishPackIndex(packIndex + packSize);
+                currentFile.setFinishPackIndex(packIndex + packSize);
             } else {
-                fileInfo.setFinishPackIndex(packIndex);
+                currentFile.setFinishPackIndex(packIndex);
             }
-            fm.save(fileInfo);
+            currentFile.setState(FileInfo.STATE.SYNCING);
+            fm.save(currentFile);
         } catch (IOException e) {
             throw new IllegalStateException("ERROR 0x04 : Failed extract FileInfo from Json", e);
         }
-        output.openFile(PathMapperUtil.sourcePathMapper(backupPath, fileInfo.getFullName()));
+        output.openFile(PathMapperUtil.sourcePathMapper(backupPath, currentFile.getFullName()));
     }
 
     /**
@@ -209,7 +221,7 @@ public class SyncAllResolver extends AbstractLogable implements Resolver {
                 || ReadProcess.CONTENT.equals(stage))) {
             throw new IllegalStateException("Program error. Illegal stage :" +stage);
         }
-        logger.debug("CurrentTask "+Thread.currentThread().getName()+".currentPos:"+currentPos);
+        logger.debug("currentPos:"+currentPos);
         // size 是当前包有效的文件数据长度，是每个文件读取头信息的时候初始化的。 currentPos 当前包有效数据的位置
         int size = packValidDataSize.get(packIndex);
         if (currentPos >= data.length) {
@@ -237,6 +249,12 @@ public class SyncAllResolver extends AbstractLogable implements Resolver {
     @Override
     public PackType getPackType() {
         return PackType.SYNC_ALL_JAVA;
+    }
+
+    @Override
+    public Resolver setTaskId(int taskId) {
+        this.taskId = taskId;
+        return this;
     }
 
     @Override

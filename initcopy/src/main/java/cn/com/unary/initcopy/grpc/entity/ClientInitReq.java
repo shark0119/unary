@@ -16,7 +16,7 @@ public  final class ClientInitReq extends
   }
   private ClientInitReq() {
     taskId_ = 0;
-    totalSize_ = 0;
+    totalSize_ = 0L;
     targetDir_ = "";
     syncType_ = 0;
     fileBaseInfos_ = java.util.Collections.emptyList();
@@ -54,7 +54,7 @@ public  final class ClientInitReq extends
           }
           case 16: {
 
-            totalSize_ = input.readInt32();
+            totalSize_ = input.readSInt64();
             break;
           }
           case 26: {
@@ -115,15 +115,15 @@ public  final class ClientInitReq extends
   }
 
   public static final int TOTALSIZE_FIELD_NUMBER = 2;
-  private int totalSize_;
+  private long totalSize_;
   /**
    * <pre>
    *总大小
    * </pre>
    *
-   * <code>optional int32 totalSize = 2;</code>
+   * <code>optional sint64 totalSize = 2;</code>
    */
-  public int getTotalSize() {
+  public long getTotalSize() {
     return totalSize_;
   }
 
@@ -263,8 +263,8 @@ public  final class ClientInitReq extends
     if (taskId_ != 0) {
       output.writeInt32(1, taskId_);
     }
-    if (totalSize_ != 0) {
-      output.writeInt32(2, totalSize_);
+    if (totalSize_ != 0L) {
+      output.writeSInt64(2, totalSize_);
     }
     if (!getTargetDirBytes().isEmpty()) {
       com.google.protobuf.GeneratedMessageV3.writeString(output, 3, targetDir_);
@@ -286,9 +286,9 @@ public  final class ClientInitReq extends
       size += com.google.protobuf.CodedOutputStream
         .computeInt32Size(1, taskId_);
     }
-    if (totalSize_ != 0) {
+    if (totalSize_ != 0L) {
       size += com.google.protobuf.CodedOutputStream
-        .computeInt32Size(2, totalSize_);
+        .computeSInt64Size(2, totalSize_);
     }
     if (!getTargetDirBytes().isEmpty()) {
       size += com.google.protobuf.GeneratedMessageV3.computeStringSize(3, targetDir_);
@@ -339,7 +339,8 @@ public  final class ClientInitReq extends
     hash = (37 * hash) + TASKID_FIELD_NUMBER;
     hash = (53 * hash) + getTaskId();
     hash = (37 * hash) + TOTALSIZE_FIELD_NUMBER;
-    hash = (53 * hash) + getTotalSize();
+    hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+        getTotalSize());
     hash = (37 * hash) + TARGETDIR_FIELD_NUMBER;
     hash = (53 * hash) + getTargetDir().hashCode();
     hash = (37 * hash) + SYNCTYPE_FIELD_NUMBER;
@@ -469,7 +470,7 @@ public  final class ClientInitReq extends
       super.clear();
       taskId_ = 0;
 
-      totalSize_ = 0;
+      totalSize_ = 0L;
 
       targetDir_ = "";
 
@@ -563,7 +564,7 @@ public  final class ClientInitReq extends
       if (other.getTaskId() != 0) {
         setTaskId(other.getTaskId());
       }
-      if (other.getTotalSize() != 0) {
+      if (other.getTotalSize() != 0L) {
         setTotalSize(other.getTotalSize());
       }
       if (!other.getTargetDir().isEmpty()) {
@@ -652,15 +653,15 @@ public  final class ClientInitReq extends
       return this;
     }
 
-    private int totalSize_ ;
+    private long totalSize_ ;
     /**
      * <pre>
      *总大小
      * </pre>
      *
-     * <code>optional int32 totalSize = 2;</code>
+     * <code>optional sint64 totalSize = 2;</code>
      */
-    public int getTotalSize() {
+    public long getTotalSize() {
       return totalSize_;
     }
     /**
@@ -668,9 +669,9 @@ public  final class ClientInitReq extends
      *总大小
      * </pre>
      *
-     * <code>optional int32 totalSize = 2;</code>
+     * <code>optional sint64 totalSize = 2;</code>
      */
-    public Builder setTotalSize(int value) {
+    public Builder setTotalSize(long value) {
       
       totalSize_ = value;
       onChanged();
@@ -681,11 +682,11 @@ public  final class ClientInitReq extends
      *总大小
      * </pre>
      *
-     * <code>optional int32 totalSize = 2;</code>
+     * <code>optional sint64 totalSize = 2;</code>
      */
     public Builder clearTotalSize() {
       
-      totalSize_ = 0;
+      totalSize_ = 0L;
       onChanged();
       return this;
     }

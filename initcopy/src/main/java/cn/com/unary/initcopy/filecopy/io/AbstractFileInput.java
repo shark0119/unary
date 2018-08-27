@@ -25,7 +25,7 @@ public abstract class AbstractFileInput extends AbstractLogable implements AutoC
      * 从文件中读取数据
      *
      * @param buffer 文件数据容器，默认读取 {@link ByteBuffer#remaining()}个字节
-     * @return 读取到有效数据返回 true，否则返回 false 表示未读到有效数据
+     * @return 读取到文件尾返回 false，否则返回 true
      * @throws IOException 文件读取发生异常
      */
 	public abstract boolean read (ByteBuffer buffer) throws IOException;

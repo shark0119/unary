@@ -12,6 +12,7 @@ import cn.com.unary.initcopy.utils.AbstractLogable;
 import cn.com.unary.initcopy.utils.BeanConvertUtil;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Scope;
@@ -22,6 +23,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
 
 /**
  * 文件复制模块，负责与外部通讯。将内部三个模块与外部组合起来。
@@ -37,7 +39,11 @@ public class ClientFileCopy extends AbstractLogable implements ApplicationContex
     @Autowired
     protected ClientFileCopyInit clientFileCopyInit;
     @Autowired
+    @Qualifier("clientFM")
     protected FileManager fm;
+    @Autowired
+    @Qualifier("clientExecutor")
+    protected ExecutorService exec;
 
     private ApplicationContext applicationContext;
 
@@ -96,7 +102,7 @@ public class ClientFileCopy extends AbstractLogable implements ApplicationContex
                                final List<String> syncFileIds,
                                final List<DiffFileInfo> diffFileInfos) {
         final SyncDiffPacker syncDiffPacker =
-                applicationContext.getBean("rsyncPacker", SyncDiffPacker.class).setTaskId(taskId);
+                applicationContext.getBean("RsyncPacker", SyncDiffPacker.class).setTaskId(taskId);
         syncDiffPacker.setTransfer(unaryTClient);
         Thread thread = new Thread(new Runnable() {
             @Override
@@ -111,7 +117,7 @@ public class ClientFileCopy extends AbstractLogable implements ApplicationContex
                 }
             }
         }, taskId + "");
-        thread.start();
+        exec.execute(thread);
     }
 
     /**
@@ -123,7 +129,7 @@ public class ClientFileCopy extends AbstractLogable implements ApplicationContex
      */
     private void startAllSync(UnaryTClient unaryTClient, int taskId, final List<String> syncFileIds) {
         final Packer syncAllPacker =
-                applicationContext.getBean("syncAllPacker", Packer.class).setTaskId(taskId);
+                applicationContext.getBean("SyncAllPacker", Packer.class).setTaskId(taskId);
         syncAllPacker.setTransfer(unaryTClient);
         Thread thread = new Thread(new Runnable() {
             @Override
@@ -137,11 +143,12 @@ public class ClientFileCopy extends AbstractLogable implements ApplicationContex
                 }
             }
         }, "fileCopy:" + taskId);
-        thread.start();
+        exec.execute(thread);
     }
 
     private void recordPackerError(Exception e) {
-        logger.error("Exception happened on Thread " + Thread.currentThread().getName(), e);
+        logger.error("Exception happened .", e);
+        throw new IllegalStateException(e);
     }
 
     @Override

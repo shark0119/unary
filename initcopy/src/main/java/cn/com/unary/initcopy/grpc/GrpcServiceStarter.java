@@ -28,7 +28,7 @@ public class GrpcServiceStarter extends AbstractLogable {
         this.port = port;
     }
     public void start() throws IOException, InterruptedException {
-        server = ServerBuilder.forPort(port)
+        /*server = ServerBuilder.forPort(port)
                 .addService(service)
                 .build().start();
         logger.debug("service start...");
@@ -44,7 +44,7 @@ public class GrpcServiceStarter extends AbstractLogable {
                 logger.error("*** server shut down");
             }
         });
-        this.blockUntilShutdown();
+        this.blockUntilShutdown();*/
     }
 
     // block 一直到退出程序

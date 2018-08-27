@@ -2,15 +2,19 @@ package cn.com.unary.initcopy.config;
 
 import api.UnaryTServer;
 import cn.com.unary.initcopy.InitCopyContext;
+import cn.com.unary.initcopy.dao.RamFileManager;
 import com.alibaba.druid.pool.DruidDataSource;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Repository;
 
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * 用于 Spring 创建 Beans
@@ -56,4 +60,29 @@ public class BeanConfig {
         return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     }
 
+    @Bean
+    @Scope("singleton")
+    public ExecutorService serverExecutor () {
+        return Executors.newCachedThreadPool();
+    }
+    @Bean
+    @Scope("singleton")
+    public ExecutorService clientExecutor () {
+        return Executors.newCachedThreadPool();
+    }
+    @Bean
+    @Scope("singleton")
+    public ExecutorService contextExecutor () {
+        return Executors.newCachedThreadPool();
+    }
+    @Bean
+    @Scope("singleton")
+    public RamFileManager clientFM () {
+        return new RamFileManager();
+    }
+    @Bean
+    @Scope("singleton")
+    public RamFileManager serverFM () {
+        return new RamFileManager();
+    }
 }

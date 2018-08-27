@@ -35,4 +35,6 @@ public interface FileManager {
 	void delete (String...fileIds);
 
 	List<FileInfo> queryByTaskId(int taskId);
+
+	boolean taskFinished(int taskId);
 }

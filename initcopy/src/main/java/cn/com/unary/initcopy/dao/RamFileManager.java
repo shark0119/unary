@@ -3,6 +3,7 @@ package cn.com.unary.initcopy.dao;
 import cn.com.unary.initcopy.entity.FileInfo;
 import cn.com.unary.initcopy.utils.AbstractLogable;
 import cn.com.unary.initcopy.utils.ValidateUtils;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Repository;
 
 import javax.annotation.Resource;
@@ -17,11 +18,10 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  * @author shark
  */
-@Repository("RamFileManager")
 public class RamFileManager extends AbstractLogable implements FileManager {
 
     // key : fileId, field: 文件信息实体
-    private static Map<String, FileInfo> fiMap = new ConcurrentHashMap<>();
+    private Map<String, FileInfo> fiMap = new ConcurrentHashMap<>();
 
     @Override
     public List<FileInfo> query(String... fileIds) {
@@ -70,5 +70,15 @@ public class RamFileManager extends AbstractLogable implements FileManager {
             }
         }
         return fileInfos;
+    }
+
+    @Override
+    public boolean taskFinished(int taskId) {
+        for(FileInfo fi : queryByTaskId(taskId)) {
+            if (!fi.getStateEnum().equals(FileInfo.STATE.SYNCED)) {
+                return false;
+            }
+        }
+        return true;
     }
 }

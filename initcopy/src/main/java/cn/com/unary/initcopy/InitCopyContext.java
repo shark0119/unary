@@ -7,12 +7,15 @@ import cn.com.unary.initcopy.grpc.linker.ControlTaskGrpcLinker;
 import cn.com.unary.initcopy.grpc.linker.InitCopyGrpcLinker;
 import cn.com.unary.initcopy.grpc.service.ControlTaskGrpcImpl;
 import cn.com.unary.initcopy.grpc.service.InitCopyGrpcImpl;
+import cn.com.unary.initcopy.utils.AbstractLogable;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PreDestroy;
 import java.io.IOException;
+import java.util.concurrent.ExecutorService;
 
 /**
  * 初始化复制上下文启动类
@@ -22,7 +25,7 @@ import java.io.IOException;
  */
 @Component("InitCopyContext")
 @Scope("singleton")
-public class InitCopyContext {
+public class InitCopyContext extends AbstractLogable {
     public static int CONTROL_TASK_GRPC_PORT = 23456;
     // 全局的属性
     public final static String CHARSET = "UTF-8";
@@ -32,11 +35,13 @@ public class InitCopyContext {
     protected static int grpcPort;
     // 源端与目标端之间 GRPC 通讯监听的端口
     protected static int innerGrpcPort = 6002;
-    @Autowired
     protected static UnaryTServer uts;
     private static volatile Boolean isActive = Boolean.FALSE;
     @Autowired
     protected UnaryProcess process;
+    @Autowired
+    @Qualifier("contextExecutor")
+    protected ExecutorService exec;
 
     public InitCopyContext() {
     }
@@ -73,8 +78,10 @@ public class InitCopyContext {
     public void destroy() {
         uts = null;
         System.out.println("Context destroy");
+        throw new IllegalStateException("eeee");
     }
 
+    @Autowired
     public InitCopyContext setUts(UnaryTServer uts) {
         InitCopyContext.uts = uts;
         return this;
@@ -82,7 +89,18 @@ public class InitCopyContext {
 
     private InitCopyContext clientInit() throws IOException, InterruptedException {
         // 启动向外部提供任务管理的 GRPC 服务（源端）
-        new GrpcServiceStarter(new InitCopyGrpcImpl(new InitCopyGrpcLinker()), grpcPort).start();
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    new GrpcServiceStarter(new InitCopyGrpcImpl(new InitCopyGrpcLinker()), grpcPort).start();
+                } catch (Exception e) {
+                    logger.error(e);
+                    throw new IllegalStateException(e);
+                }
+            }
+        }, "InitCopyGrpcService");
+        exec.execute(thread);
         return this;
     }
 
@@ -91,7 +109,18 @@ public class InitCopyContext {
         uts.startServer();
         uts.setProcess(process);
         // 启动内部控制任务信息的 GRPC 服务（目标端）
-        new GrpcServiceStarter(new ControlTaskGrpcImpl(new ControlTaskGrpcLinker()), grpcPort).start();
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    new GrpcServiceStarter(new ControlTaskGrpcImpl(new ControlTaskGrpcLinker()), grpcPort).start();
+                } catch (Exception e) {
+                    logger.error(e);
+                    throw new IllegalStateException(e);
+                }
+            }
+        }, "ControlTaskGrpcService");
+        exec.execute(thread);
         return this;
     }
 }

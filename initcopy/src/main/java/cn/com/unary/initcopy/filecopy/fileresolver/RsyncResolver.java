@@ -17,13 +17,23 @@ import java.io.IOException;
 public class RsyncResolver implements Resolver{
 
 	@Override
-	public void process(byte[] data) {
-		
+	public boolean process(byte[] data) {
+		return false;
 	}
 
 	@Override
 	public Constants.PackType getPackType() {
 		return Constants.PackType.RSYNC_JAVA;
+	}
+
+	@Override
+	public Resolver setTaskId(int taskId) {
+		return this;
+	}
+
+	@Override
+	public SyncAllResolver setBackupPath(String backupPath) {
+		return null;
 	}
 
 	@Override

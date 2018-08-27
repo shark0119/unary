@@ -19,7 +19,13 @@ public class PathMapperUtil {
      */
     public static String sourcePathMapper (String destPath, String filePath) {
         // TODO use regex to achieve
-        return null;
+        filePath = filePath.trim().replaceAll("\\\\", "/");
+        destPath = destPath.trim().replaceAll("\\\\", "/");
+        filePath = "win_driver_unary_" + filePath.toLowerCase().charAt(0) + filePath.substring(2);
+        if (!destPath.endsWith("/")) {
+            destPath += "/";
+        }
+        return destPath + filePath;
     }
 
     /**

@@ -6,12 +6,10 @@ import cn.com.unary.initcopy.grpc.entity.DeleteTask;
 import cn.com.unary.initcopy.grpc.entity.ExecResult;
 import cn.com.unary.initcopy.grpc.entity.ModifyTask;
 import cn.com.unary.initcopy.grpc.entity.ServerInitResp;
-import com.google.common.util.concurrent.ListenableFuture;
+import cn.com.unary.initcopy.grpc.linker.ControlTaskGrpcLinker;
+import cn.com.unary.initcopy.utils.AbstractLogable;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
-import io.grpc.Server;
-
-import java.util.concurrent.ExecutionException;
 
 /**
  * 源端和目标端之间，任务控制信息GRPC接口的调用方(客户端)
@@ -19,10 +17,12 @@ import java.util.concurrent.ExecutionException;
  * @author Shark.Yin
  * @since 1.0
  */
-public class ControlTaskGrpcClient {
+public class ControlTaskGrpcClient extends AbstractLogable {
+
 
     private ControlTaskGrpc.ControlTaskBlockingStub blockingStub;
     private ControlTaskGrpc.ControlTaskFutureStub futureStub;
+    private ControlTaskGrpcLinker linker;
 
     /**
      * 配置 GRPC 服务的相关信息
@@ -39,11 +39,11 @@ public class ControlTaskGrpcClient {
     /**
      * 调用 {@link cn.com.unary.initcopy.grpc.ControlTaskGrpc#METHODID_INIT}
      *
-     * @param clientInitReq 初始化请求
+     * @param req 初始化请求
      * @return 初始化响应
      */
-    public ServerInitResp invokeGrpcInit(ClientInitReq clientInitReq) {
-        final ListenableFuture<ServerInitResp> sir =  futureStub.init(clientInitReq);
+    public ServerInitResp invokeGrpcInit(ClientInitReq req) {
+        /*final ListenableFuture<ServerInitResp> sir =  futureStub.init(req);
         sir.addListener(new Runnable() {
             @Override
             public void run() {
@@ -55,8 +55,10 @@ public class ControlTaskGrpcClient {
                     e.printStackTrace();
                 }
             }
-        }, null);
-        return blockingStub.init(clientInitReq);
+        }, null);*/
+        logger.debug("Send file data to the target to confirm.");
+        return linker.init(req);
+        // return blockingStub.init(req);
     }
 
     /**
@@ -79,4 +81,7 @@ public class ControlTaskGrpcClient {
         return blockingStub.modify(modifyTask);
     }
 
+    public void setLinker(ControlTaskGrpcLinker linker) {
+        this.linker = linker;
+    }
 }

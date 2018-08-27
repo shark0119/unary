@@ -77,9 +77,10 @@ public class SyncAllPacker extends AbstractLogable implements Packer {
 
     // ----我来组成分割线，以下是 Spring 容器来管理的实体----
     @Autowired
-    @Qualifier("JavaNioInput")
+    @Qualifier("JavaNioFileInput")
     protected AbstractFileInput input;
     @Autowired
+    @Qualifier("clientFM")
     protected FileManager fm;
     @Autowired
     protected InitCopyContext ctx;
@@ -91,7 +92,7 @@ public class SyncAllPacker extends AbstractLogable implements Packer {
     private Iterator<FileInfo> fiIterator;    // 待读取的文件列表
     private List<String> readFileIds = new ArrayList<>();    // 已读取的文件 ID 列表
     private FileInfo currentFileInfo;   // 当前正在读取的文件
-    private ByteBuffer fileInfoBuffer; // 文件信息数据
+    private ByteBuffer fileInfoBuffer = ByteBuffer.allocate(0); // 文件信息数据
     private ObjectMapper mapper = new ObjectMapper();
     private int packIndex = 0;    // 当前的包序号
     private int taskId = -1; // 任务ID。
@@ -106,10 +107,10 @@ public class SyncAllPacker extends AbstractLogable implements Packer {
         if (isReady) {
             return isReady;
         } else {
-            isReady = input == null
-                    && fm == null
-                    && ctx == null
-                    && utc == null
+            isReady = input != null
+                    && fm != null
+                    && ctx != null
+                    && utc != null
                     && taskId != -1;
             return isReady;
         }
@@ -126,17 +127,16 @@ public class SyncAllPacker extends AbstractLogable implements Packer {
         if (isReady() && !pause) {
             List<FileInfo> list = fm.query(fileIds.toArray(new String[fileIds.size()]));
             fiIterator = list.iterator();
-            logger.debug("CurrentTask " + Thread.currentThread().getName()
-                    + ". Got " + list.size() + " FileInfo with " + fileIds.size() + " FileId");
+            logger.debug("Got " + list.size() + " FileInfo with " + fileIds.size() + " FileId");
             byte[] packData = CommonUtils.extractBytes(pack());
-            while (packData.length != 0) {
-                logger.debug("CurrentTask " + Thread.currentThread().getName()
-                        + ". Pass " + packData.length + " bytes to Transfer.");
+            while (packData.length <= HEAD_LENGTH) {
+                logger.debug("Pass " + packData.length + " bytes to Transfer.");
                 utc.sendData(packData);
                 packData = CommonUtils.extractBytes(pack());
             }
         } else {
-            throw new IllegalStateException("ERROR CODE 0X03:Object is not ready.");
+            throw new IllegalStateException("ERROR CODE 0X03:Object is not ready. ready & pause:"
+                    + isReady + "&" + pause);
         }
     }
 
@@ -204,17 +204,17 @@ public class SyncAllPacker extends AbstractLogable implements Packer {
                 // 尝试丢弃未传输的文件信息
                 throw new IllegalStateException("Program Error. Attempt to abandon valid file info.");
             }
-            logger.debug("CurrentTask " + Thread.currentThread().getName()
-                    + ". Got File With Id: {2}" + fi.getId());
-            // pack file info
-            fileInfoBuffer = serializeFileInfo(fi);
-            packFileInfo(buffer);
-            // pack file data
-            input.read(buffer);
-            fi = nextFile();
+            // pack file data, 未读到文件尾
+            if (input.read(buffer)) {
+                continue;
+            } else {
+                // pack file info
+                fi = nextFile();
+                fileInfoBuffer = serializeFileInfo(fi);
+                packFileInfo(buffer);
+            }
         }
-        logger.debug("CurrentTask " + Thread.currentThread().getName()
-                + ". Pack Done. PackIndex: " + packIndex + ", PackSize: " + buffer.position());
+        logger.debug("Pack Done. PackIndex: " + packIndex + ", PackSize: " + buffer.position());
         return buffer;
     }
 
@@ -232,9 +232,11 @@ public class SyncAllPacker extends AbstractLogable implements Packer {
             // 需要截断
             readSize = buffer.remaining();
         }
+        if (readSize == 0){
+            return;
+        }
         buffer.put(fileInfoBuffer.array(), fileInfoBuffer.position(), readSize);
-        logger.debug("CurrentTask " + Thread.currentThread().getName()
-                + ". Pack " + readSize + " bytes FileInfo, current position "
+        logger.debug("Pack " + readSize + " bytes FileInfo, current position "
                 + fileInfoBuffer.position());
     }
 
@@ -252,8 +254,7 @@ public class SyncAllPacker extends AbstractLogable implements Packer {
             buffer.putInt(fileInfoJsonBytes.length);
             // set file info
             buffer.put(fileInfoJsonBytes);
-            logger.debug("CurrentTask " + Thread.currentThread().getName() + ". FileID: "
-                    + fi.getId() + ", file info json bytes length: " + buffer.capacity() + ".");
+            logger.debug("FileID: " + fi.getId() + ", file info json bytes length: " + buffer.capacity() + ".");
             return buffer;
         } catch (JsonProcessingException e) {
             throw new IllegalStateException("ERROR 0x04 : Failed transfer FileInfo to Json", e);
@@ -269,13 +270,12 @@ public class SyncAllPacker extends AbstractLogable implements Packer {
         if (fiIterator.hasNext()) {
             currentFileInfo = fiIterator.next();
             input.openFile(currentFileInfo.getFullName());
+            currentFileInfo.setState(FileInfo.STATE.SYNCING);
+            fm.save(currentFileInfo);
+            logger.debug("Got next file : " + currentFileInfo.getId());
+            return currentFileInfo;
         }
-        currentFileInfo.setState(FileInfo.STATE.SYNCING);
-
-        fm.save(currentFileInfo);
-        logger.debug("CurrentTask " + Thread.currentThread().getName()
-                + ". Got next file : {2}" + currentFileInfo.getId());
-        return currentFileInfo;
+        return null;
     }
 
     @Override

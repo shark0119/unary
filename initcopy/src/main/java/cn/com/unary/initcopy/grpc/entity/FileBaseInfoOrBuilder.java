@@ -60,4 +60,19 @@ public interface FileBaseInfoOrBuilder extends
    */
   com.google.protobuf.ByteString
       getFullNameBytes();
+
+  /**
+   * <code>optional string fileId = 5;</code>
+   */
+  java.lang.String getFileId();
+  /**
+   * <code>optional string fileId = 5;</code>
+   */
+  com.google.protobuf.ByteString
+      getFileIdBytes();
+
+  /**
+   * <code>optional int32 taskId = 6;</code>
+   */
+  int getTaskId();
 }

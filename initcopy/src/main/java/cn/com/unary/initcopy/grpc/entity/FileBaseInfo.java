@@ -19,6 +19,8 @@ public  final class FileBaseInfo extends
     modifyTime_ = 0L;
     fileSize_ = 0L;
     fullName_ = "";
+    fileId_ = "";
+    taskId_ = 0;
   }
 
   @java.lang.Override
@@ -66,6 +68,17 @@ public  final class FileBaseInfo extends
             java.lang.String s = input.readStringRequireUtf8();
 
             fullName_ = s;
+            break;
+          }
+          case 42: {
+            java.lang.String s = input.readStringRequireUtf8();
+
+            fileId_ = s;
+            break;
+          }
+          case 48: {
+
+            taskId_ = input.readInt32();
             break;
           }
         }
@@ -201,6 +214,49 @@ public  final class FileBaseInfo extends
     }
   }
 
+  public static final int FILEID_FIELD_NUMBER = 5;
+  private volatile java.lang.Object fileId_;
+  /**
+   * <code>optional string fileId = 5;</code>
+   */
+  public java.lang.String getFileId() {
+    java.lang.Object ref = fileId_;
+    if (ref instanceof java.lang.String) {
+      return (java.lang.String) ref;
+    } else {
+      com.google.protobuf.ByteString bs = 
+          (com.google.protobuf.ByteString) ref;
+      java.lang.String s = bs.toStringUtf8();
+      fileId_ = s;
+      return s;
+    }
+  }
+  /**
+   * <code>optional string fileId = 5;</code>
+   */
+  public com.google.protobuf.ByteString
+      getFileIdBytes() {
+    java.lang.Object ref = fileId_;
+    if (ref instanceof java.lang.String) {
+      com.google.protobuf.ByteString b = 
+          com.google.protobuf.ByteString.copyFromUtf8(
+              (java.lang.String) ref);
+      fileId_ = b;
+      return b;
+    } else {
+      return (com.google.protobuf.ByteString) ref;
+    }
+  }
+
+  public static final int TASKID_FIELD_NUMBER = 6;
+  private int taskId_;
+  /**
+   * <code>optional int32 taskId = 6;</code>
+   */
+  public int getTaskId() {
+    return taskId_;
+  }
+
   private byte memoizedIsInitialized = -1;
   public final boolean isInitialized() {
     byte isInitialized = memoizedIsInitialized;
@@ -225,6 +281,12 @@ public  final class FileBaseInfo extends
     if (!getFullNameBytes().isEmpty()) {
       com.google.protobuf.GeneratedMessageV3.writeString(output, 4, fullName_);
     }
+    if (!getFileIdBytes().isEmpty()) {
+      com.google.protobuf.GeneratedMessageV3.writeString(output, 5, fileId_);
+    }
+    if (taskId_ != 0) {
+      output.writeInt32(6, taskId_);
+    }
   }
 
   public int getSerializedSize() {
@@ -245,6 +307,13 @@ public  final class FileBaseInfo extends
     }
     if (!getFullNameBytes().isEmpty()) {
       size += com.google.protobuf.GeneratedMessageV3.computeStringSize(4, fullName_);
+    }
+    if (!getFileIdBytes().isEmpty()) {
+      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(5, fileId_);
+    }
+    if (taskId_ != 0) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeInt32Size(6, taskId_);
     }
     memoizedSize = size;
     return size;
@@ -270,6 +339,10 @@ public  final class FileBaseInfo extends
         == other.getFileSize());
     result = result && getFullName()
         .equals(other.getFullName());
+    result = result && getFileId()
+        .equals(other.getFileId());
+    result = result && (getTaskId()
+        == other.getTaskId());
     return result;
   }
 
@@ -290,6 +363,10 @@ public  final class FileBaseInfo extends
         getFileSize());
     hash = (37 * hash) + FULLNAME_FIELD_NUMBER;
     hash = (53 * hash) + getFullName().hashCode();
+    hash = (37 * hash) + FILEID_FIELD_NUMBER;
+    hash = (53 * hash) + getFileId().hashCode();
+    hash = (37 * hash) + TASKID_FIELD_NUMBER;
+    hash = (53 * hash) + getTaskId();
     hash = (29 * hash) + unknownFields.hashCode();
     memoizedHashCode = hash;
     return hash;
@@ -416,6 +493,10 @@ public  final class FileBaseInfo extends
 
       fullName_ = "";
 
+      fileId_ = "";
+
+      taskId_ = 0;
+
       return this;
     }
 
@@ -442,6 +523,8 @@ public  final class FileBaseInfo extends
       result.modifyTime_ = modifyTime_;
       result.fileSize_ = fileSize_;
       result.fullName_ = fullName_;
+      result.fileId_ = fileId_;
+      result.taskId_ = taskId_;
       onBuilt();
       return result;
     }
@@ -496,6 +579,13 @@ public  final class FileBaseInfo extends
       if (!other.getFullName().isEmpty()) {
         fullName_ = other.fullName_;
         onChanged();
+      }
+      if (!other.getFileId().isEmpty()) {
+        fileId_ = other.fileId_;
+        onChanged();
+      }
+      if (other.getTaskId() != 0) {
+        setTaskId(other.getTaskId());
       }
       onChanged();
       return this;
@@ -773,6 +863,101 @@ public  final class FileBaseInfo extends
   checkByteStringIsUtf8(value);
       
       fullName_ = value;
+      onChanged();
+      return this;
+    }
+
+    private java.lang.Object fileId_ = "";
+    /**
+     * <code>optional string fileId = 5;</code>
+     */
+    public java.lang.String getFileId() {
+      java.lang.Object ref = fileId_;
+      if (!(ref instanceof java.lang.String)) {
+        com.google.protobuf.ByteString bs =
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        fileId_ = s;
+        return s;
+      } else {
+        return (java.lang.String) ref;
+      }
+    }
+    /**
+     * <code>optional string fileId = 5;</code>
+     */
+    public com.google.protobuf.ByteString
+        getFileIdBytes() {
+      java.lang.Object ref = fileId_;
+      if (ref instanceof String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        fileId_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+    /**
+     * <code>optional string fileId = 5;</code>
+     */
+    public Builder setFileId(
+        java.lang.String value) {
+      if (value == null) {
+    throw new NullPointerException();
+  }
+  
+      fileId_ = value;
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>optional string fileId = 5;</code>
+     */
+    public Builder clearFileId() {
+      
+      fileId_ = getDefaultInstance().getFileId();
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>optional string fileId = 5;</code>
+     */
+    public Builder setFileIdBytes(
+        com.google.protobuf.ByteString value) {
+      if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+      
+      fileId_ = value;
+      onChanged();
+      return this;
+    }
+
+    private int taskId_ ;
+    /**
+     * <code>optional int32 taskId = 6;</code>
+     */
+    public int getTaskId() {
+      return taskId_;
+    }
+    /**
+     * <code>optional int32 taskId = 6;</code>
+     */
+    public Builder setTaskId(int value) {
+      
+      taskId_ = value;
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>optional int32 taskId = 6;</code>
+     */
+    public Builder clearTaskId() {
+      
+      taskId_ = 0;
       onChanged();
       return this;
     }

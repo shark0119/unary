@@ -116,24 +116,25 @@ public final class IC_Entity {
       "(\005\022C\n\nmodifyType\030\002 \001(\0162/.cn.com.unary.in" +
       "itcopy.grpc.constant.ModifyType\022\022\n\nspeed" +
       "Limit\030\003 \001(\005\"0\n\nDeleteTask\022\016\n\006taskId\030\001 \001(" +
-      "\005\022\022\n\ndeleteFile\030\002 \001(\010\"X\n\014FileBaseInfo\022\020\n" +
+      "\005\022\022\n\ndeleteFile\030\002 \001(\010\"x\n\014FileBaseInfo\022\020\n" +
       "\010checkSum\030\001 \001(\t\022\022\n\nmodifyTime\030\002 \001(\022\022\020\n\010f",
-      "ileSize\030\003 \001(\022\022\020\n\010fullName\030\004 \001(\t\"\316\001\n\rClie" +
-      "ntInitReq\022\016\n\006taskId\030\001 \001(\005\022\021\n\ttotalSize\030\002" +
-      " \001(\005\022\021\n\ttargetDir\030\003 \001(\t\022?\n\010syncType\030\004 \001(" +
-      "\0162-.cn.com.unary.initcopy.grpc.constant." +
-      "SyncType\022F\n\rfileBaseInfos\030\005 \003(\0132/.cn.com" +
-      ".unary.initcopy.grpc.entity.FileBaseInfo" +
-      "\"Q\n\rDiffFileChunk\022\027\n\017strongCheckCode\030\001 \001" +
-      "(\t\022\025\n\rweakCheckCode\030\002 \001(\t\022\020\n\010chunkSeq\030\003 " +
-      "\001(\t\"g\n\014DiffFileInfo\022\016\n\006fileId\030\001 \001(\t\022G\n\rd" +
-      "iffFileChunk\030\002 \003(\01320.cn.com.unary.initco",
-      "py.grpc.entity.DiffFileChunk\"\203\001\n\016ServerI" +
-      "nitResp\022\016\n\006taskId\030\001 \001(\005\022\r\n\005ready\030\002 \001(\010\022\013" +
-      "\n\003msg\030\003 \001(\t\022E\n\014diffFileInfo\030\004 \003(\0132/.cn.c" +
-      "om.unary.initcopy.grpc.entity.DiffFileIn" +
-      "foB0\n!cn.com.unary.initcopy.grpc.entityB" +
-      "\tIC_EntityP\001b\006proto3"
+      "ileSize\030\003 \001(\022\022\020\n\010fullName\030\004 \001(\t\022\016\n\006fileI" +
+      "d\030\005 \001(\t\022\016\n\006taskId\030\006 \001(\005\"\316\001\n\rClientInitRe" +
+      "q\022\016\n\006taskId\030\001 \001(\005\022\021\n\ttotalSize\030\002 \001(\022\022\021\n\t" +
+      "targetDir\030\003 \001(\t\022?\n\010syncType\030\004 \001(\0162-.cn.c" +
+      "om.unary.initcopy.grpc.constant.SyncType" +
+      "\022F\n\rfileBaseInfos\030\005 \003(\0132/.cn.com.unary.i" +
+      "nitcopy.grpc.entity.FileBaseInfo\"Q\n\rDiff" +
+      "FileChunk\022\027\n\017strongCheckCode\030\001 \001(\t\022\025\n\rwe" +
+      "akCheckCode\030\002 \001(\t\022\020\n\010chunkSeq\030\003 \001(\t\"g\n\014D" +
+      "iffFileInfo\022\016\n\006fileId\030\001 \001(\t\022G\n\rdiffFileC",
+      "hunk\030\002 \003(\01320.cn.com.unary.initcopy.grpc." +
+      "entity.DiffFileChunk\"\203\001\n\016ServerInitResp\022" +
+      "\016\n\006taskId\030\001 \001(\005\022\r\n\005ready\030\002 \001(\010\022\013\n\003msg\030\003 " +
+      "\001(\t\022E\n\014diffFileInfo\030\004 \003(\0132/.cn.com.unary" +
+      ".initcopy.grpc.entity.DiffFileInfoB0\n!cn" +
+      ".com.unary.initcopy.grpc.entityB\tIC_Enti" +
+      "tyP\001b\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -201,7 +202,7 @@ public final class IC_Entity {
     internal_static_cn_com_unary_initcopy_grpc_entity_FileBaseInfo_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_cn_com_unary_initcopy_grpc_entity_FileBaseInfo_descriptor,
-        new java.lang.String[] { "CheckSum", "ModifyTime", "FileSize", "FullName", });
+        new java.lang.String[] { "CheckSum", "ModifyTime", "FileSize", "FullName", "FileId", "TaskId", });
     internal_static_cn_com_unary_initcopy_grpc_entity_ClientInitReq_descriptor =
       getDescriptor().getMessageTypes().get(9);
     internal_static_cn_com_unary_initcopy_grpc_entity_ClientInitReq_fieldAccessorTable = new

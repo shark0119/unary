@@ -1,21 +1,29 @@
 package cn.com.unary.initcopy.grpc.linker;
 
+import cn.com.unary.initcopy.filecopy.ServerFileCopy;
 import cn.com.unary.initcopy.grpc.entity.ClientInitReq;
 import cn.com.unary.initcopy.grpc.entity.DeleteTask;
 import cn.com.unary.initcopy.grpc.entity.ExecResult;
 import cn.com.unary.initcopy.grpc.entity.ModifyTask;
 import cn.com.unary.initcopy.grpc.entity.ServerInitResp;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 /**
  * 作为 GRPC 服务与业务代码通讯的中转站
  * 控制任务 GRPC 服务的任务管理中心，控制任务 GRPC 服务的具体业务逻辑处理
+ * 线程安全
  *
  * @author Shark.Yin
  * @since 1.0
  */
 @Component("ControlTaskGrpcLinker")
+@Scope("singleton")
 public class ControlTaskGrpcLinker {
+
+    @Autowired
+    private ServerFileCopy fileCopy;
 
     /**
      * 调用 {@link cn.com.unary.initcopy.grpc.ControlTaskGrpc#METHODID_INIT}
@@ -24,7 +32,7 @@ public class ControlTaskGrpcLinker {
      * @return 初始化响应
      */
     public ServerInitResp init(ClientInitReq clientInitReq) {
-        return null;
+        return fileCopy.startInit(clientInitReq);
     }
 
     /**
