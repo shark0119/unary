@@ -36,5 +36,10 @@ public interface FileManager {
 
 	List<FileInfo> queryByTaskId(int taskId);
 
+	/**
+	 * 如果完成返回 true
+	 * @param taskId 任务Id
+	 * @return 完成返回 true，未完成返回 false
+	 */
 	boolean taskFinished(int taskId);
 }

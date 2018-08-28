@@ -1,10 +1,13 @@
 package cn.com.unary.initcopy.filecopy.io;
 
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 
@@ -16,6 +19,7 @@ import java.nio.file.StandardOpenOption;
  * @since 1.0
  */
 @Component("JavaNioFileOutput")
+@Scope("prototype")
 public class JavaNioFileOutput extends AbstractFileOutput {
 
     protected String currentFileName;
@@ -31,8 +35,7 @@ public class JavaNioFileOutput extends AbstractFileOutput {
         ByteBuffer buffer = ByteBuffer.wrap(data, offset, length);
         int size = currentFileChannel.write(buffer);
         currentFileChannel.force(true);
-        logger.debug("CurrentTask "+Thread.currentThread().getName()+
-                    ". Write "+size+" bytes to "+currentFileName);
+        logger.debug("Write "+size+" bytes to "+currentFileName);
         return size;
     }
 
@@ -59,14 +62,28 @@ public class JavaNioFileOutput extends AbstractFileOutput {
         }
     }
 
+    /**
+     * 打开某文件，如不存在，则先创建，只接受文本和二进制文件
+     * @param fileName 文件名
+     * @return 当前对象
+     * @throws IOException 发生IO异常
+     */
     @Override
     public AbstractFileOutput openFile(String fileName) throws IOException {
         close();
-        logger.debug("CurrentTask "+Thread.currentThread().getName()
-                        +". Change File to " + fileName);
+        logger.debug("Change File to " + fileName);
         this.currentFileName = fileName;
+        File file = new File(fileName.substring(0, fileName.lastIndexOf("/")));
+        if (!file.exists()) {
+            file.mkdirs();
+        }
+        file = new File(fileName);
+        if (!file.exists()) {
+            file.createNewFile();
+        }
+        Path path = Paths.get(fileName);
         currentFileChannel = FileChannel.open(
-                Paths.get(fileName),
+                path,
                 StandardOpenOption.WRITE);
         return this;
     }

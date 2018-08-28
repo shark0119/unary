@@ -10,6 +10,7 @@ import cn.com.unary.initcopy.grpc.entity.DiffFileInfo;
 import cn.com.unary.initcopy.grpc.entity.SyncTask;
 import cn.com.unary.initcopy.utils.AbstractLogable;
 import cn.com.unary.initcopy.utils.BeanConvertUtil;
+import cn.com.unary.initcopy.utils.Task;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -103,21 +104,8 @@ public class ClientFileCopy extends AbstractLogable implements ApplicationContex
                                final List<DiffFileInfo> diffFileInfos) {
         final SyncDiffPacker syncDiffPacker =
                 applicationContext.getBean("RsyncPacker", SyncDiffPacker.class).setTaskId(taskId);
-        syncDiffPacker.setTransfer(unaryTClient);
-        Thread thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    syncDiffPacker.setFileDiffInfos(diffFileInfos)
-                            .start(syncFileIds);
-                } catch (IOException e) {
-                    ClientFileCopy.this.recordPackerError(e);
-                } catch (IllegalStateException ise) {
-                    ClientFileCopy.this.recordPackerError(ise);
-                }
-            }
-        }, taskId + "");
-        exec.execute(thread);
+        syncDiffPacker.setFileDiffInfos(diffFileInfos).setTransfer(unaryTClient);
+        exec.execute(new PackTask(taskId, syncDiffPacker, syncFileIds));
     }
 
     /**
@@ -131,19 +119,7 @@ public class ClientFileCopy extends AbstractLogable implements ApplicationContex
         final Packer syncAllPacker =
                 applicationContext.getBean("SyncAllPacker", Packer.class).setTaskId(taskId);
         syncAllPacker.setTransfer(unaryTClient);
-        Thread thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    syncAllPacker.start(syncFileIds);
-                } catch (IOException e) {
-                    ClientFileCopy.this.recordPackerError(e);
-                } catch (IllegalStateException ise) {
-                    ClientFileCopy.this.recordPackerError(ise);
-                }
-            }
-        }, "fileCopy:" + taskId);
-        exec.execute(thread);
+        exec.execute(new PackTask(taskId, syncAllPacker, syncFileIds));
     }
 
     private void recordPackerError(Exception e) {
@@ -156,4 +132,31 @@ public class ClientFileCopy extends AbstractLogable implements ApplicationContex
         this.applicationContext = applicationContext;
     }
 
+    protected class PackTask implements Task {
+
+        private final List<String> syncFileIds;
+        private int taskId;
+        private Packer packer;
+
+        public PackTask(int taskId, Packer packer, List<String> syncFileIds){
+            this.taskId = taskId;
+            this.packer = packer;
+            this.syncFileIds = syncFileIds;
+        }
+        @Override
+        public int getId() {
+            return this.taskId;
+        }
+
+        @Override
+        public void run() {
+            try {
+                packer.start(syncFileIds);
+            } catch (IOException e) {
+                ClientFileCopy.this.recordPackerError(e);
+            } catch (IllegalStateException ise) {
+                ClientFileCopy.this.recordPackerError(ise);
+            }
+        }
+    }
 }

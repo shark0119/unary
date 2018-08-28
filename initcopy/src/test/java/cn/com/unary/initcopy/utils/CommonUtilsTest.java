@@ -16,7 +16,7 @@ public class CommonUtilsTest {
         data[2] = (byte) ((byte) (i >> 8) & 0xFF);
         data[1] = (byte) ((byte) (i >> 16) & 0xFF);
         data[0] = (byte) ((byte) (i >> 24) & 0xFF);
-        i = CommonUtils.byteArrayToInt(data);
+        i = CommonUtils.byteArrayToInt(data, 0);
         System.out.println(i);
     }
 

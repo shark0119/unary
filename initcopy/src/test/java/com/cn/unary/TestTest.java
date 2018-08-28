@@ -10,6 +10,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.UUID;
 
+import cn.com.unary.initcopy.filecopy.filepacker.SyncAllPacker;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -113,6 +114,16 @@ public class TestTest {
 	public void test7() {
 		int length = UUID.randomUUID().toString().length();
 		System.out.println(length);
+	}
+	@Test
+	public void test8 () {
+		long size = 2075974L;
+		long packSize = size /(991);
+        System.out.println(packSize);
+
+        int i = SyncAllPacker.BUFFER_DIRECT_LIMIT;
+        System.out.println("buffer:" + i);
+        System.out.println(10/100);
 	}
 
 }

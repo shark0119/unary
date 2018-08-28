@@ -8,8 +8,7 @@ import cn.com.unary.initcopy.entity.FileInfo;
 import cn.com.unary.initcopy.filecopy.io.AbstractFileInput;
 import cn.com.unary.initcopy.utils.AbstractLogable;
 import cn.com.unary.initcopy.utils.CommonUtils;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.alibaba.fastjson.JSON;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
@@ -74,6 +73,7 @@ public class SyncAllPacker extends AbstractLogable implements Packer {
     public final static int FILE_INFO_LENGTH = 4;
     // 每个包的大小
     public final static int PACK_SIZE = UnaryTClient.MAX_PACK_SIZE;
+    public final static int BUFFER_DIRECT_LIMIT = 1025 * 1024;
 
     // ----我来组成分割线，以下是 Spring 容器来管理的实体----
     @Autowired
@@ -92,8 +92,8 @@ public class SyncAllPacker extends AbstractLogable implements Packer {
     private Iterator<FileInfo> fiIterator;    // 待读取的文件列表
     private List<String> readFileIds = new ArrayList<>();    // 已读取的文件 ID 列表
     private FileInfo currentFileInfo;   // 当前正在读取的文件
-    private ByteBuffer fileInfoBuffer = ByteBuffer.allocate(0); // 文件信息数据
-    private ObjectMapper mapper = new ObjectMapper();
+    private ByteBuffer fileInfoBuffer ; // 文件信息数据
+    // private ObjectMapper mapper = new ObjectMapper();
     private int packIndex = 0;    // 当前的包序号
     private int taskId = -1; // 任务ID。
     private boolean pause = false;  // 当前打包进程是否暂停
@@ -129,7 +129,7 @@ public class SyncAllPacker extends AbstractLogable implements Packer {
             fiIterator = list.iterator();
             logger.debug("Got " + list.size() + " FileInfo with " + fileIds.size() + " FileId");
             byte[] packData = CommonUtils.extractBytes(pack());
-            while (packData.length <= HEAD_LENGTH) {
+            while (packData.length != HEAD_LENGTH) {
                 logger.debug("Pass " + packData.length + " bytes to Transfer.");
                 utc.sendData(packData);
                 packData = CommonUtils.extractBytes(pack());
@@ -155,13 +155,11 @@ public class SyncAllPacker extends AbstractLogable implements Packer {
             }
             fiIterator = unSyncFileList.iterator();
             pause = false;
-            logger.debug("CurrentTask " + Thread.currentThread().getName()
-                    + ". Got " + list.size() + " FileInfo and "
+            logger.debug("Got " + list.size() + " FileInfo and "
                     + unSyncFileList.size() + " unsync Files");
             byte[] packData = CommonUtils.extractBytes(pack());
-            while (packData.length != 0) {
-                logger.debug("CurrentTask " + Thread.currentThread().getName()
-                        + ". Pass " + packData.length + " bytes to Transfer.");
+            while (packData.length != HEAD_LENGTH) {
+                logger.debug("Pass " + packData.length + " bytes to Transfer.");
                 utc.sendData(packData);
                 packData = CommonUtils.extractBytes(pack());
             }
@@ -169,7 +167,7 @@ public class SyncAllPacker extends AbstractLogable implements Packer {
             throw new IllegalStateException("ERROR CODE 0X03:Object is not ready.");
         }
     }
-
+        
     /**
      * 将文件数据打包
      *
@@ -185,7 +183,7 @@ public class SyncAllPacker extends AbstractLogable implements Packer {
             return ByteBuffer.allocate(0);
         }
         ByteBuffer buffer;
-        if (PACK_SIZE < 256 * 1024) {
+        if (PACK_SIZE < BUFFER_DIRECT_LIMIT) {
             buffer = ByteBuffer.allocate(PACK_SIZE);
         } else {
             buffer = ByteBuffer.allocateDirect(PACK_SIZE);
@@ -196,24 +194,51 @@ public class SyncAllPacker extends AbstractLogable implements Packer {
         buffer.putInt(++packIndex);
         // set pack type
         buffer.put(this.getPackType().getValue());
-        packFileInfo(buffer);
+
         FileInfo fi;
-        fi = nextFile();
-        while (buffer.hasRemaining() && fi != null) {
-            if (fileInfoBuffer.hasRemaining()) {
-                // 尝试丢弃未传输的文件信息
-                throw new IllegalStateException("Program Error. Attempt to abandon valid file info.");
-            }
-            // pack file data, 未读到文件尾
-            if (input.read(buffer)) {
-                continue;
-            } else {
-                // pack file info
-                fi = nextFile();
+        // 第一次打包，需要先打开一个文件
+        if (fileInfoBuffer == null) {
+            fi = nextFile();
+            if (null != fi) {
                 fileInfoBuffer = serializeFileInfo(fi);
                 packFileInfo(buffer);
+            } else {
+                // 若无未读文件，直接返回
+                logger.debug("Pack Done. PackIndex: " + packIndex + ", PackSize: " + buffer.position());
+                return buffer;
             }
         }
+        // 上次打包还有残留
+        if (fileInfoBuffer.hasRemaining()) {
+            packFileInfo(buffer);
+        }
+        boolean fileNotDone;
+        // 一直读取直到包满
+        while (buffer.hasRemaining()) {
+            // 包未满时，文件头信息应该已被读完
+            if (fileInfoBuffer.hasRemaining()) {
+                throw new IllegalStateException("Program error");
+            } else {
+                fileNotDone = input.read(buffer);
+                if (!fileNotDone) {
+                    // 如果读到文件尾，则打开一个新文件
+                    fi = nextFile();
+                    if (null != fi) {
+                        fileInfoBuffer = serializeFileInfo(fi);
+                        packFileInfo(buffer);
+                    } else {
+                        // 若无未读文件，直接返回
+                        break;
+                    }
+                } else {
+                    // 当文件未读到文件尾部时，包应该是满的
+                    if (buffer.hasRemaining()) {
+                        throw new IllegalStateException("Program error");
+                    }
+                }
+            }
+        }
+
         logger.debug("Pack Done. PackIndex: " + packIndex + ", PackSize: " + buffer.position());
         return buffer;
     }
@@ -232,10 +257,11 @@ public class SyncAllPacker extends AbstractLogable implements Packer {
             // 需要截断
             readSize = buffer.remaining();
         }
-        if (readSize == 0){
+        if (readSize == 0) {
             return;
         }
         buffer.put(fileInfoBuffer.array(), fileInfoBuffer.position(), readSize);
+        fileInfoBuffer.position(fileInfoBuffer.position() + readSize);
         logger.debug("Pack " + readSize + " bytes FileInfo, current position "
                 + fileInfoBuffer.position());
     }
@@ -247,16 +273,19 @@ public class SyncAllPacker extends AbstractLogable implements Packer {
      * @return 包装了文件信息的实体
      */
     private ByteBuffer serializeFileInfo(FileInfo fi) {
+        logger.debug("Ser to json.File id:" + fi.getId());
         try {
-            byte[] fileInfoJsonBytes = mapper.writeValueAsBytes(fi);
+            // byte[] fileInfoJsonBytes = mapper.writeValueAsBytes(fi);
+            byte[] fileInfoJsonBytes = JSON.toJSONBytes(fi);
             ByteBuffer buffer = ByteBuffer.allocate(fileInfoJsonBytes.length + FILE_INFO_LENGTH);
             // set file info size
             buffer.putInt(fileInfoJsonBytes.length);
             // set file info
             buffer.put(fileInfoJsonBytes);
             logger.debug("FileID: " + fi.getId() + ", file info json bytes length: " + buffer.capacity() + ".");
+            buffer.flip();
             return buffer;
-        } catch (JsonProcessingException e) {
+        } catch (Exception e) {
             throw new IllegalStateException("ERROR 0x04 : Failed transfer FileInfo to Json", e);
         }
     }

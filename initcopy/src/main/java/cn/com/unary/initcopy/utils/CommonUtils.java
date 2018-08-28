@@ -11,11 +11,11 @@ public class CommonUtils {
      * @param b 字节数组
      * @return 整型
      */
-    public static int byteArrayToInt(byte[] b) {
-        return   b[3] & 0xFF |
-                (b[2] & 0xFF) << 8 |
-                (b[1] & 0xFF) << 16 |
-                (b[0] & 0xFF) << 24;
+    public static int byteArrayToInt(byte[] b, int offset) {
+        return   b[offset + 3] & 0xFF |
+                (b[offset + 2] & 0xFF) << 8 |
+                (b[offset + 1] & 0xFF) << 16 |
+                (b[offset + 0] & 0xFF) << 24;
     }
 
     /**

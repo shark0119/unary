@@ -86,7 +86,7 @@ public class RsyncPacker implements SyncDiffPacker {
     }
 
     @Override
-    public Packer setTransfer(UnaryTClient unaryTClient) {
+    public SyncDiffPacker setTransfer(UnaryTClient unaryTClient) {
         this.unaryTClient = unaryTClient;
         return this;
     }

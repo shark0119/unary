@@ -1,5 +1,6 @@
 package cn.com.unary.initcopy.config;
 
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 /**
@@ -8,6 +9,7 @@ import org.springframework.stereotype.Component;
  * @author shark
  */
 @Component("AttrConfig")
+@Scope("prototype")
 public class AttrConfig {
 
     public String getDbUrl() {

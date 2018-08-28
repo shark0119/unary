@@ -6,9 +6,6 @@ import java.util.List;
 
 import org.junit.Test;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 public class ByteBufferTest {
 	private static byte[] fileInfoBytes;
 	private static int position;
@@ -48,7 +45,7 @@ public class ByteBufferTest {
 	}
 	
 	
-	@Test
+	/*@Test
 	public void test2 () throws JsonProcessingException {
 		List<Integer> is = new ArrayList<>();
 		ObjectMapper mapper = new ObjectMapper();
@@ -63,5 +60,5 @@ public class ByteBufferTest {
 		System.out.println(mapper.writeValueAsBytes(is).length);
 		is.add(2147483647);
 		System.out.println(mapper.writeValueAsBytes(is).length);
-	}
+	}*/
 }

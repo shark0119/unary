@@ -1,15 +1,13 @@
 package cn.com.unary.initcopy.config;
 
-import api.UnaryTServer;
-import cn.com.unary.initcopy.InitCopyContext;
 import cn.com.unary.initcopy.dao.RamFileManager;
+import cn.com.unary.initcopy.utils.NameThreadFactory;
 import com.alibaba.druid.pool.DruidDataSource;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Repository;
 
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
@@ -33,6 +31,7 @@ public class BeanConfig {
      * @throws SQLException 数据源创建失败
      */
     @Bean
+    @Scope("singleton")
     public DruidDataSource dataSource(
             @Value("#{AttrConfig.getDbUrl()}") String url,
             @Value("#{AttrConfig.getDbDriver()}") String driver) throws SQLException {
@@ -63,17 +62,17 @@ public class BeanConfig {
     @Bean
     @Scope("singleton")
     public ExecutorService serverExecutor () {
-        return Executors.newCachedThreadPool();
+        return Executors.newCachedThreadPool(new NameThreadFactory());
     }
     @Bean
     @Scope("singleton")
     public ExecutorService clientExecutor () {
-        return Executors.newCachedThreadPool();
+        return Executors.newCachedThreadPool(new NameThreadFactory());
     }
     @Bean
     @Scope("singleton")
     public ExecutorService contextExecutor () {
-        return Executors.newCachedThreadPool();
+        return Executors.newCachedThreadPool(new NameThreadFactory());
     }
     @Bean
     @Scope("singleton")

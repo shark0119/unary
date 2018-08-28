@@ -1,6 +1,5 @@
 package cn.com.unary.initcopy.filecopy;
 
-import cn.com.unary.initcopy.dao.FileManager;
 import cn.com.unary.initcopy.entity.Constants;
 import cn.com.unary.initcopy.filecopy.fileresolver.Resolver;
 import cn.com.unary.initcopy.filecopy.fileresolver.RsyncResolver;
@@ -10,6 +9,7 @@ import cn.com.unary.initcopy.grpc.entity.ClientInitReq;
 import cn.com.unary.initcopy.grpc.entity.ServerInitResp;
 import cn.com.unary.initcopy.utils.AbstractLogable;
 import cn.com.unary.initcopy.utils.CommonUtils;
+import cn.com.unary.initcopy.utils.Task;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -44,7 +44,9 @@ public class ServerFileCopy extends AbstractLogable implements ApplicationContex
     @Autowired
     private ServerFileCopyInit init;
 
+    // 已放入线程池中执行的任务
     private Map<Integer, CopyTask> execTaskMap = new HashMap<>();
+    // 任务列表
     private Map<Integer, CopyTask> taskMap = new HashMap<>();
     private ReentrantLock lock = new ReentrantLock();
 
@@ -54,14 +56,18 @@ public class ServerFileCopy extends AbstractLogable implements ApplicationContex
      * @param data 数据包
      */
     public void resolverPack(byte[] data) {
-        int taskId = CommonUtils.byteArrayToInt(data);
+        int taskId = CommonUtils.byteArrayToInt(data, 0);
         lock.lock();
         if (execTaskMap.containsKey(taskId)) {
-            taskMap.get(taskId).addPack(data);
+            execTaskMap.get(taskId).addPack(data);
+            data = null;
         } else {
             if (taskMap.containsKey(taskId)) {
-                fileCopyExec.execute(new Thread(taskMap.get(taskId), ""+taskId));
-                execTaskMap.put(taskId, taskMap.get(taskId));
+                final CopyTask copyTask = taskMap.get(taskId);
+                copyTask.addPack(data);
+                data = null;
+                fileCopyExec.execute(copyTask);
+                execTaskMap.put(taskId, copyTask);
             } else {
                 logger.error("Task " + taskId + " not found;");
             }
@@ -69,6 +75,12 @@ public class ServerFileCopy extends AbstractLogable implements ApplicationContex
         lock.unlock();
     }
 
+    /**
+     * 收到初始化请求后，新建任务并放入任务列表中。
+     *
+     * @param req 初始化请求
+     * @return 初始化响应
+     */
     public ServerInitResp startInit(ClientInitReq req) {
         try {
             CopyTask task = new CopyTask(req.getTaskId(), req.getTargetDir());
@@ -77,6 +89,10 @@ public class ServerFileCopy extends AbstractLogable implements ApplicationContex
             lock.unlock();
             return init.startInit(req);
         } catch (Exception e) {
+            // 初始化失败后，移除当前任务
+            lock.lock();
+            taskMap.remove(req.getTaskId());
+            lock.unlock();
             ServerInitResp.Builder builder = ServerInitResp.newBuilder();
             builder.setMsg(e.getMessage());
             builder.setReady(false);
@@ -90,13 +106,11 @@ public class ServerFileCopy extends AbstractLogable implements ApplicationContex
         this.context = applicationContext;
     }
 
-
-    protected class CopyTask implements Runnable {
+    protected class CopyTask implements Task {
         private Resolver syncAllResolver;
         private Resolver syncDiffResolver;
         private List<byte[]> packs;
         private int taskId;
-        private Integer index = 0;
         private Boolean pause = false;
 
         public CopyTask(int taskId, String targetDir) {
@@ -119,19 +133,17 @@ public class ServerFileCopy extends AbstractLogable implements ApplicationContex
         public void run() {
             byte[] pack = null;
             while (true) {
-                synchronized (index) {
-                    if (index < packs.size()) {
-                        pack = packs.get(index);
-                        index++;
+                synchronized (packs) {
+                    if (!packs.isEmpty()) {
+                        pack = packs.get(0);
+                        packs.remove(0);
                     }
                 }
                 if (pack == null) {
                     try {
-                        if (index >= packs.size()) {
-                            logger.debug("Index: " + index + ", pack size: " + packs.size());
-                        } else {
-                            logger.error("Index: " + index + ", pack size: " + packs.size());
-                            throw new IllegalStateException("Program error.");
+                        if (!packs.isEmpty()) {
+                            throw new IllegalStateException("Program error."
+                                    +"Pack size: " + packs.size());
                         }
                         synchronized (pause) {
                             pause.wait();
@@ -140,18 +152,17 @@ public class ServerFileCopy extends AbstractLogable implements ApplicationContex
                         throw new IllegalStateException(e);
                     }
                 }
+                // 当前任务已完成解析
                 if (resolve(pack)) {
-                    if (index >= packs.size()) {
-                        logger.debug("Index: " + index + ", pack size: " + packs.size());
-                    } else {
-                        logger.error("Index: " + index + ", pack size: " + packs.size());
-                        throw new IllegalStateException("Program error.");
+                    if (!packs.isEmpty()) {
+                        throw new IllegalStateException("Program error."
+                                +"Pack size: " + packs.size());
                     }
                     break;
                 } else {
-                    if (index >= packs.size()) {
+                    // 等待后续的包接收
+                    if (packs.isEmpty()) {
                         try {
-                            logger.debug("Index: " + index + ", pack size: " + packs.size());
                             synchronized (pause) {
                                 pause.wait();
                             }
@@ -164,7 +175,7 @@ public class ServerFileCopy extends AbstractLogable implements ApplicationContex
         }
 
         private boolean resolve(byte[] pack) {
-            if (Constants.PackType.SYNC_ALL_JAVA.equals(pack[8])) {
+            if (Constants.PackType.SYNC_ALL_JAVA.getValue() == pack[8]) {
                 return syncAllResolver.process(pack);
             } else {
                 return syncDiffResolver.process(pack);
@@ -172,13 +183,18 @@ public class ServerFileCopy extends AbstractLogable implements ApplicationContex
         }
 
         public void addPack(byte[] pack) {
-            synchronized (index) {
+            Objects.requireNonNull(pack);
+            synchronized (packs) {
                 this.packs.add(pack);
-
                 synchronized (pause) {
                     pause.notify();
                 }
             }
+        }
+
+        @Override
+        public int getId() {
+            return taskId;
         }
     }
 }

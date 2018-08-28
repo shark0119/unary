@@ -89,7 +89,7 @@ public class InitCopyContext extends AbstractLogable {
 
     private InitCopyContext clientInit() throws IOException, InterruptedException {
         // 启动向外部提供任务管理的 GRPC 服务（源端）
-        Thread thread = new Thread(new Runnable() {
+        exec.execute(new Runnable() {
             @Override
             public void run() {
                 try {
@@ -99,8 +99,7 @@ public class InitCopyContext extends AbstractLogable {
                     throw new IllegalStateException(e);
                 }
             }
-        }, "InitCopyGrpcService");
-        exec.execute(thread);
+        });
         return this;
     }
 
@@ -109,7 +108,7 @@ public class InitCopyContext extends AbstractLogable {
         uts.startServer();
         uts.setProcess(process);
         // 启动内部控制任务信息的 GRPC 服务（目标端）
-        Thread thread = new Thread(new Runnable() {
+        exec.execute(new Runnable() {
             @Override
             public void run() {
                 try {
@@ -119,8 +118,7 @@ public class InitCopyContext extends AbstractLogable {
                     throw new IllegalStateException(e);
                 }
             }
-        }, "ControlTaskGrpcService");
-        exec.execute(thread);
+        });
         return this;
     }
 }

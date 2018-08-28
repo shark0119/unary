@@ -12,7 +12,7 @@ public interface Resolver extends AutoCloseable {
      * 解析文件数据包，如果解析器无法对应，则会抛 IllegalStateException
      *
      * @param data 文件数据包
-     * @return 任务是否完成
+     * @return 任务是否完成，完成返回 true
      */
     boolean process(byte[] data);
 

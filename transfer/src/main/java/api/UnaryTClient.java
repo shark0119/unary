@@ -8,5 +8,5 @@ public abstract class UnaryTClient {
 	public abstract int sendData(byte[] data);
 	public abstract void startClient() throws IOException;
 	public abstract void stopClient() throws IOException;
-	public static int MAX_PACK_SIZE = 1000;
+	public static int MAX_PACK_SIZE = 63*1024;
 }

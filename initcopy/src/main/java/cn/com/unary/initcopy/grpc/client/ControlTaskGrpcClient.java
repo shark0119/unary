@@ -31,9 +31,9 @@ public class ControlTaskGrpcClient extends AbstractLogable {
      * @param port GRPC 服务监听的端口
      */
     public ControlTaskGrpcClient(String host, int port) {
-        ManagedChannel channel = ManagedChannelBuilder.forAddress(host, port).usePlaintext(true).build();
+        /*ManagedChannel channel = ManagedChannelBuilder.forAddress(host, port).usePlaintext(true).build();
         blockingStub = ControlTaskGrpc.newBlockingStub(channel);
-        futureStub = ControlTaskGrpc.newFutureStub(channel);
+        futureStub = ControlTaskGrpc.newFutureStub(channel);*/
     }
 
     /**

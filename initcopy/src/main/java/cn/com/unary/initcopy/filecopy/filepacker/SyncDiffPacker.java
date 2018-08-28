@@ -2,6 +2,7 @@ package cn.com.unary.initcopy.filecopy.filepacker;
 
 import java.util.List;
 
+import api.UnaryTClient;
 import cn.com.unary.initcopy.grpc.entity.DiffFileInfo;
 
 /**
@@ -18,4 +19,6 @@ public interface SyncDiffPacker extends Packer{
 	SyncDiffPacker setFileDiffInfos(List<DiffFileInfo> diffFileInfo);
 
 	SyncDiffPacker setTaskId (int taskId);
+
+	SyncDiffPacker setTransfer(UnaryTClient unaryTClient);
 }

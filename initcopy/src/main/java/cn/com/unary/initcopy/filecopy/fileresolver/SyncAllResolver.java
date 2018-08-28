@@ -9,7 +9,7 @@ import cn.com.unary.initcopy.filecopy.io.AbstractFileOutput;
 import cn.com.unary.initcopy.utils.AbstractLogable;
 import cn.com.unary.initcopy.utils.CommonUtils;
 import cn.com.unary.initcopy.utils.PathMapperUtil;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.alibaba.fastjson.JSON;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
@@ -18,9 +18,7 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * 全复制时使用的文件解析器，标识为
@@ -35,11 +33,13 @@ public class SyncAllResolver extends AbstractLogable implements Resolver {
     public static final int PACK_SIZE = SyncAllPacker.PACK_SIZE;
     public static final int HEAD_LENGTH = SyncAllPacker.HEAD_LENGTH;
     public static final int FILE_INFO_LENGTH = SyncAllPacker.FILE_INFO_LENGTH;
-    // key：包序号 value：包文件数据长度，表示了当前文件在传输中包分布的情况
-    private final Map<Integer, Integer> packValidDataSize = new HashMap<>();
+    // 标识了这个文件在传输中的包分布情况，以下分别标识了开始和结束包，以及在其中的长度。
+    // 默认文件是连续的形式，分布在中间的包，应该是填充满的。
+    private int beginPackIndex, endPackIndex, beginPackSize, endPackSize;
     // 已经读取的包序号
     private final List<Integer> readPackIndex = new ArrayList<>();
-    private final ObjectMapper mapper = new ObjectMapper();
+    // private final ObjectMapper mapper = new ObjectMapper();
+
     // 文件信息长度，当被截断时，暂存此处
     private final ByteBuffer fileInfoLenBuf = ByteBuffer.allocate(FILE_INFO_LENGTH);
     @Autowired
@@ -62,7 +62,7 @@ public class SyncAllResolver extends AbstractLogable implements Resolver {
 
     @Override
     public boolean process(byte[] data) {
-        packIndex = CommonUtils.byteArrayToInt(data);
+        packIndex = CommonUtils.byteArrayToInt(data, 4);
         readPackIndex.add(packIndex);
         // get pack info
         if (!PackType.valueOf(data[HEAD_LENGTH-1]).equals(getPackType())) {
@@ -99,9 +99,14 @@ public class SyncAllResolver extends AbstractLogable implements Resolver {
                 throw new IllegalStateException("Program error. Unexpected state " + stage);
         }
         if (fm.taskFinished(taskId)) {
-            return false;
-        } else {
+            try {
+                this.close();
+            } catch (Exception e) {
+                logger.error("close resource error", e);
+            }
             return true;
+        } else {
+            return false;
         }
     }
 
@@ -113,16 +118,18 @@ public class SyncAllResolver extends AbstractLogable implements Resolver {
      * @return 读取完毕后的位置
      */
     private int readFileInfo(byte[] data, int currentPos) throws IOException {
+        logger.debug("CurrentPos:"+currentPos);
+        if (currentPos >= data.length) {
+            return currentPos;
+        }
         if (ReadProcess.FILE_INFO_DONE.equals(stage)
                 || ReadProcess.CONTENT.equals(stage)) {
             throw new IllegalStateException("Program error. Illegal stage :" +stage);
         }
-        logger.debug("CurrentTask "+Thread.currentThread().getName()+".currentPos:"+currentPos);
-        if (currentPos >= data.length) {
-            return currentPos;
-        }
         int packRemaining = data.length - currentPos;   // 当前包的可读字节数
-        if (ReadProcess.FILE_INFO_LENGTH.equals(stage)) {
+        // 文件数据读完或者是文件信息长度未读完，都应该从这里执行
+        if (ReadProcess.FILE_INFO_LENGTH.equals(stage)
+                || ReadProcess.CONTENT_DONE.equals(stage)) {
             int fileInfoLenRemaining = fileInfoLenBuf.remaining();
             int readableLen;    // 可读入文件信息长度数组的字节数
             if (packRemaining < fileInfoLenRemaining) {
@@ -144,7 +151,14 @@ public class SyncAllResolver extends AbstractLogable implements Resolver {
         }
 
         if (ReadProcess.FILE_INFO_LENGTH_DONE.equals(stage)) {
-            fileInfo = ByteBuffer.allocate(CommonUtils.byteArrayToInt(fileInfoLenBuf.array()));
+            try{
+                fileInfo = ByteBuffer.allocate(CommonUtils.byteArrayToInt(fileInfoLenBuf.array(), 0));
+            } catch (OutOfMemoryError ome) {
+                System.out.println("**********************************"
+                        +CommonUtils.byteArrayToInt(fileInfoLenBuf.array(), 0)
+                        +"*******************");
+                throw ome;
+            }
             fileInfoLenBuf.clear();
         }
 
@@ -164,8 +178,8 @@ public class SyncAllResolver extends AbstractLogable implements Resolver {
         } else {
             stage = ReadProcess.FILE_INFO_DONE;
             int readSize = fileInfo.remaining();
-            currentPos += readSize;
             fileInfo.put(data, currentPos, readSize);
+            currentPos += readSize;
 
             // 文件信息读取完毕，序列化文件信息。准备文件写入数据
             initCopyFile(data.length - currentPos);
@@ -185,25 +199,20 @@ public class SyncAllResolver extends AbstractLogable implements Resolver {
         }
         logger.debug("A file info json start transfer to FileInfo");
         try {
-            currentFile = mapper.readValue(this.fileInfo.array(), FileInfo.class);
-            packValidDataSize.put(packIndex, remainingSize);
-            long fileSize = currentFile.getFileSize();
+            // currentFile = mapper.readValue(this.fileInfo.array(), FileInfo.class);
+            currentFile = JSON.parseObject(fileInfo.array(), FileInfo.class);
+            beginPackIndex = endPackIndex = packIndex;
+            beginPackSize = endPackSize = remainingSize;
+            long fileSizeExCurPack = currentFile.getFileSize() - remainingSize;
             currentFile.setBeginPackIndex(packIndex);
-            if (fileSize > remainingSize) {
-                fileSize -= remainingSize;
-                int packSize = (int) (fileSize % (PACK_SIZE - HEAD_LENGTH));
-                fileSize -= packSize * (PACK_SIZE - HEAD_LENGTH);
-                for (int i = 1; i < packSize; i++) {
-                    packValidDataSize.put(packIndex + i, PACK_SIZE - HEAD_LENGTH);
-                }
-                packValidDataSize.put(packIndex + packSize, (int) fileSize);
-                currentFile.setFinishPackIndex(packIndex + packSize);
-            } else {
-                currentFile.setFinishPackIndex(packIndex);
+            if (fileSizeExCurPack > 0) {
+                endPackIndex += (int) (fileSizeExCurPack / (PACK_SIZE - HEAD_LENGTH)) + 1;
+                endPackSize = (int) (fileSizeExCurPack % (PACK_SIZE - HEAD_LENGTH));
             }
+            currentFile.setFinishPackIndex(endPackIndex);
             currentFile.setState(FileInfo.STATE.SYNCING);
             fm.save(currentFile);
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new IllegalStateException("ERROR 0x04 : Failed extract FileInfo from Json", e);
         }
         output.openFile(PathMapperUtil.sourcePathMapper(backupPath, currentFile.getFullName()));
@@ -217,13 +226,27 @@ public class SyncAllResolver extends AbstractLogable implements Resolver {
      * @return 读取完毕后的位置
      */
     private int readFileData(byte[] data, int currentPos) throws IOException {
+        logger.debug("currentPos:"+currentPos);
+        if (currentPos >= data.length) {
+            return currentPos;
+        }
         if (!(ReadProcess.FILE_INFO_DONE.equals(stage)
                 || ReadProcess.CONTENT.equals(stage))) {
             throw new IllegalStateException("Program error. Illegal stage :" +stage);
         }
-        logger.debug("currentPos:"+currentPos);
         // size 是当前包有效的文件数据长度，是每个文件读取头信息的时候初始化的。 currentPos 当前包有效数据的位置
-        int size = packValidDataSize.get(packIndex);
+
+        int size;
+        if (packIndex == beginPackIndex) {
+            size = beginPackSize;
+        } else if (packIndex == endPackIndex) {
+            size = endPackSize;
+        } else if (packIndex > beginPackIndex && packIndex < endPackIndex) {
+            size = PACK_SIZE - HEAD_LENGTH;
+        } else {
+            throw new IllegalStateException("Program error");
+        }
+
         if (currentPos >= data.length) {
             return currentPos;
         } else if (currentPos + size > data.length) {
@@ -232,8 +255,8 @@ public class SyncAllResolver extends AbstractLogable implements Resolver {
         }
         output.write(data, currentPos, size);
         currentPos += size;
-        if (readPackIndex.size() >= packValidDataSize.keySet().size()) {
-            packValidDataSize.clear();
+        if (readPackIndex.size() > endPackIndex - beginPackIndex) {
+            beginPackIndex = endPackIndex = beginPackSize = endPackSize = 0;
             readPackIndex.clear();
             stage = ReadProcess.CONTENT_DONE;
         } else {

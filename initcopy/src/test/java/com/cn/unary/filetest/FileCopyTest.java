@@ -1,3 +1,4 @@
+/*
 package com.cn.unary.filetest;
 
 import java.io.File;
@@ -202,3 +203,4 @@ public class FileCopyTest {
         channel.close();
     }
 }
+*/
