@@ -27,13 +27,21 @@ import java.util.concurrent.ExecutorService;
 @Scope("singleton")
 public class InitCopyContext extends AbstractLogable {
     public static int CONTROL_TASK_GRPC_PORT = 23456;
-    // 全局的属性
+    /**
+     * 以下全是全局的属性
+     */
     public final static String CHARSET = "UTF-8";
-    // 传输模块监听的端口
+    /**
+     * 传输模块监听的端口
+     */
     protected static int transPort;
-    // 面向外部 GRPC 服务监听的端口
+    /**
+     * 面向外部 GRPC 服务监听的端口
+     */
     protected static int grpcPort;
-    // 源端与目标端之间 GRPC 通讯监听的端口
+    /**
+     * 源端与目标端之间 GRPC 通讯监听的端口
+     */
     protected static int innerGrpcPort = 6002;
     protected static UnaryTServer uts;
     private static volatile Boolean isActive = Boolean.FALSE;

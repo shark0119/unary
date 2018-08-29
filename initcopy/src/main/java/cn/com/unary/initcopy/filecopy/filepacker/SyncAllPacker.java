@@ -66,16 +66,24 @@ import java.util.List;
 @Scope("prototype")
 public class SyncAllPacker extends AbstractLogable implements Packer {
 
-    // 保留多少个字节来表示数据包头部长度。默认5个字节，
-    // 4个字节存储了任务Id，4个字节存储了一个整型代表包序号,还有一个字节的解析器种类标识
+    // 保留多少个字节来表示数据包头部长度。默认9个字节，
+    /**
+     * 4个字节存储了任务Id，4个字节存储了一个整型代表包序号,还有一个字节的解析器种类标识
+     */
     public final static int HEAD_LENGTH = 4 + 4 + 1;
-    // 文件信息长度。默认4个字节，存储了一个整型
+    /**
+     * 文件信息长度。默认4个字节，存储了一个整型
+     */
     public final static int FILE_INFO_LENGTH = 4;
-    // 每个包的大小
+    /**
+     * 每个包的大小
+     */
     public final static int PACK_SIZE = UnaryTClient.MAX_PACK_SIZE;
     public final static int BUFFER_DIRECT_LIMIT = 1025 * 1024;
 
-    // ----我来组成分割线，以下是 Spring 容器来管理的实体----
+    /**
+     * ----我来组成分割线，以下是 Spring 容器来管理的实体----
+     */
     @Autowired
     @Qualifier("JavaNioFileInput")
     protected AbstractFileInput input;
@@ -87,16 +95,41 @@ public class SyncAllPacker extends AbstractLogable implements Packer {
 
     protected UnaryTClient utc;
 
-    // ----我是另外一只分界线，以下是自定义全局变量----
-    private boolean isReady = false;    // 是否可以开始打包解析
-    private Iterator<FileInfo> fiIterator;    // 待读取的文件列表
-    private List<String> readFileIds = new ArrayList<>();    // 已读取的文件 ID 列表
-    private FileInfo currentFileInfo;   // 当前正在读取的文件
-    private ByteBuffer fileInfoBuffer ; // 文件信息数据
-    // private ObjectMapper mapper = new ObjectMapper();
-    private int packIndex = 0;    // 当前的包序号
-    private int taskId = -1; // 任务ID。
-    private boolean pause = false;  // 当前打包进程是否暂停
+    /**
+     * ----我是另外一只分界线，以下是自定义全局变量----
+     */
+    /**
+     * 是否可以开始打包解析
+     */
+    private boolean isReady = false;
+    /**
+     * 待读取的文件列表
+     */
+    private Iterator<FileInfo> fiIterator;
+    /**
+     * 已读取的文件 ID 列表
+     */
+    private List<String> readFileIds = new ArrayList<>();
+    /**
+     * 当前正在读取的文件
+     */
+    private FileInfo currentFileInfo;
+    /**
+     * 文件信息数据
+     */
+    private ByteBuffer fileInfoBuffer ;
+    /**
+     * 当前的包序号
+     */
+    private int packIndex = 0;
+    /**
+     * 任务ID。
+     */
+    private int taskId = -1;
+    /**
+     * 当前打包进程是否暂停
+     */
+    private boolean pause = false;
 
     /**
      * 相关成员参数不能为空，任务Id不能为-1
@@ -331,7 +364,8 @@ public class SyncAllPacker extends AbstractLogable implements Packer {
 
     @Override
     public void close() throws Exception {
-        if (input != null)
+        if (input != null) {
             input.close();
+        }
     }
 }

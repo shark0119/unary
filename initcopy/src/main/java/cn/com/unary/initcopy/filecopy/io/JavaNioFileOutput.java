@@ -35,21 +35,17 @@ public class JavaNioFileOutput extends AbstractFileOutput {
         ByteBuffer buffer = ByteBuffer.wrap(data, offset, length);
         int size = currentFileChannel.write(buffer);
         currentFileChannel.force(true);
-        logger.debug("Write "+size+" bytes to "+currentFileName);
+        logger.debug("Write " + size + " bytes to " + currentFileName);
         return size;
     }
 
-    /**
-     * @see FileChannel#truncate(long)
-     */
+    @Override
     public AbstractFileOutput truncate(int size) throws IOException {
         currentFileChannel.truncate(size);
         return this;
     }
 
-    /**
-     * @see FileChannel#position(long)
-     */
+    @Override
     public AbstractFileOutput position(long position) throws IOException {
         currentFileChannel.position(position);
         return this;
@@ -64,6 +60,7 @@ public class JavaNioFileOutput extends AbstractFileOutput {
 
     /**
      * 打开某文件，如不存在，则先创建，只接受文本和二进制文件
+     *
      * @param fileName 文件名
      * @return 当前对象
      * @throws IOException 发生IO异常

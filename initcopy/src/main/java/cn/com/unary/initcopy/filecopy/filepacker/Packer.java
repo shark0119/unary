@@ -35,6 +35,7 @@ public interface Packer extends AutoCloseable {
      * 开始文件读取打包，并向目标端发送数据包
      *
      * @param fileIds 文件的UUID
+     * @throws IOException IO 异常
      */
     void start(List<String> fileIds) throws IOException;
 
@@ -57,7 +58,19 @@ public interface Packer extends AutoCloseable {
      */
     void pause();
 
+    /**
+     * 设置传输模块
+     *
+     * @param unaryTClient 传输模块客户端
+     * @return 当前对象
+     */
     Packer setTransfer(UnaryTClient unaryTClient);
 
+    /**
+     * 设置任务 Id
+     *
+     * @param taskId 任务 Id
+     * @return 当前对象
+     */
     Packer setTaskId(int taskId);
 }

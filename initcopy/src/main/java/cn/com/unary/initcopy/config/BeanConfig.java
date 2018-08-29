@@ -15,6 +15,7 @@ import java.text.SimpleDateFormat;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  * 用于 Spring 创建 Beans
@@ -68,7 +69,8 @@ public class BeanConfig {
                 .namingPattern("server-%d-task-")
                 .uncaughtExceptionHandler(new ExecutorExceptionHandler())
                 .build();
-        return Executors.newCachedThreadPool(executorThreadFactory);
+        return new ThreadPoolExecutor(1,2,3,
+                null, null, executorThreadFactory);
     }
     @Bean
     @Scope("singleton")
@@ -77,7 +79,8 @@ public class BeanConfig {
                 .namingPattern("client-%d-pack-")
                 .uncaughtExceptionHandler(new ExecutorExceptionHandler())
                 .build();
-        return Executors.newCachedThreadPool(executorThreadFactory);
+        return new ThreadPoolExecutor(1,2,3,
+                null, null, executorThreadFactory);
     }
     @Bean
     @Scope("singleton")
@@ -86,7 +89,8 @@ public class BeanConfig {
                 .namingPattern("init-copy-context-executor-%d")
                 .uncaughtExceptionHandler(new ExecutorExceptionHandler())
                 .build();
-        return Executors.newCachedThreadPool(executorThreadFactory);
+        return new ThreadPoolExecutor(1,2,3,
+                null, null, executorThreadFactory);
     }
     @Bean
     @Scope("singleton")

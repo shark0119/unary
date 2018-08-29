@@ -15,6 +15,11 @@ import cn.com.unary.initcopy.entity.Constants.FileType;
 import cn.com.unary.initcopy.entity.FileInfo;
 import cn.com.unary.initcopy.grpc.entity.FileBaseInfo;
 
+/**
+ * 实体转换类，支持 POJO 与 GRPC 实体
+ * @author Shark.Yin
+ * @since 1.0
+ */
 public class BeanConvertUtil {
 
 	private BeanConvertUtil() {}
@@ -31,24 +36,24 @@ public class BeanConvertUtil {
 	 * @throws IOException 由于读文件导致的 IO 异常
 	 */
 	public static FileInfo readFromBaseFileInfo (BaseFileInfo bfi) throws IOException {
-		FileInfo fi = new FileInfo(bfi);
-		Path path = Paths.get(bfi.getFullName());
-		BasicFileAttributes bfa = 
-				Files
-				.getFileAttributeView(path, BasicFileAttributeView.class)
-				.readAttributes();
-		if (bfa.isSymbolicLink())
-			fi.setFileType(FileType.SYMBOLIC_LINK);
-		else if (bfa.isDirectory())
-			fi.setFileType(FileType.DIR);
-		else if (bfa.isRegularFile())
-			fi.setFileType(FileType.REGULAR_FILE);
-		else if (bfa.isOther())
-			fi.setFileType(FileType.OTHER);
-		
+        FileInfo fi = new FileInfo(bfi);
+        Path path = Paths.get(bfi.getFullName());
+        BasicFileAttributes bfa =
+                Files
+                        .getFileAttributeView(path, BasicFileAttributeView.class)
+                        .readAttributes();
+        if (bfa.isSymbolicLink()) {
+            fi.setFileType(FileType.SYMBOLIC_LINK);
+        } else if (bfa.isDirectory()) {
+            fi.setFileType(FileType.DIR);
+        }else if (bfa.isRegularFile()) {
+            fi.setFileType(FileType.REGULAR_FILE);
+        } else if (bfa.isOther()) {
+            fi.setFileType(FileType.OTHER);
+        }
 		FileOwnerAttributeView ownerView = Files.getFileAttributeView(
 				path, FileOwnerAttributeView.class);
-		fi.setAttr(fi.newFileAttr());
+		fi.setAttr(FileInfo.newFileAttr());
 		fi.getAttr().setOwner(ownerView.getOwner().getName());
 		fi.getAttr().setHidden(path.toFile().isHidden());
 		return fi;

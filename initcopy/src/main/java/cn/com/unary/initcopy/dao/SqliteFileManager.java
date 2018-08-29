@@ -17,13 +17,13 @@ import cn.com.unary.initcopy.exception.InfoPersistenceException;
 import cn.com.unary.initcopy.common.AbstractLogable;
 import cn.com.unary.initcopy.utils.ValidateUtils;
 
+
+// TODO use AOP to log
 /**
  * 文件信息管理的基于 Sqlite 的实现
  * @author shark
  *
  */
-// TODO use AOP to log
-// @Repository("SqliteFileManager")
 public class SqliteFileManager extends AbstractLogable implements FileManager {
 
 	@Autowired
@@ -35,8 +35,9 @@ public class SqliteFileManager extends AbstractLogable implements FileManager {
 		
 		StringBuilder sb = new StringBuilder("select * from FILE_INFO WHERE FILE_ID IN ('");
 		for (String fileId : fileIds) {
-			if (ValidateUtils.isEmpty(fileId))
+			if (ValidateUtils.isEmpty(fileId)) {
 				fileId = "";
+			}
 			sb.append(fileId + "','");
 		}
 		sb.delete(sb.length()-2, sb.length());

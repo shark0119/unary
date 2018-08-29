@@ -89,7 +89,7 @@ public class ClientFileCopyInit extends AbstractLogable {
                         InitCopyContext.CONTROL_TASK_GRPC_PORT);
         controlTaskGrpcClient.setLinker (linker);
 
-        long totalSize = 0l;
+        long totalSize = 0L;
         for (BaseFileInfo bfi : syncFiles) {
             totalSize += bfi.getFileSize();
         }
@@ -104,7 +104,8 @@ public class ClientFileCopyInit extends AbstractLogable {
             case SYNC_DIFF:
                 syncFileIds = syncDiffInit(builder, controlTaskGrpcClient, diffFileInfos);
                 break;
-            case SYNC_ALL: // as default option
+            // as default option
+            case SYNC_ALL:
             default:
                 syncAllInit(builder, controlTaskGrpcClient);
                 break;
@@ -117,7 +118,6 @@ public class ClientFileCopyInit extends AbstractLogable {
      *
      * @param builder 初始化请求的 Builder
      * @param controlTaskGrpcClient 和控制任务 GRPC 通讯的客户端
-     * @param syncFiles 待同步的文件列表
      * @param diffFileInfos 从目标端收到的文件同步差异信息数据
      * @return 目标端确认后的待同步文件列表
      */

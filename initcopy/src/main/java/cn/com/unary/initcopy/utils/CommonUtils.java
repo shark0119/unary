@@ -2,6 +2,12 @@ package cn.com.unary.initcopy.utils;
 
 import java.nio.ByteBuffer;
 
+/**
+ * 常用的一些工具
+ *
+ * @author Shark.Yin
+ * @since 1.0
+ */
 public class CommonUtils {
     private CommonUtils(){}
 

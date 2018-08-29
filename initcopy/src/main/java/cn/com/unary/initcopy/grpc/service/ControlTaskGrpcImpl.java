@@ -19,7 +19,7 @@ public class ControlTaskGrpcImpl extends ControlTaskGrpc.ControlTaskImplBase {
 
     /**
      *
-     * @param controlTaskGrpcLinker
+     * @param linker 任务控制 GRPC 服务与业务代码的连接器
      */
     public ControlTaskGrpcImpl(ControlTaskGrpcLinker linker) {
         this.linker = linker;

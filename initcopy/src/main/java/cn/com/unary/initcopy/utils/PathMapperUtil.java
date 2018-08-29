@@ -1,8 +1,25 @@
 package cn.com.unary.initcopy.utils;
 
+/**
+ * 差异复制时，源端和目标端路径转换
+ *
+ * @author Shark.Yin
+ * @since 1.0
+ */
 public class PathMapperUtil {
+
+    public static final String SUFFIX = "/";
+    public static final String UNARY_PREFIX = "/win_driver_unary_";
+
     public enum OS {
-        LINUX, WINDOWS,
+        /**
+         * Linux
+         */
+        LINUX,
+        /**
+         * Windows
+         */
+        WINDOWS,
     }
 
     /**
@@ -22,8 +39,8 @@ public class PathMapperUtil {
         filePath = filePath.trim().replaceAll("\\\\", "/");
         destPath = destPath.trim().replaceAll("\\\\", "/");
         filePath = "win_driver_unary_" + filePath.toLowerCase().charAt(0) + filePath.substring(2);
-        if (!destPath.endsWith("/")) {
-            destPath += "/";
+        if (!destPath.endsWith(SUFFIX)) {
+            destPath += SUFFIX;
         }
         return destPath + filePath;
     }
@@ -52,7 +69,7 @@ public class PathMapperUtil {
                     break;
                 case WINDOWS:
                     String driveLetter = "C:";
-                    if (filePath.startsWith("/win_driver_unary_")) {
+                    if (filePath.startsWith(UNARY_PREFIX)) {
                         driveLetter = filePath.charAt(19) + ":";
                     }
                     filePath = driveLetter + filePath;

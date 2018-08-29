@@ -65,7 +65,7 @@ public class ClientFileCopy extends AbstractLogable implements ApplicationContex
 
         logger.debug("Remove invalid file info. Complete file info from base file info.");
         List<FileInfo> list1 = fm.queryByTaskId(syncTask.getTaskId());
-        Map<String, String> map = new HashMap<>();
+        Map<String, String> map = new HashMap<>(100);
         for (String id : syncFileIds) {
             map.put(id, id);
         }
@@ -80,7 +80,8 @@ public class ClientFileCopy extends AbstractLogable implements ApplicationContex
         logger.debug("Try Start A Sync Task. Pack And Send File.");
         // 根据不同的同步方式来进行使用对应的打包策略
         switch (syncTask.getSyncType()) {
-            case SYNC_DIFF: // 差异复制
+            // 差异复制
+            case SYNC_DIFF:
                 startDiffSync(unaryTClient, syncTask.getTaskId(), syncFileIds, diffFileInfos);
                 break;
             case SYNC_ALL:

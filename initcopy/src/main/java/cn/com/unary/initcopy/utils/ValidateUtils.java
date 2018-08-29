@@ -46,8 +46,9 @@ public class ValidateUtils {
         Object[] objArr;
         if (object.getClass().isArray()) {
             objArr = (Object[]) object;
-            if (objArr.length == 0)
+            if (objArr.length == 0) {
                 throw new NullPointerException();
+            }
         }
     }
 
@@ -56,8 +57,9 @@ public class ValidateUtils {
      * @throws NullPointerException null或者length 为0时，抛出异常
      */
     public static void requireNotEmpty(String obj) {
-        if (obj == null || obj.isEmpty())
+        if (obj == null || obj.isEmpty()) {
             throw new NullPointerException();
+        }
     }
 
     /**
@@ -65,8 +67,9 @@ public class ValidateUtils {
      * @throws NullPointerException null或者length 为0时，抛出异常
      */
     public static void requireNotEmpty(Map obj) {
-        if (obj == null || obj.isEmpty())
+        if (obj == null || obj.isEmpty()) {
             throw new NullPointerException();
+        }
     }
 
     /**
@@ -74,7 +77,8 @@ public class ValidateUtils {
      * @throws NullPointerException null或者length 为0时，抛出异常
      */
     public static void requireNotEmpty(Collection obj) {
-        if (obj == null || obj.isEmpty())
+        if (obj == null || obj.isEmpty()) {
             throw new NullPointerException();
+        }
     }
 }

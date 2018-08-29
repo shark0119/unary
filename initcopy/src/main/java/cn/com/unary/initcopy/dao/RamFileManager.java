@@ -17,13 +17,16 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class RamFileManager extends AbstractLogable implements FileManager {
 
-    // key : fileId, field: 文件信息实体
+    /**
+     * key : fileId, field: 文件信息实体
+     */
     private Map<String, FileInfo> fiMap = new ConcurrentHashMap<>();
 
     @Override
     public List<FileInfo> query(String... fileIds) {
-        if (fileIds.length == 0)
+        if (fileIds.length == 0) {
             return null;
+        }
         List<FileInfo> fis = new ArrayList<>();
         for (String id : fileIds) {
             FileInfo fi = fiMap.get(id);

@@ -39,7 +39,8 @@ public class ServerFileCopyInit {
             case SYNC_DIFF:
                 builder.addAllDiffFileInfo(syncDiffInit(req.getFileBaseInfosList()));
                 break;
-            case SYNC_ALL: // as default option
+            // as default option
+            case SYNC_ALL:
                 default:
                     FileInfo fi ;
                     for(FileBaseInfo fbi : req.getFileBaseInfosList()) {

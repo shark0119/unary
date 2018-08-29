@@ -8,7 +8,8 @@ import java.nio.channels.FileChannel;
 /**
  * 向文件写入数据
  *
- * @author shark
+ * @author Shark.Yin
+ * @since 1.0
  */
 public abstract class AbstractFileOutput extends AbstractLogable implements AutoCloseable {
 
@@ -43,11 +44,22 @@ public abstract class AbstractFileOutput extends AbstractLogable implements Auto
     public abstract int write(byte[] data, int offset, int length) throws IOException;
 
     /**
+     * Truncates this channel's file to the given size.
+     *
+     * @param size @see FileChannel#truncate(long)
+     * @return 当前对象
+     * @throws IOException IO 异常
      * @see FileChannel#truncate(long)
      */
+
     public abstract AbstractFileOutput truncate(int size) throws IOException;
 
     /**
+     * Sets this channel's file position.
+     *
+     * @param position @see FileChannel#position(long)
+     * @return 当前对象
+     * @throws IOException IO异常
      * @see FileChannel#position(long)
      */
     public abstract AbstractFileOutput position(long position) throws IOException;

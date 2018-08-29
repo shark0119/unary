@@ -11,18 +11,20 @@ import cn.com.unary.initcopy.server.InitCopyServer;
  * @author Shark.Yin
  * @since 1.0
  */
-public class ICMain {
+public class IcMain {
 
     public static void main(String[] args) {
         boolean isServer = false;
         boolean isClient = false;
         boolean nextIsPort = false;
+        String help = "--help", asServer = "-s", asClient = "-c", designatedPort = "-p";;
+        int maxPort = 65535;
         int port = 0;
         if (args.length == 0) {
             System.out.println("Input filesync --help for help.");
             return;
         }
-        if (args.length == 1 && args[0].trim().equals("--help")) {
+        if (args.length == 1 && help.equals(args[0].trim())) {
             System.out.println("\"filesync -c\" to start a grpc server.");
             System.out.println("\"filesync -s -p [port]\" to start a target server.");
             return;
@@ -35,26 +37,28 @@ public class ICMain {
                     System.out.println(arg + " is not a invalid port.");
                 }
                 nextIsPort = false;
-            } else if (arg.trim().equals("-s")) {
+            } else if (arg.trim().equals(asServer)) {
                 if (isClient) {
                     System.out.println("can't use both -c and -s at the same time");
                     return;
                 }
                 isServer = true;
-            } else if (arg.trim().equals("-c")) {
+            } else if (arg.trim().equals(asClient)) {
                 if (isServer) {
                     System.out.println("can't use both -c and -s at the same time");
                     return;
                 }
                 isClient = true;
-            } else if (arg.trim().equals("-p")) {
-                nextIsPort = true;
             } else {
-                System.out.println("invalid arg: " + arg);
-                return;
+                if (arg.trim().equals(designatedPort)) {
+                    nextIsPort = true;
+                } else {
+                    System.out.println("invalid arg: " + arg);
+                    return;
+                }
             }
         }
-        if (port < 0 || port > 65535) {
+        if (port < 0 || port > maxPort) {
             System.out.println("invalid port :" + port);
             return;
         } else if (port == 0) {

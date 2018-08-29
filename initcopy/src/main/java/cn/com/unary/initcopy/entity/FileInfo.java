@@ -18,7 +18,18 @@ public class FileInfo extends BaseFileInfo{
 	private STATE state = STATE.WAIT;
 
 	public enum STATE {
-		WAIT, SYNCING, SYNCED,
+		/**
+		 * 等待同步
+		 */
+		WAIT,
+		/**
+		 * 正在同步
+		 */
+		SYNCING,
+		/**
+		 * 已同步
+		 */
+		SYNCED,
 	}
 	
 	public FileInfo () {}
@@ -57,8 +68,9 @@ public class FileInfo extends BaseFileInfo{
 	@Override
 	public boolean equals(Object obj) {
 		if (obj instanceof FileInfo) {
-			if (((FileInfo) obj).getId().equals(this.getId()))
+			if (((FileInfo) obj).getId().equals(this.getId())) {
 				return true;
+			}
 		}
 		return false;
 	}

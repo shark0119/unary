@@ -3,7 +3,7 @@ package cn.com.unary.initcopy.filecopy.fileresolver;
 import cn.com.unary.initcopy.dao.FileManager;
 import cn.com.unary.initcopy.entity.Constants.PackType;
 import cn.com.unary.initcopy.entity.FileInfo;
-import cn.com.unary.initcopy.exception.UnaryIOException;
+import cn.com.unary.initcopy.exception.UnaryIoException;
 import cn.com.unary.initcopy.filecopy.filepacker.SyncAllPacker;
 import cn.com.unary.initcopy.filecopy.io.AbstractFileOutput;
 import cn.com.unary.initcopy.common.AbstractLogable;
@@ -32,24 +32,31 @@ public class SyncAllResolver extends AbstractLogable implements Resolver {
     public static final int PACK_SIZE = SyncAllPacker.PACK_SIZE;
     public static final int HEAD_LENGTH = SyncAllPacker.HEAD_LENGTH;
     public static final int FILE_INFO_LENGTH = SyncAllPacker.FILE_INFO_LENGTH;
-    // 文件信息长度，当被截断时，暂存此处
+    /**
+     * 文件信息长度，当被截断时，暂存此处
+     */
     private final ByteBuffer fileInfoLenBuf = ByteBuffer.allocate(FILE_INFO_LENGTH);
     @Autowired
     @Qualifier("serverFM")
     protected FileManager fm;
-    // 标识了这个文件在传输中的包分布情况，以下分别标识了开始和结束包，以及在其中的长度。
-    // 默认文件是连续的形式，分布在中间的包，应该是填充满的。
+    /**
+     * 标识了这个文件在传输中的包分布情况，以下分别标识了开始和结束包，以及在其中的长度。
+     * 默认文件是连续的形式，分布在中间的包，应该是填充满的。
+     */
     private int beginPackIndex, endPackIndex, beginPackSize, endPackSize;
     @Autowired
     private AbstractFileOutput output;
     private ReadProcess stage = ReadProcess.CONTENT_DONE;
     private ByteBuffer fileInfo;
-    // 当前读取的包序号
+    /**
+     * 当前读取的包序号
+     */
     private int packIndex;
     private String backupPath;
     private int taskId;
     private FileInfo currentFile;
 
+    @Override
     public SyncAllResolver setBackupPath(String backupPath) {
         this.backupPath = backupPath;
         return this;
@@ -58,7 +65,6 @@ public class SyncAllResolver extends AbstractLogable implements Resolver {
     @Override
     public boolean process(byte[] data) {
         packIndex = CommonUtils.byteArrayToInt(data, 4);
-        // readPackIndex.add(packIndex);
         // get pack info
         if (!PackType.valueOf(data[HEAD_LENGTH - 1]).equals(getPackType())) {
             throw new IllegalStateException("ERROR 0x05 : Bad data pack format. Wrong Resolver");
@@ -66,27 +72,33 @@ public class SyncAllResolver extends AbstractLogable implements Resolver {
         int currentPos = HEAD_LENGTH;
         // 判断上次读取的位置
         switch (stage) {
-            case FILE_INFO_LENGTH: // 同下，从文件头读取
-            case FILE_INFO_LENGTH_DONE: // 同下，从文件头读取
-            case FILE_INFO: // 同下，从文件头读取
-            case CONTENT_DONE:  // 从文件头读取
+            case FILE_INFO_LENGTH:
+                // 同下，从文件头读取
+            case FILE_INFO_LENGTH_DONE:
+                // 同下，从文件头读取
+            case FILE_INFO:
+                // 同下，从文件头读取
+            case CONTENT_DONE:
+                // 从文件头读取
                 // 单个包中有多个文件
                 while (currentPos < data.length) {
                     try {
                         currentPos = readFileData(data, readFileInfo(data, currentPos));
                     } catch (IOException e) {
-                        throw new UnaryIOException("ERROR 0x01 : IO error.", e);
+                        throw new UnaryIoException("ERROR 0x01 : IO error.", e);
                     }
                 }
                 break;
-            case FILE_INFO_DONE:    // 同下，从文件内容读取
-            case CONTENT:   // 同下，从文件内容读取
+            case FILE_INFO_DONE:
+                // 同下，从文件内容读取
+            case CONTENT:
+                // 同下，从文件内容读取
                 // 单个包中有多个文件
                 while (currentPos < data.length) {
                     try {
                         currentPos = readFileInfo(data, readFileData(data, currentPos));
                     } catch (IOException e) {
-                        throw new UnaryIOException("ERROR 0x01 : IO error.", e);
+                        throw new UnaryIoException("ERROR 0x01 : IO error.", e);
                     }
                 }
                 break;
@@ -121,12 +133,14 @@ public class SyncAllResolver extends AbstractLogable implements Resolver {
                 || ReadProcess.CONTENT.equals(stage)) {
             throw new IllegalStateException("Program error. Illegal stage :" + stage);
         }
-        int packRemaining = data.length - currentPos;   // 当前包的可读字节数
+        // 当前包的可读字节数
+        int packRemaining = data.length - currentPos;
         // 文件数据读完或者是文件信息长度未读完，都应该从这里执行
         if (ReadProcess.FILE_INFO_LENGTH.equals(stage)
                 || ReadProcess.CONTENT_DONE.equals(stage)) {
             int fileInfoLenRemaining = fileInfoLenBuf.remaining();
-            int readableLen;    // 可读入文件信息长度数组的字节数
+            // 可读入文件信息长度数组的字节数
+            int readableLen;
             if (packRemaining < fileInfoLenRemaining) {
                 stage = ReadProcess.FILE_INFO_LENGTH;
                 readableLen = packRemaining;
@@ -138,9 +152,10 @@ public class SyncAllResolver extends AbstractLogable implements Resolver {
             currentPos += readableLen;
             packRemaining -= readableLen;
             if (packRemaining < 1) {
-                if (currentPos != data.length)
+                if (currentPos != data.length) {
                     throw new IllegalStateException("Program error. currentPos :"
                             + currentPos + ", data size:" + data.length);
+                }
                 return data.length;
             }
         }
@@ -187,7 +202,6 @@ public class SyncAllResolver extends AbstractLogable implements Resolver {
     private void initCopyFile(int remainingSize) throws IOException {
         logger.debug("A file info json start transfer to FileInfo");
         try {
-            // currentFile = mapper.readValue(this.fileInfo.array(), FileInfo.class);
             currentFile = JSON.parseObject(fileInfo.array(), FileInfo.class);
             beginPackIndex = endPackIndex = packIndex;
             long fileSizeExCurPack = currentFile.getFileSize() - remainingSize;
@@ -273,16 +287,23 @@ public class SyncAllResolver extends AbstractLogable implements Resolver {
 
     @Override
     public void close() throws Exception {
-        if (output != null)
+        if (output != null) {
             output.close();
+        }
     }
 
     private enum ReadProcess {
-        FILE_INFO_LENGTH, // 文件信息长度
-        FILE_INFO_LENGTH_DONE, // 文件信息长度已读完
-        FILE_INFO,    // 文件信息未读完
-        FILE_INFO_DONE,    // 文件信息已读完
-        CONTENT,    // 文件数据未读完
-        CONTENT_DONE, // 文件数据已读完
+        // 文件信息长度
+        FILE_INFO_LENGTH,
+        // 文件信息长度已读完
+        FILE_INFO_LENGTH_DONE,
+        // 文件信息未读完
+        FILE_INFO,
+        // 文件信息已读完
+        FILE_INFO_DONE,
+        // 文件数据未读完
+        CONTENT,
+        // 文件数据已读完
+        CONTENT_DONE,
     }
 }

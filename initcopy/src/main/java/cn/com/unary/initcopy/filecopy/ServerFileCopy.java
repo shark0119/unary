@@ -1,6 +1,7 @@
 package cn.com.unary.initcopy.filecopy;
 
 import cn.com.unary.initcopy.entity.Constants;
+import cn.com.unary.initcopy.filecopy.filepacker.SyncAllPacker;
 import cn.com.unary.initcopy.filecopy.fileresolver.Resolver;
 import cn.com.unary.initcopy.filecopy.fileresolver.RsyncResolver;
 import cn.com.unary.initcopy.filecopy.fileresolver.SyncAllResolver;
@@ -44,9 +45,13 @@ public class ServerFileCopy extends AbstractLogable implements ApplicationContex
     @Autowired
     private ServerFileCopyInit init;
 
-    // 已放入线程池中执行的任务
+    /**
+     * 已放入线程池中执行的任务
+     */
     private Map<Integer, CopyTask> execTaskMap = new HashMap<>();
-    // 任务列表
+    /**
+     * 任务列表
+      */
     private Map<Integer, CopyTask> taskMap = new HashMap<>();
     private ReentrantLock lock = new ReentrantLock();
 
@@ -185,7 +190,7 @@ public class ServerFileCopy extends AbstractLogable implements ApplicationContex
         }
 
         private boolean resolve(byte[] pack) {
-            if (Constants.PackType.SYNC_ALL_JAVA.getValue() == pack[8]) {
+            if (Constants.PackType.SYNC_ALL_JAVA.getValue() == pack[SyncAllPacker.HEAD_LENGTH-1]) {
                 return syncAllResolver.process(pack);
             } else {
                 return syncDiffResolver.process(pack);
