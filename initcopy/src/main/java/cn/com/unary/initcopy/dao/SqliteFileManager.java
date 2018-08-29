@@ -9,14 +9,12 @@ import java.util.Objects;
 
 import cn.com.unary.initcopy.utils.BeanExactUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Repository;
 
 import com.alibaba.druid.pool.DruidDataSource;
 
 import cn.com.unary.initcopy.entity.FileInfo;
 import cn.com.unary.initcopy.exception.InfoPersistenceException;
-import cn.com.unary.initcopy.utils.AbstractLogable;
-import cn.com.unary.initcopy.utils.BeanConvertUtil;
+import cn.com.unary.initcopy.common.AbstractLogable;
 import cn.com.unary.initcopy.utils.ValidateUtils;
 
 /**

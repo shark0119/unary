@@ -37,5 +37,5 @@ public interface Resolver extends AutoCloseable {
      * @param backupPath 文件备份的路径
      * @return 当前对象
      */
-    SyncAllResolver setBackupPath(String backupPath);
+    Resolver setBackupPath(String backupPath);
 }

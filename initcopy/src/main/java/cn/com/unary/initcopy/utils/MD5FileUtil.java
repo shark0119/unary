@@ -1,5 +1,7 @@
 package cn.com.unary.initcopy.utils;
 
+import cn.com.unary.initcopy.common.AbstractLogable;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -10,7 +12,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 
-public class MD5FileUtil extends AbstractLogable{
+public class MD5FileUtil extends AbstractLogable {
 
 	private MD5FileUtil () {}
 	/**

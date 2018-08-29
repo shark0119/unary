@@ -7,9 +7,7 @@ import cn.com.unary.initcopy.grpc.entity.ExecResult;
 import cn.com.unary.initcopy.grpc.entity.ModifyTask;
 import cn.com.unary.initcopy.grpc.entity.ServerInitResp;
 import cn.com.unary.initcopy.grpc.linker.ControlTaskGrpcLinker;
-import cn.com.unary.initcopy.utils.AbstractLogable;
-import io.grpc.ManagedChannel;
-import io.grpc.ManagedChannelBuilder;
+import cn.com.unary.initcopy.common.AbstractLogable;
 
 /**
  * 源端和目标端之间，任务控制信息GRPC接口的调用方(客户端)

@@ -7,9 +7,8 @@ import cn.com.unary.initcopy.filecopy.fileresolver.SyncAllResolver;
 import cn.com.unary.initcopy.filecopy.init.ServerFileCopyInit;
 import cn.com.unary.initcopy.grpc.entity.ClientInitReq;
 import cn.com.unary.initcopy.grpc.entity.ServerInitResp;
-import cn.com.unary.initcopy.utils.AbstractLogable;
+import cn.com.unary.initcopy.common.AbstractLogable;
 import cn.com.unary.initcopy.utils.CommonUtils;
-import cn.com.unary.initcopy.utils.Task;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -24,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
@@ -60,12 +60,10 @@ public class ServerFileCopy extends AbstractLogable implements ApplicationContex
         lock.lock();
         if (execTaskMap.containsKey(taskId)) {
             execTaskMap.get(taskId).addPack(data);
-            data = null;
         } else {
             if (taskMap.containsKey(taskId)) {
                 final CopyTask copyTask = taskMap.get(taskId);
                 copyTask.addPack(data);
-                data = null;
                 fileCopyExec.execute(copyTask);
                 execTaskMap.put(taskId, copyTask);
             } else {
@@ -89,6 +87,7 @@ public class ServerFileCopy extends AbstractLogable implements ApplicationContex
             lock.unlock();
             return init.startInit(req);
         } catch (Exception e) {
+            logger.error("Grpc Server Internal Error.", e);
             // 初始化失败后，移除当前任务
             lock.lock();
             taskMap.remove(req.getTaskId());
@@ -96,7 +95,6 @@ public class ServerFileCopy extends AbstractLogable implements ApplicationContex
             ServerInitResp.Builder builder = ServerInitResp.newBuilder();
             builder.setMsg(e.getMessage());
             builder.setReady(false);
-            logger.error("Grpc Server Internal Error.", e);
             return builder.build();
         }
     }
@@ -106,24 +104,27 @@ public class ServerFileCopy extends AbstractLogable implements ApplicationContex
         this.context = applicationContext;
     }
 
-    protected class CopyTask implements Task {
+    protected class CopyTask implements Runnable {
         private Resolver syncAllResolver;
         private Resolver syncDiffResolver;
         private List<byte[]> packs;
         private int taskId;
-        private Boolean pause = false;
+        private Object lock;
+        private boolean pause;
+        private AtomicInteger wait;
+        private AtomicInteger notify;
 
         public CopyTask(int taskId, String targetDir) {
             this.taskId = taskId;
             this.syncAllResolver = context.getBean("SyncAllResolver", SyncAllResolver.class);
             this.syncDiffResolver = context.getBean("RsyncResolver", RsyncResolver.class);
-            syncAllResolver.setBackupPath(targetDir);
-            syncDiffResolver.setBackupPath(targetDir);
+            syncAllResolver.setBackupPath(targetDir).setTaskId(taskId);
+            syncDiffResolver.setBackupPath(targetDir).setTaskId(taskId);
             packs = new ArrayList<>();
-        }
-
-        public int getTaskId() {
-            return this.taskId;
+            lock = new Object();
+            pause = false;
+            wait = new AtomicInteger(0);
+            notify = new AtomicInteger(0);
         }
 
         /**
@@ -131,6 +132,7 @@ public class ServerFileCopy extends AbstractLogable implements ApplicationContex
          */
         @Override
         public void run() {
+            Thread.currentThread().setName(Thread.currentThread().getName()+taskId);
             byte[] pack = null;
             while (true) {
                 synchronized (packs) {
@@ -145,8 +147,12 @@ public class ServerFileCopy extends AbstractLogable implements ApplicationContex
                             throw new IllegalStateException("Program error."
                                     +"Pack size: " + packs.size());
                         }
-                        synchronized (pause) {
-                            pause.wait();
+                        synchronized (lock) {
+                            if (!pause) {
+                                logger.debug(wait.incrementAndGet() + "'s wait when pack's null !!!");
+                                lock.wait();
+                                pause = true;
+                            }
                         }
                     } catch (InterruptedException e) {
                         throw new IllegalStateException(e);
@@ -155,7 +161,7 @@ public class ServerFileCopy extends AbstractLogable implements ApplicationContex
                 // 当前任务已完成解析
                 if (resolve(pack)) {
                     if (!packs.isEmpty()) {
-                        throw new IllegalStateException("Program error."
+                        throw new IllegalStateException("Program error. Task Done but "
                                 +"Pack size: " + packs.size());
                     }
                     break;
@@ -163,8 +169,12 @@ public class ServerFileCopy extends AbstractLogable implements ApplicationContex
                     // 等待后续的包接收
                     if (packs.isEmpty()) {
                         try {
-                            synchronized (pause) {
-                                pause.wait();
+                            synchronized (lock) {
+                                if (!pause) {
+                                    logger.debug(wait.incrementAndGet() + "'s wait on packs' empty!!!");
+                                    lock.wait();
+                                    pause = true;
+                                }
                             }
                         } catch (InterruptedException e) {
                             throw new IllegalStateException(e);
@@ -186,15 +196,14 @@ public class ServerFileCopy extends AbstractLogable implements ApplicationContex
             Objects.requireNonNull(pack);
             synchronized (packs) {
                 this.packs.add(pack);
-                synchronized (pause) {
-                    pause.notify();
+                synchronized (lock) {
+                    if (pause) {
+                        logger.debug(notify.incrementAndGet() + "'s notify!!!");
+                        lock.notify();
+                        pause = false;
+                    }
                 }
             }
-        }
-
-        @Override
-        public int getId() {
-            return taskId;
         }
     }
 }

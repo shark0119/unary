@@ -6,7 +6,7 @@ import cn.com.unary.initcopy.dao.FileManager;
 import cn.com.unary.initcopy.entity.Constants.PackType;
 import cn.com.unary.initcopy.entity.FileInfo;
 import cn.com.unary.initcopy.filecopy.io.AbstractFileInput;
-import cn.com.unary.initcopy.utils.AbstractLogable;
+import cn.com.unary.initcopy.common.AbstractLogable;
 import cn.com.unary.initcopy.utils.CommonUtils;
 import com.alibaba.fastjson.JSON;
 import org.springframework.beans.factory.annotation.Autowired;

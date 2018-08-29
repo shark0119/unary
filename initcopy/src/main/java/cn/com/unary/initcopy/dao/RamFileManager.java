@@ -1,12 +1,9 @@
 package cn.com.unary.initcopy.dao;
 
 import cn.com.unary.initcopy.entity.FileInfo;
-import cn.com.unary.initcopy.utils.AbstractLogable;
+import cn.com.unary.initcopy.common.AbstractLogable;
 import cn.com.unary.initcopy.utils.ValidateUtils;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Repository;
 
-import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;

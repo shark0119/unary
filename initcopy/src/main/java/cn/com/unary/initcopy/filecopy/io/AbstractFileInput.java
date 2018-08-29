@@ -3,12 +3,8 @@ package cn.com.unary.initcopy.filecopy.io;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
-import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
 
-import cn.com.unary.initcopy.exception.UnaryIOException;
-import cn.com.unary.initcopy.utils.AbstractLogable;
-import io.netty.buffer.ByteBuf;
+import cn.com.unary.initcopy.common.AbstractLogable;
 
 public abstract class AbstractFileInput extends AbstractLogable implements AutoCloseable {
 

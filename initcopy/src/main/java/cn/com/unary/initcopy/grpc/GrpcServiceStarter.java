@@ -1,9 +1,8 @@
 package cn.com.unary.initcopy.grpc;
 
-import cn.com.unary.initcopy.utils.AbstractLogable;
+import cn.com.unary.initcopy.common.AbstractLogable;
 import io.grpc.BindableService;
 import io.grpc.Server;
-import io.grpc.ServerBuilder;
 
 import java.io.IOException;
 

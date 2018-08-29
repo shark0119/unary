@@ -32,8 +32,8 @@ public class RsyncResolver implements Resolver{
 	}
 
 	@Override
-	public SyncAllResolver setBackupPath(String backupPath) {
-		return null;
+	public RsyncResolver setBackupPath(String backupPath) {
+		return this;
 	}
 
 	@Override

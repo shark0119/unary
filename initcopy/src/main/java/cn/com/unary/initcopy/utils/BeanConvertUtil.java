@@ -22,7 +22,10 @@ public class BeanConvertUtil {
 	/**
 	 * 将初始化时发送的文件信息转化为文件信息实体。FileInfo 包含了文件除内容以外所有的信息。
 	 * 但本函数不初始化以下属性：
-	 * seqs
+     *
+	 * {@link FileInfo#beginPackIndex}
+     * {@link FileInfo#finishPackIndex}
+     *
 	 * @param bfi 初始化时需要的文件基础信息
 	 * @return 文件的待同步信息
 	 * @throws IOException 由于读文件导致的 IO 异常
@@ -58,7 +61,7 @@ public class BeanConvertUtil {
 	    }
 		return bfis;
 	}
-	public static List<FileBaseInfo> takeToGrpc (List<BaseFileInfo> bfis) {
+	public static List<FileBaseInfo> takeToGrpc (List<? extends BaseFileInfo> bfis) {
 	    List<FileBaseInfo> fbis = new ArrayList<>();
 	    for(BaseFileInfo bfi : bfis) {
 	        fbis.add(takeToGrpc(bfi));
@@ -70,7 +73,8 @@ public class BeanConvertUtil {
         bfi.setFileSize(fbi.getFileSize());
         bfi.setFullName(fbi.getFullName());
         bfi.setModifyTime(fbi.getModifyTime());
-        // TODO set file id and task id
+		bfi.setTaskId(fbi.getTaskId());
+		bfi.setId(fbi.getFileId());
 	    return bfi;
     }
 
@@ -79,7 +83,8 @@ public class BeanConvertUtil {
         builder.setFileSize(bfi.getFileSize())
                 .setFullName(bfi.getFullName())
                 .setModifyTime(bfi.getModifyTime())
-        // TODO set file id and task id
+				.setTaskId(bfi.getTaskId())
+				.setFileId(bfi.getId())
         ;
         return builder.build();
     }

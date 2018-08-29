@@ -25,6 +25,7 @@ public class FileInfo extends BaseFileInfo{
 	public FileInfo (BaseFileInfo bfi) {
 		this.setFileSize(bfi.getFileSize());
 		this.setFullName(bfi.getFullName());
+		this.setTaskId(bfi.getTaskId());
 		this.setId(bfi.getId());
 		this.setModifyTime(bfi.getModifyTime());
 	}

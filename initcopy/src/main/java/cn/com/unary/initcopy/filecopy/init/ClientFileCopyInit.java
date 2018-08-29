@@ -12,7 +12,7 @@ import cn.com.unary.initcopy.grpc.entity.DiffFileInfo;
 import cn.com.unary.initcopy.grpc.entity.ServerInitResp;
 import cn.com.unary.initcopy.grpc.entity.SyncTask;
 import cn.com.unary.initcopy.grpc.linker.ControlTaskGrpcLinker;
-import cn.com.unary.initcopy.utils.AbstractLogable;
+import cn.com.unary.initcopy.common.AbstractLogable;
 import cn.com.unary.initcopy.utils.BeanConvertUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -73,13 +73,17 @@ public class ClientFileCopyInit extends AbstractLogable {
         // TODO 设置加密压缩等选项
 
         logger.debug("Set transfer option done. Start to traversing files.");
-        List<BaseFileInfo> syncFiles = traversingFiles(syncTask.getFileList());
+        List<FileInfo> syncFiles = traversingFiles(syncTask.getFileList());
         List<String> syncFileIds = new ArrayList<>();
-        for (BaseFileInfo fi : syncFiles) {
+        int taskId = syncTask.getTaskId();
+        for (FileInfo fi : syncFiles) {
             syncFileIds.add(fi.getId());
+            fi.setTaskId(taskId);
+            fileManager.save(fi);
         }
+        logger.debug("We got " + syncFiles.size() + " files and " + syncFileIds.size()
+                + " file id from specified local directory in task " + syncTask.getTaskId());
 
-        logger.debug("Try to init according sync type.");
         ControlTaskGrpcClient controlTaskGrpcClient =
                 new ControlTaskGrpcClient(syncTask.getTargetInfo().getIp(),
                         InitCopyContext.CONTROL_TASK_GRPC_PORT);
@@ -91,12 +95,14 @@ public class ClientFileCopyInit extends AbstractLogable {
         }
         ClientInitReq.Builder builder = ClientInitReq.newBuilder()
                 .setTargetDir(syncTask.getTargetDir())
-                .setTaskId(syncTask.getTaskId())
-                .setTotalSize(totalSize);
+                .setTaskId(taskId)
+                .setTotalSize(totalSize)
+                .addAllFileBaseInfos(BeanConvertUtil.takeToGrpc(syncFiles));
 
+        logger.debug("Try to init according sync type.");
         switch (syncTask.getSyncType()) {
             case SYNC_DIFF:
-                syncFileIds = syncDiffInit(builder, controlTaskGrpcClient, syncFiles, diffFileInfos);
+                syncFileIds = syncDiffInit(builder, controlTaskGrpcClient, diffFileInfos);
                 break;
             case SYNC_ALL: // as default option
             default:
@@ -117,10 +123,8 @@ public class ClientFileCopyInit extends AbstractLogable {
      */
     private List<String> syncDiffInit(ClientInitReq.Builder builder,
                                       ControlTaskGrpcClient controlTaskGrpcClient,
-                                      List<BaseFileInfo> syncFiles,
                                       List<DiffFileInfo> diffFileInfos) {
-        builder.addAllFileBaseInfos(BeanConvertUtil.takeToGrpc(syncFiles))
-                .setSyncType(SyncType.SYNC_DIFF);
+        builder.setSyncType(SyncType.SYNC_DIFF);
         ServerInitResp resp = controlTaskGrpcClient.invokeGrpcInit(builder.build());
         if (!resp.getReady()) {
             throw new IllegalStateException("ERROR 0x07 : Server intern Error." + resp.getMsg());
@@ -142,9 +146,9 @@ public class ClientFileCopyInit extends AbstractLogable {
         }
     }
 
-    private List<BaseFileInfo> traversingFiles(List<String> files) throws IOException {
+    private List<FileInfo> traversingFiles(List<String> files) throws IOException {
         Path path;
-        final List<BaseFileInfo> fileInfos = new ArrayList<>();
+        final List<FileInfo> fileInfos = new ArrayList<>();
         for (String fileName : files) {
             path = Paths.get(fileName);
             Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
@@ -154,7 +158,6 @@ public class ClientFileCopyInit extends AbstractLogable {
                     if (dir.toFile().list().length == 0) {
                         FileInfo fileInfo = new FileInfo(takeFromFile(dir.toFile()));
                         fileInfos.add(fileInfo);
-                        fileManager.save(fileInfo);
                     }
                     return FileVisitResult.CONTINUE;
                 }
@@ -164,7 +167,6 @@ public class ClientFileCopyInit extends AbstractLogable {
                         throws IOException {
                     FileInfo fileInfo = new FileInfo(takeFromFile(file.toFile()));
                     fileInfos.add(fileInfo);
-                    fileManager.save(fileInfo);
                     return FileVisitResult.CONTINUE;
                 }
             });

@@ -1,10 +1,9 @@
 package cn.com.unary.initcopy.filecopy.io;
 
-import cn.com.unary.initcopy.utils.AbstractLogable;
+import cn.com.unary.initcopy.common.AbstractLogable;
 
 import java.io.IOException;
 import java.nio.channels.FileChannel;
-import java.util.Objects;
 
 /**
  * 向文件写入数据

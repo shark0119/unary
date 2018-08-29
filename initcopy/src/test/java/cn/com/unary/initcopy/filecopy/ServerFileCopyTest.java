@@ -1,6 +1,6 @@
 package cn.com.unary.initcopy.filecopy;
 
-import cn.com.unary.initcopy.utils.AbstractLogable;
+import cn.com.unary.initcopy.common.AbstractLogable;
 import org.junit.Test;
 
 import java.util.ArrayList;

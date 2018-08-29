@@ -1,8 +1,9 @@
 package cn.com.unary.initcopy.config;
 
 import cn.com.unary.initcopy.dao.RamFileManager;
-import cn.com.unary.initcopy.utils.NameThreadFactory;
+import cn.com.unary.initcopy.common.ExecutorExceptionHandler;
 import com.alibaba.druid.pool.DruidDataSource;
+import org.apache.commons.lang3.concurrent.BasicThreadFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -13,6 +14,7 @@ import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 
 /**
  * 用于 Spring 创建 Beans
@@ -62,17 +64,29 @@ public class BeanConfig {
     @Bean
     @Scope("singleton")
     public ExecutorService serverExecutor () {
-        return Executors.newCachedThreadPool(new NameThreadFactory());
+        ThreadFactory executorThreadFactory = new BasicThreadFactory.Builder()
+                .namingPattern("server-%d-task-")
+                .uncaughtExceptionHandler(new ExecutorExceptionHandler())
+                .build();
+        return Executors.newCachedThreadPool(executorThreadFactory);
     }
     @Bean
     @Scope("singleton")
     public ExecutorService clientExecutor () {
-        return Executors.newCachedThreadPool(new NameThreadFactory());
+        ThreadFactory executorThreadFactory = new BasicThreadFactory.Builder()
+                .namingPattern("client-%d-pack-")
+                .uncaughtExceptionHandler(new ExecutorExceptionHandler())
+                .build();
+        return Executors.newCachedThreadPool(executorThreadFactory);
     }
     @Bean
     @Scope("singleton")
     public ExecutorService contextExecutor () {
-        return Executors.newCachedThreadPool(new NameThreadFactory());
+        ThreadFactory executorThreadFactory = new BasicThreadFactory.Builder()
+                .namingPattern("init-copy-context-executor-%d")
+                .uncaughtExceptionHandler(new ExecutorExceptionHandler())
+                .build();
+        return Executors.newCachedThreadPool(executorThreadFactory);
     }
     @Bean
     @Scope("singleton")

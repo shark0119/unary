@@ -8,9 +8,8 @@ import cn.com.unary.initcopy.filecopy.filepacker.SyncDiffPacker;
 import cn.com.unary.initcopy.filecopy.init.ClientFileCopyInit;
 import cn.com.unary.initcopy.grpc.entity.DiffFileInfo;
 import cn.com.unary.initcopy.grpc.entity.SyncTask;
-import cn.com.unary.initcopy.utils.AbstractLogable;
+import cn.com.unary.initcopy.common.AbstractLogable;
 import cn.com.unary.initcopy.utils.BeanConvertUtil;
-import cn.com.unary.initcopy.utils.Task;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -132,7 +131,7 @@ public class ClientFileCopy extends AbstractLogable implements ApplicationContex
         this.applicationContext = applicationContext;
     }
 
-    protected class PackTask implements Task {
+    protected class PackTask implements Runnable {
 
         private final List<String> syncFileIds;
         private int taskId;
@@ -143,13 +142,10 @@ public class ClientFileCopy extends AbstractLogable implements ApplicationContex
             this.packer = packer;
             this.syncFileIds = syncFileIds;
         }
-        @Override
-        public int getId() {
-            return this.taskId;
-        }
 
         @Override
         public void run() {
+            Thread.currentThread().setName(Thread.currentThread().getName()+taskId);
             try {
                 packer.start(syncFileIds);
             } catch (IOException e) {

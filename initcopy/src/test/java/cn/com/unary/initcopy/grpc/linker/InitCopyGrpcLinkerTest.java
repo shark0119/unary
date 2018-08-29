@@ -6,27 +6,16 @@ import cn.com.unary.initcopy.grpc.constant.SyncType;
 import cn.com.unary.initcopy.grpc.entity.ExecResult;
 import cn.com.unary.initcopy.grpc.entity.SyncTarget;
 import cn.com.unary.initcopy.grpc.entity.SyncTask;
-import cn.com.unary.initcopy.utils.AbstractLogable;
+import cn.com.unary.initcopy.common.AbstractLogable;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.MappedByteBuffer;
-import java.nio.channels.FileChannel;
-import java.nio.channels.FileLock;
-import java.nio.channels.ReadableByteChannel;
-import java.nio.channels.WritableByteChannel;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.ThreadFactory;
 
 public class InitCopyGrpcLinkerTest extends AbstractLogable {
     AnnotationConfigApplicationContext ac;
@@ -52,7 +41,7 @@ public class InitCopyGrpcLinkerTest extends AbstractLogable {
             // 客户端添加任务。
             SyncTask.Builder builder = SyncTask.newBuilder();
             List<String> syncFiles = new ArrayList<>();
-            syncFiles.add("C:\\Users\\shark\\Desktop\\文件\\极客时间   趣谈网络协议_files\\0.js");
+            syncFiles.add("C:\\Users\\shark\\Desktop\\文件\\极客时间   趣谈网络协议_files");
             builder.setTaskId(1)
                     .setSyncType(SyncType.SYNC_ALL)
                     .setTargetDir("G:/")
@@ -63,7 +52,6 @@ public class InitCopyGrpcLinkerTest extends AbstractLogable {
             // Thread.sleep(10000);
             logger.debug("Task finish");
             Objects.requireNonNull(result);
-
         } catch (Throwable throwable) {
             System.out.println("I got you");
         }
@@ -83,16 +71,8 @@ public class InitCopyGrpcLinkerTest extends AbstractLogable {
     }
 
     public static void main(String[] args) throws Exception {
-        File file = new File("G:\\java\\unary\\java_pid27908.hprof");
-        file.createNewFile();
-        Path path = Paths.get("G:\\java\\unary\\java_pid27908.hprof");
-        FileChannel channel = FileChannel.open(path, StandardOpenOption.WRITE);
-        ByteBuffer buffer = ByteBuffer.allocate(10);
-        buffer.putInt(2);
-        buffer.putInt(2);
-        for (int i=0; i<Integer.MAX_VALUE; i++) {
-            channel.write(buffer);
-            channel.force(true);
-        }
+        InitCopyGrpcLinkerTest test = new InitCopyGrpcLinkerTest();
+        test.setUp();
+        test.add();
     }
 }

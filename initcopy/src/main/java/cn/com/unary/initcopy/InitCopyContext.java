@@ -7,7 +7,7 @@ import cn.com.unary.initcopy.grpc.linker.ControlTaskGrpcLinker;
 import cn.com.unary.initcopy.grpc.linker.InitCopyGrpcLinker;
 import cn.com.unary.initcopy.grpc.service.ControlTaskGrpcImpl;
 import cn.com.unary.initcopy.grpc.service.InitCopyGrpcImpl;
-import cn.com.unary.initcopy.utils.AbstractLogable;
+import cn.com.unary.initcopy.common.AbstractLogable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;

@@ -1,4 +1,4 @@
-package cn.com.unary.initcopy.utils;
+package cn.com.unary.initcopy.common;
 
 import org.apache.log4j.Logger;
 
@@ -12,6 +12,5 @@ public abstract class AbstractLogable {
 
     public AbstractLogable() {
         logger = Logger.getLogger(this.getClass());
-        // logger = LoggerFactory.getLogger(this.getClass());
     }
 }

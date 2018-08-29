@@ -41,8 +41,11 @@ public class ServerFileCopyInit {
                 break;
             case SYNC_ALL: // as default option
                 default:
+                    FileInfo fi ;
                     for(FileBaseInfo fbi : req.getFileBaseInfosList()) {
-                        fm.save(new FileInfo(BeanConvertUtil.takeFromGrpc(fbi)));
+                        fi = new FileInfo(BeanConvertUtil.takeFromGrpc(fbi));
+                        fi.setTaskId(req.getTaskId());
+                        fm.save(fi);
                     }
                     break;
         }
