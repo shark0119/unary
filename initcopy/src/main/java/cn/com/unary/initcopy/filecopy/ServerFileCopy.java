@@ -116,8 +116,6 @@ public class ServerFileCopy extends AbstractLogable implements ApplicationContex
         private int taskId;
         private Object lock;
         private boolean pause;
-        private AtomicInteger wait;
-        private AtomicInteger notify;
 
         public CopyTask(int taskId, String targetDir) {
             this.taskId = taskId;
@@ -128,8 +126,6 @@ public class ServerFileCopy extends AbstractLogable implements ApplicationContex
             packs = new ArrayList<>();
             lock = new Object();
             pause = false;
-            wait = new AtomicInteger(0);
-            notify = new AtomicInteger(0);
         }
 
         /**
@@ -138,6 +134,7 @@ public class ServerFileCopy extends AbstractLogable implements ApplicationContex
         @Override
         public void run() {
             Thread.currentThread().setName(Thread.currentThread().getName()+taskId);
+            long time = System.nanoTime();
             byte[] pack = null;
             while (true) {
                 synchronized (packs) {
@@ -154,7 +151,6 @@ public class ServerFileCopy extends AbstractLogable implements ApplicationContex
                         }
                         synchronized (lock) {
                             if (!pause) {
-                                logger.debug(wait.incrementAndGet() + "'s wait when pack's null !!!");
                                 lock.wait();
                                 pause = true;
                             }
@@ -176,7 +172,6 @@ public class ServerFileCopy extends AbstractLogable implements ApplicationContex
                         try {
                             synchronized (lock) {
                                 if (!pause) {
-                                    logger.debug(wait.incrementAndGet() + "'s wait on packs' empty!!!");
                                     lock.wait();
                                     pause = true;
                                 }
@@ -187,6 +182,7 @@ public class ServerFileCopy extends AbstractLogable implements ApplicationContex
                     }
                 }
             }
+            logger.info("Task resolver done. Use " + (System.nanoTime() - time));
         }
 
         private boolean resolve(byte[] pack) {
@@ -203,7 +199,6 @@ public class ServerFileCopy extends AbstractLogable implements ApplicationContex
                 this.packs.add(pack);
                 synchronized (lock) {
                     if (pause) {
-                        logger.debug(notify.incrementAndGet() + "'s notify!!!");
                         lock.notify();
                         pause = false;
                     }

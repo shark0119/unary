@@ -2,6 +2,7 @@ package cn.com.unary.initcopy.config;
 
 import cn.com.unary.initcopy.dao.RamFileManager;
 import cn.com.unary.initcopy.common.ExecutorExceptionHandler;
+import cn.com.unary.initcopy.grpc.entity.ClientInitReq;
 import com.alibaba.druid.pool.DruidDataSource;
 import org.apache.commons.lang3.concurrent.BasicThreadFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,8 +15,10 @@ import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 用于 Spring 创建 Beans
@@ -69,8 +72,12 @@ public class BeanConfig {
                 .namingPattern("server-%d-task-")
                 .uncaughtExceptionHandler(new ExecutorExceptionHandler())
                 .build();
-        return new ThreadPoolExecutor(1,2,3,
-                null, null, executorThreadFactory);
+        ExecutorService pool = new ThreadPoolExecutor(5,
+                200, 1000L, TimeUnit.MILLISECONDS,
+                new LinkedBlockingQueue<Runnable>(1024),
+                executorThreadFactory,
+                new ThreadPoolExecutor.AbortPolicy());
+        return pool;
     }
     @Bean
     @Scope("singleton")
@@ -79,8 +86,12 @@ public class BeanConfig {
                 .namingPattern("client-%d-pack-")
                 .uncaughtExceptionHandler(new ExecutorExceptionHandler())
                 .build();
-        return new ThreadPoolExecutor(1,2,3,
-                null, null, executorThreadFactory);
+        ExecutorService pool = new ThreadPoolExecutor(5,
+                200, 1000L, TimeUnit.MILLISECONDS,
+                new LinkedBlockingQueue<Runnable>(1024),
+                executorThreadFactory,
+                new ThreadPoolExecutor.AbortPolicy());
+        return pool;
     }
     @Bean
     @Scope("singleton")
@@ -89,8 +100,12 @@ public class BeanConfig {
                 .namingPattern("init-copy-context-executor-%d")
                 .uncaughtExceptionHandler(new ExecutorExceptionHandler())
                 .build();
-        return new ThreadPoolExecutor(1,2,3,
-                null, null, executorThreadFactory);
+        ExecutorService pool = new ThreadPoolExecutor(5,
+                200, 1000L, TimeUnit.MILLISECONDS,
+                new LinkedBlockingQueue<Runnable>(1024),
+                executorThreadFactory,
+                new ThreadPoolExecutor.AbortPolicy());
+        return pool;
     }
     @Bean
     @Scope("singleton")

@@ -41,15 +41,14 @@ public class InitCopyGrpcLinkerTest extends AbstractLogable {
             // 客户端添加任务。
             SyncTask.Builder builder = SyncTask.newBuilder();
             List<String> syncFiles = new ArrayList<>();
-            syncFiles.add("C:\\Users\\shark\\Desktop\\文件\\极客时间   趣谈网络协议_files");
+            syncFiles.add("E:\\Shark_File\\Download\\CentOS-6.0-x86_64-bin-DVD1.iso");
             builder.setTaskId(1)
                     .setSyncType(SyncType.SYNC_ALL)
-                    .setTargetDir("G:/")
+                    .setTargetDir("F:/")
                     .addAllFile(syncFiles)
                     .setTargetInfo(SyncTarget.newBuilder().setIp("localhost").setPort(80).build());
             logger.debug("Start add a task.");
             ExecResult result = linker.add(builder.build());
-            // Thread.sleep(10000);
             logger.debug("Task finish");
             Objects.requireNonNull(result);
         } catch (Throwable throwable) {

@@ -1,13 +1,13 @@
 package cn.com.unary.initcopy.entity;
 
-import java.io.Serializable;
+import cn.com.unary.initcopy.common.Entity;
 
 /**
  * 在初始化时所需要的文件基础信息
  * @author shark
  *
  */
-public class BaseFileInfo implements Serializable {
+public class BaseFileInfo implements Entity {
 
 	private static final long serialVersionUID = 1852745479396286807L;
 	private int taskId;

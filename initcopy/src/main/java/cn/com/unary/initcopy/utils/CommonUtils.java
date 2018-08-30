@@ -32,6 +32,7 @@ public class CommonUtils {
      */
     public static byte[] extractBytes (ByteBuffer buffer) {
         byte[] data = new byte[buffer.position()];
+        // TODO 可做的优化，修改传输模块代码，将其改为 ByteBuffer
         System.arraycopy(buffer.array(), 0, data, 0, buffer.position());
         return data;
     }

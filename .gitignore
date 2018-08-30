@@ -13,3 +13,7 @@ transfer/.project
 transfer/target/*
 
 *.iml
+
+*.log
+
+initcopy/log/
