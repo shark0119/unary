@@ -116,6 +116,8 @@ public class ServerFileCopy extends AbstractLogable implements ApplicationContex
         private int taskId;
         private Object lock;
         private boolean pause;
+        private AtomicInteger wait = new AtomicInteger(0);
+        private AtomicInteger notify = new AtomicInteger(0);
 
         public CopyTask(int taskId, String targetDir) {
             this.taskId = taskId;
@@ -151,6 +153,7 @@ public class ServerFileCopy extends AbstractLogable implements ApplicationContex
                         }
                         synchronized (lock) {
                             if (!pause) {
+                                logger.info(wait.getAndIncrement() +"'s wait when pack null.");
                                 lock.wait();
                                 pause = true;
                             }
@@ -172,6 +175,7 @@ public class ServerFileCopy extends AbstractLogable implements ApplicationContex
                         try {
                             synchronized (lock) {
                                 if (!pause) {
+                                    logger.info(wait.getAndIncrement() +"'s wait when packs' empty.");
                                     lock.wait();
                                     pause = true;
                                 }
@@ -199,6 +203,7 @@ public class ServerFileCopy extends AbstractLogable implements ApplicationContex
                 this.packs.add(pack);
                 synchronized (lock) {
                     if (pause) {
+                        logger.info(notify.getAndIncrement() +"'s notify when pack arrive.");
                         lock.notify();
                         pause = false;
                     }

@@ -14,7 +14,8 @@ import java.util.Objects;
 /**
  * Java 文件读取写入类，采用NIO 在支持的环境下能通过零拷贝来提升效率
  *
- * @author shark
+ * @author Shark.Yin
+ * @since 1.0
  */
 @Component("JavaNioFileInput")
 @Scope("prototype")

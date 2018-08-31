@@ -14,7 +14,8 @@ import cn.com.unary.initcopy.server.InitCopyServer;
 public class IcMain {
 
     public static void main(String[] args) {
-        boolean isServer = false;
+        
+        /*boolean isServer = false;
         boolean isClient = false;
         boolean nextIsPort = false;
         String help = "--help", asServer = "-s", asClient = "-c", designatedPort = "-p";;
@@ -80,6 +81,6 @@ public class IcMain {
                 System.out.println("GRPC Server Start Fail. " + e.getMessage());
                 return;
             }
-        }
+        }*/
     }
 }

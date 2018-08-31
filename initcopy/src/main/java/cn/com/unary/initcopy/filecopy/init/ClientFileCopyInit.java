@@ -155,10 +155,11 @@ public class ClientFileCopyInit extends AbstractLogable {
                 @Override
                 public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs)
                         throws IOException {
-                    if (dir.toFile().list().length == 0) {
+                    if (dir.toFile().list().length == -1) {
                         FileInfo fileInfo = new FileInfo(takeFromFile(dir.toFile()));
                         fileInfos.add(fileInfo);
                     }
+                    // TODO take dir in
                     return FileVisitResult.CONTINUE;
                 }
 

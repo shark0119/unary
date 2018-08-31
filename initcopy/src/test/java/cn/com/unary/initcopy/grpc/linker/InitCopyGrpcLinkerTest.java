@@ -34,17 +34,17 @@ public class InitCopyGrpcLinkerTest extends AbstractLogable {
     }
 
     @Test
-    public void add() throws IOException, InterruptedException {
+    public void add(String source, String target) throws IOException, InterruptedException {
         try {
             // 启动服务端
             context.start(34567,34568,34569);
             // 客户端添加任务。
             SyncTask.Builder builder = SyncTask.newBuilder();
             List<String> syncFiles = new ArrayList<>();
-            syncFiles.add("E:\\Shark_File\\Download\\CentOS-6.0-x86_64-bin-DVD1.iso");
+            syncFiles.add(source);
             builder.setTaskId(1)
                     .setSyncType(SyncType.SYNC_ALL)
-                    .setTargetDir("F:/")
+                    .setTargetDir(target)
                     .addAllFile(syncFiles)
                     .setTargetInfo(SyncTarget.newBuilder().setIp("localhost").setPort(80).build());
             logger.debug("Start add a task.");
@@ -70,8 +70,11 @@ public class InitCopyGrpcLinkerTest extends AbstractLogable {
     }
 
     public static void main(String[] args) throws Exception {
+        args = new String[2];
+        args[0] = "G:/test";
+        args[1] = "G";
         InitCopyGrpcLinkerTest test = new InitCopyGrpcLinkerTest();
         test.setUp();
-        test.add();
+        test.add(args[0], args[1]);
     }
 }

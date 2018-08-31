@@ -79,7 +79,7 @@ public class SyncAllPacker extends AbstractLogable implements Packer {
      * 每个包的大小
      */
     public final static int PACK_SIZE = UnaryTClient.MAX_PACK_SIZE;
-    public final static int BUFFER_DIRECT_LIMIT = 1025 * 1024;
+    public final static int BUFFER_DIRECT_LIMIT = 16 * 1024 * 1024;
 
     /**
      * ----我来组成分割线，以下是 Spring 容器来管理的实体----
