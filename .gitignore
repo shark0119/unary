@@ -17,3 +17,5 @@ transfer/target/*
 *.log
 
 initcopy/log/
+
+*.db
