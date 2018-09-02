@@ -8,6 +8,6 @@ import cn.com.unary.initcopy.common.Entity;
  * @author Shark.Yin
  * @since 1.0
  */
-public class DiffFileChunks implements Entity {
+public class DiffFileChunksDO implements Entity {
 
 }

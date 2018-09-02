@@ -25,6 +25,7 @@ public class ControlTaskGrpcImpl extends ControlTaskGrpc.ControlTaskImplBase {
         this.linker = linker;
     }
 
+    @Override
     public void init(cn.com.unary.initcopy.grpc.entity.ClientInitReq request,
                      StreamObserver<ServerInitResp> responseObserver) {
         responseObserver.onNext(linker.init(request));

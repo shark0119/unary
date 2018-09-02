@@ -1,4 +1,4 @@
-package cn.com.unary.initcopy.server;
+package cn.com.unary.initcopy.service;
 
 import api.UnaryChannel;
 import api.UnaryHandler;

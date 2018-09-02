@@ -1,19 +1,14 @@
 package cn.com.unary.initcopy.grpc;
 
+import cn.com.unary.initcopy.grpc.entity.DeleteTask;
+
 import static io.grpc.stub.ClientCalls.asyncUnaryCall;
-import static io.grpc.stub.ClientCalls.asyncServerStreamingCall;
-import static io.grpc.stub.ClientCalls.asyncClientStreamingCall;
-import static io.grpc.stub.ClientCalls.asyncBidiStreamingCall;
 import static io.grpc.stub.ClientCalls.blockingUnaryCall;
 import static io.grpc.stub.ClientCalls.blockingServerStreamingCall;
 import static io.grpc.stub.ClientCalls.futureUnaryCall;
 import static io.grpc.MethodDescriptor.generateFullMethodName;
 import static io.grpc.stub.ServerCalls.asyncUnaryCall;
-import static io.grpc.stub.ServerCalls.asyncServerStreamingCall;
-import static io.grpc.stub.ServerCalls.asyncClientStreamingCall;
-import static io.grpc.stub.ServerCalls.asyncBidiStreamingCall;
 import static io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall;
-import static io.grpc.stub.ServerCalls.asyncUnimplementedStreamingCall;
 
 /**
  */
@@ -37,13 +32,13 @@ public class ControlTaskGrpc {
           io.grpc.protobuf.ProtoUtils.marshaller(cn.com.unary.initcopy.grpc.entity.ClientInitReq.getDefaultInstance()),
           io.grpc.protobuf.ProtoUtils.marshaller(cn.com.unary.initcopy.grpc.entity.ServerInitResp.getDefaultInstance()));
   @io.grpc.ExperimentalApi("https://github.com/grpc/grpc-java/issues/1901")
-  public static final io.grpc.MethodDescriptor<cn.com.unary.initcopy.grpc.entity.DeleteTask,
+  public static final io.grpc.MethodDescriptor<DeleteTask,
       cn.com.unary.initcopy.grpc.entity.ExecResult> METHOD_DELETE =
       io.grpc.MethodDescriptor.create(
           io.grpc.MethodDescriptor.MethodType.UNARY,
           generateFullMethodName(
               "cn.com.unary.initcopy.grpc.ControlTask", "Delete"),
-          io.grpc.protobuf.ProtoUtils.marshaller(cn.com.unary.initcopy.grpc.entity.DeleteTask.getDefaultInstance()),
+          io.grpc.protobuf.ProtoUtils.marshaller(DeleteTask.getDefaultInstance()),
           io.grpc.protobuf.ProtoUtils.marshaller(cn.com.unary.initcopy.grpc.entity.ExecResult.getDefaultInstance()));
   @io.grpc.ExperimentalApi("https://github.com/grpc/grpc-java/issues/1901")
   public static final io.grpc.MethodDescriptor<cn.com.unary.initcopy.grpc.entity.ModifyTask,
@@ -97,8 +92,8 @@ public class ControlTaskGrpc {
      * 删除任务
      * </pre>
      */
-    public void delete(cn.com.unary.initcopy.grpc.entity.DeleteTask request,
-        io.grpc.stub.StreamObserver<cn.com.unary.initcopy.grpc.entity.ExecResult> responseObserver) {
+    public void delete(DeleteTask request,
+                       io.grpc.stub.StreamObserver<cn.com.unary.initcopy.grpc.entity.ExecResult> responseObserver) {
       asyncUnimplementedUnaryCall(METHOD_DELETE, responseObserver);
     }
 
@@ -125,7 +120,7 @@ public class ControlTaskGrpc {
             METHOD_DELETE,
             asyncUnaryCall(
               new MethodHandlers<
-                cn.com.unary.initcopy.grpc.entity.DeleteTask,
+                      DeleteTask,
                 cn.com.unary.initcopy.grpc.entity.ExecResult>(
                   this, METHODID_DELETE)))
           .addMethod(
@@ -173,8 +168,8 @@ public class ControlTaskGrpc {
      * 删除任务
      * </pre>
      */
-    public void delete(cn.com.unary.initcopy.grpc.entity.DeleteTask request,
-        io.grpc.stub.StreamObserver<cn.com.unary.initcopy.grpc.entity.ExecResult> responseObserver) {
+    public void delete(DeleteTask request,
+                       io.grpc.stub.StreamObserver<cn.com.unary.initcopy.grpc.entity.ExecResult> responseObserver) {
       asyncUnaryCall(
           getChannel().newCall(METHOD_DELETE, getCallOptions()), request, responseObserver);
     }
@@ -224,7 +219,7 @@ public class ControlTaskGrpc {
      * 删除任务
      * </pre>
      */
-    public cn.com.unary.initcopy.grpc.entity.ExecResult delete(cn.com.unary.initcopy.grpc.entity.DeleteTask request) {
+    public cn.com.unary.initcopy.grpc.entity.ExecResult delete(DeleteTask request) {
       return blockingUnaryCall(
           getChannel(), METHOD_DELETE, getCallOptions(), request);
     }
@@ -275,7 +270,7 @@ public class ControlTaskGrpc {
      * </pre>
      */
     public com.google.common.util.concurrent.ListenableFuture<cn.com.unary.initcopy.grpc.entity.ExecResult> delete(
-        cn.com.unary.initcopy.grpc.entity.DeleteTask request) {
+        DeleteTask request) {
       return futureUnaryCall(
           getChannel().newCall(METHOD_DELETE, getCallOptions()), request);
     }
@@ -318,7 +313,7 @@ public class ControlTaskGrpc {
               (io.grpc.stub.StreamObserver<cn.com.unary.initcopy.grpc.entity.ServerInitResp>) responseObserver);
           break;
         case METHODID_DELETE:
-          serviceImpl.delete((cn.com.unary.initcopy.grpc.entity.DeleteTask) request,
+          serviceImpl.delete((DeleteTask) request,
               (io.grpc.stub.StreamObserver<cn.com.unary.initcopy.grpc.entity.ExecResult>) responseObserver);
           break;
         case METHODID_MODIFY:

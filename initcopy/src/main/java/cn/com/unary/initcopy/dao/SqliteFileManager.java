@@ -7,12 +7,13 @@ import java.sql.Statement;
 import java.util.List;
 import java.util.Objects;
 
+import cn.com.unary.initcopy.entity.SyncTaskDO;
 import cn.com.unary.initcopy.utils.BeanExactUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.alibaba.druid.pool.DruidDataSource;
 
-import cn.com.unary.initcopy.entity.FileInfo;
+import cn.com.unary.initcopy.entity.FileInfoDO;
 import cn.com.unary.initcopy.exception.InfoPersistenceException;
 import cn.com.unary.initcopy.common.AbstractLogable;
 import cn.com.unary.initcopy.utils.ValidateUtils;
@@ -30,7 +31,7 @@ public class SqliteFileManager extends AbstractLogable implements FileManager {
 	private DruidDataSource dds;
 	
 	@Override
-	public List<FileInfo> query(String...fileIds) {
+	public List<FileInfoDO> query(String...fileIds) {
 		ValidateUtils.requireNotEmpty(fileIds);
 		
 		StringBuilder sb = new StringBuilder("select * from FILE_INFO WHERE FILE_ID IN ('");
@@ -54,7 +55,7 @@ public class SqliteFileManager extends AbstractLogable implements FileManager {
 	}
 
 	@Override
-	public void save(FileInfo fi) {
+	public void save(FileInfoDO fi) {
 		Objects.requireNonNull(fi);
 		try (
 			Connection conn = dds.getConnection();
@@ -67,8 +68,8 @@ public class SqliteFileManager extends AbstractLogable implements FileManager {
 	}
 
 	@Override
-	public void save(List<FileInfo> fis) {
-		for (FileInfo fi : fis) {
+	public void save(List<FileInfoDO> fis) {
+		for (FileInfoDO fi : fis) {
 			this.save(fi);
 		}
 	}
@@ -93,7 +94,7 @@ public class SqliteFileManager extends AbstractLogable implements FileManager {
 	}
 
 	@Override
-	public List<FileInfo> queryByTaskId(int taskId) {
+	public List<FileInfoDO> queryByTaskId(int taskId) {
 		// TODO
 		return null;
 	}
@@ -101,5 +102,20 @@ public class SqliteFileManager extends AbstractLogable implements FileManager {
 	@Override
 	public boolean taskFinished(int taskId) {
 		return false;
+	}
+
+	@Override
+	public SyncTaskDO queryTask(int taskId) {
+		return null;
+	}
+
+	@Override
+	public void deleteTask(int taskId) {
+
+	}
+
+	@Override
+	public void saveTask(SyncTaskDO taskDO) {
+
 	}
 }

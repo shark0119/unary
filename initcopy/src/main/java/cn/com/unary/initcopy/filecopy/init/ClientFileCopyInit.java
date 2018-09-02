@@ -3,8 +3,8 @@ package cn.com.unary.initcopy.filecopy.init;
 import api.UnaryTClient;
 import cn.com.unary.initcopy.InitCopyContext;
 import cn.com.unary.initcopy.dao.FileManager;
-import cn.com.unary.initcopy.entity.BaseFileInfo;
-import cn.com.unary.initcopy.entity.FileInfo;
+import cn.com.unary.initcopy.entity.BaseFileInfoDO;
+import cn.com.unary.initcopy.entity.FileInfoDO;
 import cn.com.unary.initcopy.grpc.client.ControlTaskGrpcClient;
 import cn.com.unary.initcopy.grpc.constant.SyncType;
 import cn.com.unary.initcopy.grpc.entity.ClientInitReq;
@@ -73,10 +73,10 @@ public class ClientFileCopyInit extends AbstractLogable {
         // TODO 设置加密压缩等选项
 
         logger.debug("Set transfer option done. Start to traversing files.");
-        List<FileInfo> syncFiles = traversingFiles(syncTask.getFileList());
+        List<FileInfoDO> syncFiles = traversingFiles(syncTask.getFileList());
         List<String> syncFileIds = new ArrayList<>();
         int taskId = syncTask.getTaskId();
-        for (FileInfo fi : syncFiles) {
+        for (FileInfoDO fi : syncFiles) {
             syncFileIds.add(fi.getId());
             fi.setTaskId(taskId);
             fileManager.save(fi);
@@ -87,10 +87,9 @@ public class ClientFileCopyInit extends AbstractLogable {
         ControlTaskGrpcClient controlTaskGrpcClient =
                 new ControlTaskGrpcClient(syncTask.getTargetInfo().getIp(),
                         InitCopyContext.CONTROL_TASK_GRPC_PORT);
-        controlTaskGrpcClient.setLinker (linker);
 
         long totalSize = 0L;
-        for (BaseFileInfo bfi : syncFiles) {
+        for (BaseFileInfoDO bfi : syncFiles) {
             totalSize += bfi.getFileSize();
         }
         ClientInitReq.Builder builder = ClientInitReq.newBuilder()
@@ -146,9 +145,9 @@ public class ClientFileCopyInit extends AbstractLogable {
         }
     }
 
-    private List<FileInfo> traversingFiles(List<String> files) throws IOException {
+    private List<FileInfoDO> traversingFiles(List<String> files) throws IOException {
         Path path;
-        final List<FileInfo> fileInfos = new ArrayList<>();
+        final List<FileInfoDO> fileInfos = new ArrayList<>();
         for (String fileName : files) {
             path = Paths.get(fileName);
             Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
@@ -156,7 +155,7 @@ public class ClientFileCopyInit extends AbstractLogable {
                 public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs)
                         throws IOException {
                     if (dir.toFile().list().length == -1) {
-                        FileInfo fileInfo = new FileInfo(takeFromFile(dir.toFile()));
+                        FileInfoDO fileInfo = new FileInfoDO(takeFromFile(dir.toFile()));
                         fileInfos.add(fileInfo);
                     }
                     // TODO take dir in
@@ -166,7 +165,7 @@ public class ClientFileCopyInit extends AbstractLogable {
                 @Override
                 public FileVisitResult visitFile(Path file, BasicFileAttributes attrs)
                         throws IOException {
-                    FileInfo fileInfo = new FileInfo(takeFromFile(file.toFile()));
+                    FileInfoDO fileInfo = new FileInfoDO(takeFromFile(file.toFile()));
                     fileInfos.add(fileInfo);
                     return FileVisitResult.CONTINUE;
                 }
@@ -175,8 +174,8 @@ public class ClientFileCopyInit extends AbstractLogable {
         return fileInfos;
     }
 
-    private BaseFileInfo takeFromFile(File file) {
-        BaseFileInfo bfi = new BaseFileInfo();
+    private BaseFileInfoDO takeFromFile(File file) {
+        BaseFileInfoDO bfi = new BaseFileInfoDO();
         bfi.setFileSize(file.length());
         bfi.setId(UUID.randomUUID().toString());
         bfi.setModifyTime(file.lastModified());

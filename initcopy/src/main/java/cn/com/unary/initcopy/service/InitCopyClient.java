@@ -1,4 +1,4 @@
-package cn.com.unary.initcopy.client;
+package cn.com.unary.initcopy.service;
 
 /**
  * 初始化复制的客户端

@@ -4,16 +4,17 @@ import cn.com.unary.initcopy.common.Entity;
 
 /**
  * 在初始化时所需要的文件基础信息
- * @author shark
  *
+ * @author Shark.Yin
+ * @since 1.0
  */
-public class BaseFileInfo implements Entity {
+public class BaseFileInfoDO implements Entity {
 
 	private static final long serialVersionUID = 1852745479396286807L;
-	private int taskId;
+	private Integer taskId;
 	private String id;
-	private long modifyTime;
-	private long fileSize;
+	private Long modifyTime;
+	private Long fileSize;
 	private String fullName;
 	
 	public int getTaskId() {		return taskId;	}
@@ -26,4 +27,15 @@ public class BaseFileInfo implements Entity {
 	public void setModifyTime(long modifyTime) {		this.modifyTime = modifyTime;	}
 	public long getFileSize() {		return fileSize;	}
 	public void setFileSize(long fileSize) {		this.fileSize = fileSize;	}
+
+	@Override
+	public String toString() {
+		return "BaseFileInfoDO{" +
+				"taskId=" + taskId +
+				", id='" + id + '\'' +
+				", modifyTime=" + modifyTime +
+				", fileSize=" + fileSize +
+				", fullName='" + fullName + '\'' +
+				'}';
+	}
 }

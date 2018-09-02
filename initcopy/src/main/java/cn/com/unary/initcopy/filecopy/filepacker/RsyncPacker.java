@@ -3,7 +3,7 @@ package cn.com.unary.initcopy.filecopy.filepacker;
 import api.UnaryTClient;
 import cn.com.unary.initcopy.dao.FileManager;
 import cn.com.unary.initcopy.entity.Constants.PackType;
-import cn.com.unary.initcopy.entity.FileInfo;
+import cn.com.unary.initcopy.entity.FileInfoDO;
 import cn.com.unary.initcopy.filecopy.io.AbstractFileInput;
 import cn.com.unary.initcopy.grpc.entity.DiffFileInfo;
 import cn.com.unary.initcopy.utils.ValidateUtils;
@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -27,7 +26,7 @@ import java.util.Map;
 @Scope("prototype")
 public class RsyncPacker implements SyncDiffPacker {
 
-    private final Map<String, FileInfo> fiMap = new HashMap<>();
+    private final Map<String, FileInfoDO> fiMap = new HashMap<>();
     private final Map<String, DiffFileInfo> dfiMap = new HashMap<>();
     private final List<String> readFileIds = new ArrayList<>();
     @Autowired
@@ -43,7 +42,7 @@ public class RsyncPacker implements SyncDiffPacker {
     public void start(List<String> fileIds) {
         ValidateUtils.requireNotEmpty(fileIds);
         if (ready) {
-            for (FileInfo fi : fm.query(fileIds.toArray(new String[fileIds.size()]))) {
+            for (FileInfoDO fi : fm.query(fileIds.toArray(new String[fileIds.size()]))) {
                 fiMap.put(fi.getId(), fi);
             }
             if (fiMap.keySet().size() != dfiMap.keySet().size()) {

@@ -10,18 +10,18 @@ import java.beans.Transient;
  * @author Shark.Yin
  * @since 1.0
  */
-public class FileInfo extends BaseFileInfo {
+public class FileInfoDO extends BaseFileInfoDO {
     private static final long serialVersionUID = 7000233780395813428L;
     private FileType fileType;
-    private int beginPackIndex;
-    private int finishPackIndex;
+    private Integer beginPackIndex;
+    private Integer finishPackIndex;
     private FileAttr attr;
-    private STATE state = STATE.WAIT;
+    private STATE state;
 
-    public FileInfo() {
+    public FileInfoDO() {
     }
 
-    public FileInfo(BaseFileInfo bfi) {
+    public FileInfoDO(BaseFileInfoDO bfi) {
         this.setFileSize(bfi.getFileSize());
         this.setFullName(bfi.getFullName());
         this.setTaskId(bfi.getTaskId());
@@ -69,13 +69,13 @@ public class FileInfo extends BaseFileInfo {
         return state.toString();
     }
 
+    public void setState(String state) {
+        this.state = STATE.valueOf(state);
+    }
+
     @Transient
     public void setState(STATE state) {
         this.state = state;
-    }
-
-    public void setState(String state) {
-        this.state = STATE.valueOf(state);
     }
 
     @Transient
@@ -84,19 +84,24 @@ public class FileInfo extends BaseFileInfo {
     }
 
     @Override
-    public String toString() {
-        return "FileInfo [fileType=" + fileType + ", beginPackIndex=" + beginPackIndex + ", finishPackIndex="
-                + finishPackIndex + ", attr=" + attr + "]";
-    }
-
-    @Override
     public boolean equals(Object obj) {
-        if (obj instanceof FileInfo) {
-            if (((FileInfo) obj).getId().equals(this.getId())) {
+        if (obj instanceof FileInfoDO) {
+            if (((FileInfoDO) obj).getId().equals(this.getId())) {
                 return true;
             }
         }
         return false;
+    }
+
+    @Override
+    public String toString() {
+        return "FileInfoDO{" +
+                "fileType=" + fileType +
+                ", beginPackIndex=" + beginPackIndex +
+                ", finishPackIndex=" + finishPackIndex +
+                ", attr=" + attr +
+                ", state=" + state +
+                '}';
     }
 
     public enum STATE {

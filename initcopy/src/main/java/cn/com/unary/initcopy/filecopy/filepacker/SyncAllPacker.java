@@ -4,7 +4,7 @@ import api.UnaryTClient;
 import cn.com.unary.initcopy.InitCopyContext;
 import cn.com.unary.initcopy.dao.FileManager;
 import cn.com.unary.initcopy.entity.Constants.PackType;
-import cn.com.unary.initcopy.entity.FileInfo;
+import cn.com.unary.initcopy.entity.FileInfoDO;
 import cn.com.unary.initcopy.filecopy.io.AbstractFileInput;
 import cn.com.unary.initcopy.common.AbstractLogable;
 import cn.com.unary.initcopy.utils.CommonUtils;
@@ -105,7 +105,7 @@ public class SyncAllPacker extends AbstractLogable implements Packer {
     /**
      * 待读取的文件列表
      */
-    private Iterator<FileInfo> fiIterator;
+    private Iterator<FileInfoDO> fiIterator;
     /**
      * 已读取的文件 ID 列表
      */
@@ -113,7 +113,7 @@ public class SyncAllPacker extends AbstractLogable implements Packer {
     /**
      * 当前正在读取的文件
      */
-    private FileInfo currentFileInfo;
+    private FileInfoDO currentFileInfo;
     /**
      * 文件信息数据
      */
@@ -158,7 +158,7 @@ public class SyncAllPacker extends AbstractLogable implements Packer {
     @Override
     public void start(List<String> fileIds) throws IOException {
         if (isReady() && !pause) {
-            List<FileInfo> list = fm.query(fileIds.toArray(new String[fileIds.size()]));
+            List<FileInfoDO> list = fm.query(fileIds.toArray(new String[fileIds.size()]));
             fiIterator = list.iterator();
             logger.debug("Got " + list.size() + " FileInfo with " + fileIds.size() + " FileId");
             byte[] packData = CommonUtils.extractBytes(pack());
@@ -176,13 +176,13 @@ public class SyncAllPacker extends AbstractLogable implements Packer {
     @Override
     public void restore(int taskId) throws Exception {
         if (isReady() && !pause) {
-            List<FileInfo> list = fm.queryByTaskId(taskId);
-            List<FileInfo> unSyncFileList = new ArrayList<>();
-            for (FileInfo fileInfo : list) {
-                if (fileInfo.getStateEnum().equals(FileInfo.STATE.SYNCED)) {
+            List<FileInfoDO> list = fm.queryByTaskId(taskId);
+            List<FileInfoDO> unSyncFileList = new ArrayList<>();
+            for (FileInfoDO fileInfo : list) {
+                if (fileInfo.getStateEnum().equals(FileInfoDO.STATE.SYNCED)) {
                     continue;
                 } else {
-                    fileInfo.setState(FileInfo.STATE.WAIT);
+                    fileInfo.setState(FileInfoDO.STATE.WAIT);
                     unSyncFileList.add(fileInfo);
                 }
             }
@@ -228,7 +228,7 @@ public class SyncAllPacker extends AbstractLogable implements Packer {
         // set pack type
         buffer.put(this.getPackType().getValue());
 
-        FileInfo fi;
+        FileInfoDO fi;
         // 第一次打包，需要先打开一个文件
         if (fileInfoBuffer == null) {
             fi = nextFile();
@@ -305,7 +305,7 @@ public class SyncAllPacker extends AbstractLogable implements Packer {
      * @param fi 文件信息实体
      * @return 包装了文件信息的实体
      */
-    private ByteBuffer serializeFileInfo(FileInfo fi) {
+    private ByteBuffer serializeFileInfo(FileInfoDO fi) {
         logger.debug("Ser to json.File id:" + fi.getId());
         try {
             // byte[] fileInfoJsonBytes = mapper.writeValueAsBytes(fi);
@@ -323,16 +323,16 @@ public class SyncAllPacker extends AbstractLogable implements Packer {
         }
     }
 
-    private FileInfo nextFile() throws IOException {
+    private FileInfoDO nextFile() throws IOException {
         if (currentFileInfo != null) {
-            currentFileInfo.setState(FileInfo.STATE.SYNCED);
+            currentFileInfo.setState(FileInfoDO.STATE.SYNCED);
             fm.save(currentFileInfo);
             readFileIds.add(currentFileInfo.getId());
         }
         if (fiIterator.hasNext()) {
             currentFileInfo = fiIterator.next();
             input.openFile(currentFileInfo.getFullName());
-            currentFileInfo.setState(FileInfo.STATE.SYNCING);
+            currentFileInfo.setState(FileInfoDO.STATE.SYNCING);
             fm.save(currentFileInfo);
             logger.debug("Got next file : " + currentFileInfo.getId());
             return currentFileInfo;

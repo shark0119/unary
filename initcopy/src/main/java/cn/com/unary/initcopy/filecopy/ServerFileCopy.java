@@ -1,6 +1,9 @@
 package cn.com.unary.initcopy.filecopy;
 
+import cn.com.unary.initcopy.entity.ClientInitReqDO;
 import cn.com.unary.initcopy.entity.Constants;
+import cn.com.unary.initcopy.entity.ServerInitRespDO;
+import cn.com.unary.initcopy.exception.TaskException;
 import cn.com.unary.initcopy.filecopy.filepacker.SyncAllPacker;
 import cn.com.unary.initcopy.filecopy.fileresolver.Resolver;
 import cn.com.unary.initcopy.filecopy.fileresolver.RsyncResolver;
@@ -30,6 +33,7 @@ import java.util.concurrent.locks.ReentrantLock;
 /**
  * 目标端的文件复制模块
  * 线程安全
+ * 会处理所有下层抛出的异常
  *
  * @author Shark.Yin
  * @since 1.0
@@ -83,8 +87,9 @@ public class ServerFileCopy extends AbstractLogable implements ApplicationContex
      *
      * @param req 初始化请求
      * @return 初始化响应
+     * @throws TaskException 任务初始化失败异常
      */
-    public ServerInitResp startInit(ClientInitReq req) {
+    public ServerInitRespDO startInit(ClientInitReqDO req) throws TaskException {
         try {
             CopyTask task = new CopyTask(req.getTaskId(), req.getTargetDir());
             lock.lock();
@@ -97,10 +102,10 @@ public class ServerFileCopy extends AbstractLogable implements ApplicationContex
             lock.lock();
             taskMap.remove(req.getTaskId());
             lock.unlock();
-            ServerInitResp.Builder builder = ServerInitResp.newBuilder();
-            builder.setMsg(e.getMessage());
-            builder.setReady(false);
-            return builder.build();
+            ServerInitRespDO resp = new ServerInitRespDO();
+            resp.setMsg(e.getMessage());
+            resp.setReady(false);
+            return resp;
         }
     }
 

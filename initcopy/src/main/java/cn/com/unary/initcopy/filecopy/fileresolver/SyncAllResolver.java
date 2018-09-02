@@ -2,7 +2,7 @@ package cn.com.unary.initcopy.filecopy.fileresolver;
 
 import cn.com.unary.initcopy.dao.FileManager;
 import cn.com.unary.initcopy.entity.Constants.PackType;
-import cn.com.unary.initcopy.entity.FileInfo;
+import cn.com.unary.initcopy.entity.FileInfoDO;
 import cn.com.unary.initcopy.exception.UnaryIoException;
 import cn.com.unary.initcopy.filecopy.filepacker.SyncAllPacker;
 import cn.com.unary.initcopy.filecopy.io.AbstractFileOutput;
@@ -54,7 +54,7 @@ public class SyncAllResolver extends AbstractLogable implements Resolver {
     private int packIndex;
     private String backupPath;
     private int taskId;
-    private FileInfo currentFile;
+    private FileInfoDO currentFile;
 
     @Override
     public SyncAllResolver setBackupPath(String backupPath) {
@@ -202,7 +202,7 @@ public class SyncAllResolver extends AbstractLogable implements Resolver {
     private void initCopyFile(int remainingSize) throws IOException {
         logger.debug("A file info json start transfer to FileInfo");
         try {
-            currentFile = JSON.parseObject(fileInfo.array(), FileInfo.class);
+            currentFile = JSON.parseObject(fileInfo.array(), FileInfoDO.class);
             beginPackIndex = endPackIndex = packIndex;
             long fileSizeExCurPack = currentFile.getFileSize() - remainingSize;
             currentFile.setBeginPackIndex(packIndex);
@@ -214,7 +214,7 @@ public class SyncAllResolver extends AbstractLogable implements Resolver {
                 beginPackSize = endPackSize = (int) currentFile.getFileSize();
             }
             currentFile.setFinishPackIndex(endPackIndex);
-            currentFile.setState(FileInfo.STATE.SYNCING);
+            currentFile.setState(FileInfoDO.STATE.SYNCING);
             fm.save(currentFile);
         } catch (Exception e) {
             throw new IllegalStateException("ERROR 0x04 : Failed extract FileInfo from Json", e);
@@ -260,7 +260,7 @@ public class SyncAllResolver extends AbstractLogable implements Resolver {
         currentPos += size;
         if (packIndex >= endPackIndex) {
             beginPackIndex = endPackIndex = beginPackSize = endPackSize = 0;
-            currentFile.setState(FileInfo.STATE.SYNCED);
+            currentFile.setState(FileInfoDO.STATE.SYNCED);
             fm.save(currentFile);
             stage = ReadProcess.CONTENT_DONE;
         } else {

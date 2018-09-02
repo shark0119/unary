@@ -1,6 +1,6 @@
 package cn.com.unary.initcopy.utils;
 
-import cn.com.unary.initcopy.entity.FileInfo;
+import cn.com.unary.initcopy.entity.FileInfoDO;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -14,11 +14,11 @@ import java.util.List;
  * @since 1.0
  */
 public class BeanExactUtil {
-    public static List<FileInfo> deSerFromResult (ResultSet rset) throws SQLException {
-        List<FileInfo> fis = new ArrayList<>();
-        FileInfo fi ;
+    public static List<FileInfoDO> deSerFromResult (ResultSet rset) throws SQLException {
+        List<FileInfoDO> fis = new ArrayList<>();
+        FileInfoDO fi ;
         while (rset.next()) {
-            fi = new FileInfo ();
+            fi = new FileInfoDO();
             fi.setId(rset.getString("FILE_ID"));
             fi.setModifyTime(rset.getLong("MODIFY_TIME"));
             fi.setFileSize(rset.getLong("FILE_SIZE"));
@@ -27,7 +27,7 @@ public class BeanExactUtil {
         }
         return null;
     }
-    public static String serToSql (FileInfo fi) {
+    public static String serToSql (FileInfoDO fi) {
         StringBuilder sb = new StringBuilder ("");
 
         return sb.toString();

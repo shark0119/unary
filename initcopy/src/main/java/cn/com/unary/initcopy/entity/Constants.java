@@ -60,7 +60,9 @@ public final class Constants {
         }
     }
 
-    public static class GlobalVar {
-        public static int MAX_PACK_SIZE = 4096;
+    public enum UpdateType {
+        DELETE,
+        PAUSE,
+        RESUME,
     }
 }

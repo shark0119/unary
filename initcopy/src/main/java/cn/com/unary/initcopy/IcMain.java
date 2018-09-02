@@ -1,10 +1,5 @@
 package cn.com.unary.initcopy;
 
-import cn.com.unary.initcopy.grpc.GrpcServiceStarter;
-import cn.com.unary.initcopy.grpc.linker.InitCopyGrpcLinker;
-import cn.com.unary.initcopy.grpc.service.InitCopyGrpcImpl;
-import cn.com.unary.initcopy.server.InitCopyServer;
-
 /**
  * 程序入口
  *
@@ -14,7 +9,7 @@ import cn.com.unary.initcopy.server.InitCopyServer;
 public class IcMain {
 
     public static void main(String[] args) {
-        
+
         /*boolean isServer = false;
         boolean isClient = false;
         boolean nextIsPort = false;

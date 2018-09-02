@@ -1,5 +1,9 @@
 package cn.com.unary.initcopy.grpc.client;
 
+import cn.com.unary.initcopy.common.BeanConverter;
+import cn.com.unary.initcopy.entity.DeleteTaskDO;
+import cn.com.unary.initcopy.entity.ExecResultDO;
+import cn.com.unary.initcopy.entity.ModifyTaskDO;
 import cn.com.unary.initcopy.grpc.ControlTaskGrpc;
 import cn.com.unary.initcopy.grpc.entity.ClientInitReq;
 import cn.com.unary.initcopy.grpc.entity.DeleteTask;
@@ -8,6 +12,10 @@ import cn.com.unary.initcopy.grpc.entity.ModifyTask;
 import cn.com.unary.initcopy.grpc.entity.ServerInitResp;
 import cn.com.unary.initcopy.grpc.linker.ControlTaskGrpcLinker;
 import cn.com.unary.initcopy.common.AbstractLogable;
+import io.grpc.ManagedChannel;
+import io.grpc.ManagedChannelBuilder;
+
+import java.lang.reflect.InvocationTargetException;
 
 /**
  * 源端和目标端之间，任务控制信息GRPC接口的调用方(客户端)
@@ -17,9 +25,10 @@ import cn.com.unary.initcopy.common.AbstractLogable;
  */
 public class ControlTaskGrpcClient extends AbstractLogable {
 
-
     private ControlTaskGrpc.ControlTaskBlockingStub blockingStub;
-    private ControlTaskGrpc.ControlTaskFutureStub futureStub;
+    /**
+     * 测试代码
+     */
     private ControlTaskGrpcLinker linker;
 
     /**
@@ -29,9 +38,9 @@ public class ControlTaskGrpcClient extends AbstractLogable {
      * @param port GRPC 服务监听的端口
      */
     public ControlTaskGrpcClient(String host, int port) {
-        /*ManagedChannel channel = ManagedChannelBuilder.forAddress(host, port).usePlaintext(true).build();
+        ManagedChannel channel = ManagedChannelBuilder.forAddress(host, port).usePlaintext(true).build();
         blockingStub = ControlTaskGrpc.newBlockingStub(channel);
-        futureStub = ControlTaskGrpc.newFutureStub(channel);*/
+        linker = new ControlTaskGrpcLinker();
     }
 
     /**
@@ -41,45 +50,39 @@ public class ControlTaskGrpcClient extends AbstractLogable {
      * @return 初始化响应
      */
     public ServerInitResp invokeGrpcInit(ClientInitReq req) {
-        /*final ListenableFuture<ServerInitResp> sir =  futureStub.init(req);
-        sir.addListener(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    sir.get();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                } catch (ExecutionException e) {
-                    e.printStackTrace();
-                }
-            }
-        }, null);*/
         logger.debug("Send file data to the target to confirm.");
         return linker.init(req);
-        // return blockingStub.init(req);
     }
 
     /**
      * 调用 {@link cn.com.unary.initcopy.grpc.ControlTaskGrpc#METHODID_DELETE}
      *
-     * @param deleteTask 删除任务的相关参数
+     * @param deleteTaskDO 删除任务的相关参数
      * @return 执行结果
      */
-    public ExecResult invokeGrpcDelete(DeleteTask deleteTask) {
-        return blockingStub.delete(deleteTask);
+    public ExecResultDO invokeGrpcDelete(DeleteTaskDO deleteTaskDO) {
+        try {
+            ExecResult result = blockingStub.delete(BeanConverter.convert(deleteTaskDO, DeleteTask.class));
+            return BeanConverter.convert(result, ExecResultDO.class);
+        } catch (Exception e) {
+            logger.error("Error.", e);
+            throw new IllegalStateException(e);
+        }
     }
 
     /**
      * 调用 {@link cn.com.unary.initcopy.grpc.ControlTaskGrpc#METHODID_MODIFY}
      *
-     * @param modifyTask 修改任务的相关参数
+     * @param modifyTaskDO 修改任务的相关参数
      * @return 执行结果
      */
-    public ExecResult invokeGrpcModify(ModifyTask modifyTask) {
-        return blockingStub.modify(modifyTask);
-    }
-
-    public void setLinker(ControlTaskGrpcLinker linker) {
-        this.linker = linker;
+    public ExecResultDO invokeGrpcModify(ModifyTaskDO modifyTaskDO) {
+        try {
+            ExecResult result = blockingStub.modify(BeanConverter.convert(modifyTaskDO, ModifyTask.class));
+            return BeanConverter.convert(result, ExecResultDO.class);
+        } catch (Exception e) {
+            logger.error("Error.", e);
+            throw new IllegalStateException(e);
+        }
     }
 }

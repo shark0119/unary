@@ -2,10 +2,13 @@ package cn.com.unary.initcopy.filecopy;
 
 import api.UnaryTClient;
 import cn.com.unary.initcopy.dao.FileManager;
-import cn.com.unary.initcopy.entity.FileInfo;
+import cn.com.unary.initcopy.entity.Constants;
+import cn.com.unary.initcopy.entity.FileInfoDO;
+import cn.com.unary.initcopy.exception.TaskException;
 import cn.com.unary.initcopy.filecopy.filepacker.Packer;
 import cn.com.unary.initcopy.filecopy.filepacker.SyncDiffPacker;
 import cn.com.unary.initcopy.filecopy.init.ClientFileCopyInit;
+import cn.com.unary.initcopy.grpc.constant.ModifyType;
 import cn.com.unary.initcopy.grpc.entity.DiffFileInfo;
 import cn.com.unary.initcopy.grpc.entity.SyncTask;
 import cn.com.unary.initcopy.common.AbstractLogable;
@@ -27,7 +30,7 @@ import java.util.concurrent.ExecutorService;
 
 /**
  * 文件复制模块，负责与外部通讯。将内部三个模块与外部组合起来。
- * 线程安全
+ * 线程安全，会将下层的所有可拦截异常全部捕获。
  *
  * @author Shark.Yin
  * @since 1.0
@@ -44,50 +47,60 @@ public class ClientFileCopy extends AbstractLogable implements ApplicationContex
     @Autowired
     @Qualifier("clientExecutor")
     protected ExecutorService exec;
-
     private ApplicationContext applicationContext;
 
+    /**
+     * 对任务进行删除、暂停、唤醒等操作
+     * @param taskId 任务Id
+     * @param modifyType 更新操作
+     * @throws TaskException 任务异常
+     */
+    public void updateTask (int taskId, Constants.UpdateType modifyType) throws TaskException {
+    }
     /**
      * 源端接收到添加任务指令后，开始初始化；
      * 初始化结束以后开始文件打包；线程安全
      *
      * @param syncTask 同步任务相关配置信息
-     * @throws Exception 任务添加失败，可能是 IO异常，可能是初始化异常，也可能是打包异常
+     * @throws TaskException 任务添加失败，可能是 IO异常，可能是初始化异常，也可能是打包异常
      */
-    public void addTask(SyncTask syncTask) throws Exception {
+    public void addTask(SyncTask syncTask) throws TaskException {
+        try {
+            logger.debug("Start File Copy Init.");
+            UnaryTClient unaryTClient = applicationContext.getBean(UnaryTClient.class);
+            List<DiffFileInfo> diffFileInfos = new ArrayList<>();
+            List<String> syncFileIds = clientFileCopyInit.startInit(unaryTClient, syncTask, diffFileInfos);
+            logger.debug("Got " + diffFileInfos.size() + " diff file info and "
+                    + syncFileIds.size() + " file ids.");
 
-        logger.debug("Start File Copy Init.");
-        UnaryTClient unaryTClient = applicationContext.getBean(UnaryTClient.class);
-        List<DiffFileInfo> diffFileInfos = new ArrayList<>();
-        List<String> syncFileIds = clientFileCopyInit.startInit(unaryTClient, syncTask, diffFileInfos);
-        logger.debug("Got " + diffFileInfos.size() + " diff file info and "
-                + syncFileIds.size() + " file ids.");
-
-        logger.debug("Remove invalid file info. Complete file info from base file info.");
-        List<FileInfo> list1 = fm.queryByTaskId(syncTask.getTaskId());
-        Map<String, String> map = new HashMap<>(100);
-        for (String id : syncFileIds) {
-            map.put(id, id);
-        }
-        for (FileInfo fi : list1) {
-            if (map.containsKey(fi.getId())) {
-                fm.save(BeanConvertUtil.readFromBaseFileInfo(fi));
-            } else {
-                fm.delete(fi.getId());
+            logger.debug("Remove invalid file info. Complete file info from base file info.");
+            List<FileInfoDO> list1 = fm.queryByTaskId(syncTask.getTaskId());
+            Map<String, String> map = new HashMap<>(100);
+            for (String id : syncFileIds) {
+                map.put(id, id);
             }
-        }
+            for (FileInfoDO fi : list1) {
+                if (map.containsKey(fi.getId())) {
+                    fm.save(BeanConvertUtil.readFromBaseFileInfo(fi));
+                } else {
+                    fm.delete(fi.getId());
+                }
+            }
 
-        logger.debug("Try Start A Sync Task. Pack And Send File.");
-        // 根据不同的同步方式来进行使用对应的打包策略
-        switch (syncTask.getSyncType()) {
-            // 差异复制
-            case SYNC_DIFF:
-                startDiffSync(unaryTClient, syncTask.getTaskId(), syncFileIds, diffFileInfos);
-                break;
-            case SYNC_ALL:
-            default:
-                startAllSync(unaryTClient, syncTask.getTaskId(), syncFileIds);
-                break;
+            logger.debug("Try Start A Sync Task. Pack And Send File.");
+            // 根据不同的同步方式来进行使用对应的打包策略
+            switch (syncTask.getSyncType()) {
+                // 差异复制
+                case SYNC_DIFF:
+                    startDiffSync(unaryTClient, syncTask.getTaskId(), syncFileIds, diffFileInfos);
+                    break;
+                case SYNC_ALL:
+                default:
+                    startAllSync(unaryTClient, syncTask.getTaskId(), syncFileIds);
+                    break;
+            }
+        } catch (IOException e) {
+            throw new TaskException(e);
         }
     }
 

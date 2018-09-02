@@ -13,8 +13,6 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 
 import java.util.Objects;
 
-import static org.junit.Assert.*;
-
 public class ControlTaskGrpcLinkerTest {
 
     AnnotationConfigApplicationContext ac;

@@ -22,7 +22,9 @@ public class BeanConverter extends AbstractLogable {
 
     public static final String OR_BUILDER_LIST = "OrBuilderList";
     public static final String BUILDER_LIST = "BuilderList";
-    private static final Map<String, String> GRPC_EX_METHOD = new HashMap<>(15);
+    public static final String NEW_BUILDER = "newBuilder";
+    public static final String DOT = ".";
+    private static final Map<String, String> GRPC_EX_METHOD = new HashMap<>(20);
     private static final List<String> GRPC_LIST_SUFFIXES = new ArrayList<>(3);
     private static final String GRPC_MEMBER_GETTER_SUFFIX = "OrBuilder";
     private static final String GRPC_LIST_SETTER_PREFIX = "addAll";
@@ -42,6 +44,7 @@ public class BeanConverter extends AbstractLogable {
         GRPC_EX_METHOD.put("getUnknownFields", "");
         GRPC_EX_METHOD.put("getRepeatedField", "");
         GRPC_EX_METHOD.put("getSerializedSize", "");
+        GRPC_EX_METHOD.put("getDefaultInstance", "");
         GRPC_EX_METHOD.put("getDescriptorForType", "");
         GRPC_EX_METHOD.put("getRepeatedFieldCount", "");
         GRPC_EX_METHOD.put("getOneofFieldDescriptor", "");
@@ -74,7 +77,7 @@ public class BeanConverter extends AbstractLogable {
      * @return 已填充的实体
      */
     public static <T> T convert(Object source, Class<T> targetCls, String... ignoreProperties)
-            throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+            throws Exception {
         Objects.requireNonNull(targetCls);
         Objects.requireNonNull(source);
         boolean objNotGrpc = true, containerNotGrpc = true;
@@ -88,14 +91,18 @@ public class BeanConverter extends AbstractLogable {
         } else if (!(Entity.class.isAssignableFrom(targetCls))) {
             throw new UnsupportedOperationException("must implements Entity Or MessageOrBuilder!");
         }
-        Constructor<T> constructor = targetCls.getConstructor();
-        T target = constructor.newInstance();
         // 如果两个都不是 GRPC 实体，直接使用 Spring 内置的类属性拷贝工具。
         if (objNotGrpc && containerNotGrpc) {
+            Constructor<T> constructor = targetCls.getConstructor();
+            T target = constructor.newInstance();
             BeanUtils.copyProperties(source, target, ignoreProperties);
             return target;
         }
-        Map<String, Object> fieldValueMap = getFieldValue(source, ignoreProperties);
+        Map<String, Method> getter = getMethod(source.getClass(), METHOD_TYPE.GETTER, "");
+        for (String ip : ignoreProperties) {
+            getter.remove(ip);
+        }
+        Map<String, Object> fieldValueMap = getFieldValue(source, getter);
         T obj = setFieldValue(targetCls, fieldValueMap);
         return obj;
     }
@@ -107,7 +114,7 @@ public class BeanConverter extends AbstractLogable {
      * 不论访问权限，容器都应该声明一个默认的构造方法。
      *
      * @param container     容器的 Class
-     * @param fieldValueMap 成员-值 Map
+     * @param fieldValueMap getter
      */
     public static <T> T setFieldValue(Class<T> container, Map<String, Object> fieldValueMap)
             throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, InstantiationException {
@@ -115,7 +122,7 @@ public class BeanConverter extends AbstractLogable {
         Object builder;
         // 生成实例
         if (containerIsGrpc) {
-            Method method = container.getMethod("newBuilder");
+            Method method = container.getMethod(NEW_BUILDER);
             builder = method.invoke(null);
         } else {
             Constructor<T> constructor = container.getConstructor();
@@ -124,19 +131,23 @@ public class BeanConverter extends AbstractLogable {
         }
         Map<String, Method> setters = getMethod(builder.getClass(), METHOD_TYPE.SETTER, "");
         Method method;
+        String memName;
         for (String fieldName : setters.keySet()) {
-            if (fieldValueMap.get(fieldName) != null) {
+            if (fieldValueMap.containsKey(fieldName)) {
                 method = setters.get(fieldName);
-                if (fieldName.contains(".")) {
+                if (fieldName.contains(DOT)) {
                     // 表示嵌套了对象
+                    memName = fieldName.substring(0, fieldName.indexOf(DOT) + 1);
                     Object obj = setFieldValue(method.getParameterTypes()[0],
-                            filterMap(fieldValueMap, fieldName.substring(0, fieldName.indexOf(".") + 1)));
-                    method.invoke(builder, obj);
+                            filterMap(fieldValueMap, memName));
+                    setters.get(memName).invoke(builder, obj);
+                    fieldValueMap.remove(memName);
                 } else {
                     method.invoke(builder, fieldValueMap.get(fieldName));
                 }
             } else {
-                logger.debug("Field " + fieldName + " ignore.");
+
+                logger.debug("Field " + (fieldName==null?"":fieldName) + " ignore.");
             }
         }
         // GRPC 需要额外生成
@@ -154,32 +165,22 @@ public class BeanConverter extends AbstractLogable {
      * @param obj 指定的对象
      * @return 成员-值 Map
      */
-    public static Map<String, Object> getFieldValue(Object obj, String... ignoreProperties)
-            throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
-        Map<String, String> ipMap = new HashMap<>(10);
-        for (String ip : ignoreProperties) {
-            ipMap.put(ip, null);
-        }
-        boolean isGrpcEntity = false;
-        if (obj instanceof MessageOrBuilder) {
-            isGrpcEntity = true;
-        }
-        Map<String, Object> fieldValueMap = new HashMap<>(100);
-        Map<String, Method> getter = getMethod(obj.getClass(), METHOD_TYPE.GETTER, "");
-        for (String fieldName : getter.keySet()) {
-            // 忽略
-            if (ipMap.containsKey(fieldName)) {
-                continue;
-            }
-            //  GRPC 实体
-            if (isGrpcEntity) {
-                // 无效的方法
-                if (fieldName.endsWith("bytes") &&
-                        fieldValueMap.containsKey(fieldName.substring(0, fieldName.length() - 5))) {
-                    continue;
+    public static Map<String, Object> getFieldValue(Object obj, Map<String, Method> getter)
+            throws InvocationTargetException, IllegalAccessException {
+        Map<String, Object> fieldValueMap = new HashMap<>(getter.size());
+        String memName;
+        HashSet<String> fieldNames = new HashSet<>(getter.keySet());
+        for (String fieldName : fieldNames) {
+            if (getter.keySet().contains(fieldName)) {
+                if (fieldName.contains(DOT)) {
+                    memName = fieldName.substring(0, fieldName.indexOf(DOT) + 1);
+                    // 当成员是一个对象时
+                    fieldValueMap.putAll(getFieldValue(getter.get(fieldName).invoke(obj), filterMap(getter, memName)));
+                    getter.remove(fieldName);
+                } else {
+                    fieldValueMap.put(fieldName, getter.get(fieldName).invoke(obj));
                 }
             }
-            fieldValueMap.put(fieldName, getter.get(fieldName).invoke(obj));
         }
         return fieldValueMap;
     }
@@ -197,14 +198,18 @@ public class BeanConverter extends AbstractLogable {
     public static <T> Map<String, Method> getMethod(Class<T> cls, METHOD_TYPE methodType, String prefix)
             throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         boolean isGrpcEntity = MessageOrBuilder.class.isAssignableFrom(cls);
+        boolean isAddAllMtd;
         String pattern = METHOD_TYPE.GETTER.equals(methodType) ? GET_PATTERN : SET_PATTERN;
-        prefix = ValidateUtils.isEmpty(prefix) ? "" : prefix + ".";
+        prefix = ValidateUtils.isEmpty(prefix) ? "" : prefix + DOT;
         Map<String, Method> fieldMethodMap = new HashMap<>(10);
-        String fieldName = null, methodName;
+        String fieldName, methodName, fullFieldName;
         Class<?> memType;
         for (Method method : cls.getMethods()) {
             methodName = method.getName();
             if (methodName.startsWith(pattern)) {
+                if (isGrpcEntity && GRPC_EX_METHOD.containsKey(methodName)) {
+                    continue;
+                }
                 // Getter 的参数为空， Grpc 的 Setter 的返回值必须为当前对象或者子类
                 if (methodType.equals(METHOD_TYPE.GETTER)) {
                     if (method.getParameterTypes().length != 0) {
@@ -221,30 +226,26 @@ public class BeanConverter extends AbstractLogable {
                     memType = method.getParameterTypes()[0];
                 }
                 fieldName = Character.toLowerCase(methodName.charAt(3)) + methodName.substring(4);
+                fullFieldName = prefix + fieldName;
                 if (MessageOrBuilder.class.isAssignableFrom(memType)) {
                     // GRPC 实体
-                    if (fieldMethodMap.containsKey(fieldName)) {
+                    if (fieldMethodMap.containsKey(fullFieldName)) {
                         continue;
                     } else if (methodType.equals(METHOD_TYPE.SETTER)) {
                         // SETTER
-                        if (fieldMethodMap.containsKey(fieldName)) {
-                            continue;
-                        }
                         try {
-                            Class<?> clz = memType.getMethod("newBuilder").invoke(null).getClass();
+                            Class<?> clz = memType.getMethod(NEW_BUILDER).invoke(null).getClass();
                             fieldMethodMap.putAll(getMethod(clz, methodType, fieldName));
                         } catch (Exception e) {
-                            fieldMethodMap.putAll(
-                                    getMethod(memType, methodType, fieldName));
+                            fieldMethodMap.putAll(getMethod(memType, methodType, fieldName));
                         }
                     } else {
                         // GETTER
                         if (fieldName.endsWith(GRPC_MEMBER_GETTER_SUFFIX)) {
                             continue;
                         }
-                        fieldMethodMap.putAll(
-                                getMethod(memType.getMethod("newBuilder").invoke(null).getClass(),
-                                        methodType, fieldName));
+                        Class<?> class1 = memType.getMethod(NEW_BUILDER).invoke(null).getClass();
+                        fieldMethodMap.putAll(getMethod(class1, methodType, fieldName));
                     }
                 } else if (Entity.class.isAssignableFrom(memType)) {
                     // POJO 实体
@@ -254,27 +255,23 @@ public class BeanConverter extends AbstractLogable {
                     if (fieldName == null) {
                         continue;
                     }
+                    fullFieldName = prefix + fieldName;
                 }
             } else {
-                if (isGrpcEntity && methodType.equals(METHOD_TYPE.SETTER)) {
-                    if (method.getName().startsWith(GRPC_LIST_SETTER_PREFIX)) {
-                        fieldName = Character.toLowerCase(methodName.charAt(6)) + methodName.substring(7);
-                        if (fieldMethodMap.containsKey(fieldName)) {
-                            fieldMethodMap.remove(fieldName);
-                        }
+                isAddAllMtd = isGrpcEntity && methodType.equals(METHOD_TYPE.SETTER)
+                        && method.getName().startsWith(GRPC_LIST_SETTER_PREFIX);
+                if (isAddAllMtd) {
+                    fieldName = Character.toLowerCase(methodName.charAt(6)) + methodName.substring(7);
+                    fullFieldName = prefix + fieldName;
+                    if (fieldMethodMap.containsKey(fullFieldName)) {
+                        fieldMethodMap.remove(fullFieldName);
                     }
                 } else {
                     continue;
                 }
             }
-            fieldName = prefix + fieldName;
-            if (fieldMethodMap.containsKey(fieldName)) {
-                continue;
-            }
-            fieldMethodMap.put(fieldName, method);
+            fieldMethodMap.put(fullFieldName, method);
         }
-        fieldMethodMap.remove(null);
-        fieldMethodMap.remove("null");
         return fieldMethodMap;
     }
 
@@ -349,17 +346,17 @@ public class BeanConverter extends AbstractLogable {
      * 获取某个成员变量的所有属性-值 Map
      * 并从给定容器中移除这些键值对
      *
-     * @param fieldValueMap 属性-值 Map
-     * @param memVarPrefix  成员变量名
-     * @return 符合的属性-值 Map
+     * @param stringKeyMap 待过滤的 Map
+     * @param memVarPrefix 成员变量名
+     * @return 符合的 Map
      */
-    public static Map<String, Object> filterMap(Map<String, Object> fieldValueMap, String memVarPrefix) {
-        Set<String> keySet = new HashSet<>(fieldValueMap.keySet());
-        Map<String, Object> map = new HashMap<>(10);
+    public static <T> Map<String, T> filterMap(Map<String, T> stringKeyMap, String memVarPrefix) {
+        Set<String> keySet = new HashSet<>(stringKeyMap.keySet());
+        Map<String, T> map = new HashMap<>(10);
         for (String key : keySet) {
             if (key.startsWith(memVarPrefix)) {
-                map.put(key, fieldValueMap.get(key));
-                fieldValueMap.remove(key);
+                map.put(key.substring(0, memVarPrefix.length() + 1), stringKeyMap.get(key));
+                stringKeyMap.remove(key);
             }
         }
         return map;

@@ -1,4 +1,4 @@
-package cn.com.unary.initcopy.server;
+package cn.com.unary.initcopy.service;
 
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;

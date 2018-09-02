@@ -78,7 +78,7 @@ public  final class DeleteTask extends
       internalGetFieldAccessorTable() {
     return cn.com.unary.initcopy.grpc.entity.IC_Entity.internal_static_cn_com_unary_initcopy_grpc_entity_DeleteTask_fieldAccessorTable
         .ensureFieldAccessorsInitialized(
-            cn.com.unary.initcopy.grpc.entity.DeleteTask.class, cn.com.unary.initcopy.grpc.entity.DeleteTask.Builder.class);
+            DeleteTask.class, DeleteTask.Builder.class);
   }
 
   public static final int TASKID_FIELD_NUMBER = 1;
@@ -146,10 +146,10 @@ public  final class DeleteTask extends
     if (obj == this) {
      return true;
     }
-    if (!(obj instanceof cn.com.unary.initcopy.grpc.entity.DeleteTask)) {
+    if (!(obj instanceof DeleteTask)) {
       return super.equals(obj);
     }
-    cn.com.unary.initcopy.grpc.entity.DeleteTask other = (cn.com.unary.initcopy.grpc.entity.DeleteTask) obj;
+    DeleteTask other = (DeleteTask) obj;
 
     boolean result = true;
     result = result && (getTaskId()
@@ -176,58 +176,58 @@ public  final class DeleteTask extends
     return hash;
   }
 
-  public static cn.com.unary.initcopy.grpc.entity.DeleteTask parseFrom(
+  public static DeleteTask parseFrom(
       com.google.protobuf.ByteString data)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data);
   }
-  public static cn.com.unary.initcopy.grpc.entity.DeleteTask parseFrom(
+  public static DeleteTask parseFrom(
       com.google.protobuf.ByteString data,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data, extensionRegistry);
   }
-  public static cn.com.unary.initcopy.grpc.entity.DeleteTask parseFrom(byte[] data)
+  public static DeleteTask parseFrom(byte[] data)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data);
   }
-  public static cn.com.unary.initcopy.grpc.entity.DeleteTask parseFrom(
+  public static DeleteTask parseFrom(
       byte[] data,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data, extensionRegistry);
   }
-  public static cn.com.unary.initcopy.grpc.entity.DeleteTask parseFrom(java.io.InputStream input)
+  public static DeleteTask parseFrom(java.io.InputStream input)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseWithIOException(PARSER, input);
   }
-  public static cn.com.unary.initcopy.grpc.entity.DeleteTask parseFrom(
+  public static DeleteTask parseFrom(
       java.io.InputStream input,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseWithIOException(PARSER, input, extensionRegistry);
   }
-  public static cn.com.unary.initcopy.grpc.entity.DeleteTask parseDelimitedFrom(java.io.InputStream input)
+  public static DeleteTask parseDelimitedFrom(java.io.InputStream input)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseDelimitedWithIOException(PARSER, input);
   }
-  public static cn.com.unary.initcopy.grpc.entity.DeleteTask parseDelimitedFrom(
+  public static DeleteTask parseDelimitedFrom(
       java.io.InputStream input,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
   }
-  public static cn.com.unary.initcopy.grpc.entity.DeleteTask parseFrom(
+  public static DeleteTask parseFrom(
       com.google.protobuf.CodedInputStream input)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseWithIOException(PARSER, input);
   }
-  public static cn.com.unary.initcopy.grpc.entity.DeleteTask parseFrom(
+  public static DeleteTask parseFrom(
       com.google.protobuf.CodedInputStream input,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws java.io.IOException {
@@ -239,7 +239,7 @@ public  final class DeleteTask extends
   public static Builder newBuilder() {
     return DEFAULT_INSTANCE.toBuilder();
   }
-  public static Builder newBuilder(cn.com.unary.initcopy.grpc.entity.DeleteTask prototype) {
+  public static Builder newBuilder(DeleteTask prototype) {
     return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
   }
   public Builder toBuilder() {
@@ -273,7 +273,7 @@ public  final class DeleteTask extends
         internalGetFieldAccessorTable() {
       return cn.com.unary.initcopy.grpc.entity.IC_Entity.internal_static_cn_com_unary_initcopy_grpc_entity_DeleteTask_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              cn.com.unary.initcopy.grpc.entity.DeleteTask.class, cn.com.unary.initcopy.grpc.entity.DeleteTask.Builder.class);
+              DeleteTask.class, DeleteTask.Builder.class);
     }
 
     // Construct using cn.com.unary.initcopy.grpc.entity.DeleteTask.newBuilder()
@@ -305,20 +305,20 @@ public  final class DeleteTask extends
       return cn.com.unary.initcopy.grpc.entity.IC_Entity.internal_static_cn_com_unary_initcopy_grpc_entity_DeleteTask_descriptor;
     }
 
-    public cn.com.unary.initcopy.grpc.entity.DeleteTask getDefaultInstanceForType() {
-      return cn.com.unary.initcopy.grpc.entity.DeleteTask.getDefaultInstance();
+    public DeleteTask getDefaultInstanceForType() {
+      return DeleteTask.getDefaultInstance();
     }
 
-    public cn.com.unary.initcopy.grpc.entity.DeleteTask build() {
-      cn.com.unary.initcopy.grpc.entity.DeleteTask result = buildPartial();
+    public DeleteTask build() {
+      DeleteTask result = buildPartial();
       if (!result.isInitialized()) {
         throw newUninitializedMessageException(result);
       }
       return result;
     }
 
-    public cn.com.unary.initcopy.grpc.entity.DeleteTask buildPartial() {
-      cn.com.unary.initcopy.grpc.entity.DeleteTask result = new cn.com.unary.initcopy.grpc.entity.DeleteTask(this);
+    public DeleteTask buildPartial() {
+      DeleteTask result = new DeleteTask(this);
       result.taskId_ = taskId_;
       result.deleteFile_ = deleteFile_;
       onBuilt();
@@ -352,16 +352,16 @@ public  final class DeleteTask extends
       return (Builder) super.addRepeatedField(field, value);
     }
     public Builder mergeFrom(com.google.protobuf.Message other) {
-      if (other instanceof cn.com.unary.initcopy.grpc.entity.DeleteTask) {
-        return mergeFrom((cn.com.unary.initcopy.grpc.entity.DeleteTask)other);
+      if (other instanceof DeleteTask) {
+        return mergeFrom((DeleteTask)other);
       } else {
         super.mergeFrom(other);
         return this;
       }
     }
 
-    public Builder mergeFrom(cn.com.unary.initcopy.grpc.entity.DeleteTask other) {
-      if (other == cn.com.unary.initcopy.grpc.entity.DeleteTask.getDefaultInstance()) return this;
+    public Builder mergeFrom(DeleteTask other) {
+      if (other == DeleteTask.getDefaultInstance()) return this;
       if (other.getTaskId() != 0) {
         setTaskId(other.getTaskId());
       }
@@ -380,11 +380,11 @@ public  final class DeleteTask extends
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      cn.com.unary.initcopy.grpc.entity.DeleteTask parsedMessage = null;
+      DeleteTask parsedMessage = null;
       try {
         parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
       } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        parsedMessage = (cn.com.unary.initcopy.grpc.entity.DeleteTask) e.getUnfinishedMessage();
+        parsedMessage = (DeleteTask) e.getUnfinishedMessage();
         throw e.unwrapIOException();
       } finally {
         if (parsedMessage != null) {
@@ -472,12 +472,12 @@ public  final class DeleteTask extends
   }
 
   // @@protoc_insertion_point(class_scope:cn.com.unary.initcopy.grpc.entity.DeleteTask)
-  private static final cn.com.unary.initcopy.grpc.entity.DeleteTask DEFAULT_INSTANCE;
+  private static final DeleteTask DEFAULT_INSTANCE;
   static {
-    DEFAULT_INSTANCE = new cn.com.unary.initcopy.grpc.entity.DeleteTask();
+    DEFAULT_INSTANCE = new DeleteTask();
   }
 
-  public static cn.com.unary.initcopy.grpc.entity.DeleteTask getDefaultInstance() {
+  public static DeleteTask getDefaultInstance() {
     return DEFAULT_INSTANCE;
   }
 
@@ -500,7 +500,7 @@ public  final class DeleteTask extends
     return PARSER;
   }
 
-  public cn.com.unary.initcopy.grpc.entity.DeleteTask getDefaultInstanceForType() {
+  public DeleteTask getDefaultInstanceForType() {
     return DEFAULT_INSTANCE;
   }
 

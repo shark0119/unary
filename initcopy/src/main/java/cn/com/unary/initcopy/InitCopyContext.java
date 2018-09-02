@@ -129,4 +129,28 @@ public class InitCopyContext extends AbstractLogable {
         });
         return this;
     }
+
+    public int getTransPort() {
+        return transPort;
+    }
+
+    public void setTransPort(int transPort) {
+        InitCopyContext.transPort = transPort;
+    }
+
+    public int getGrpcPort() {
+        return grpcPort;
+    }
+
+    public void setGrpcPort(int grpcPort) {
+        InitCopyContext.grpcPort = grpcPort;
+    }
+
+    public int getInnerGrpcPort() {
+        return innerGrpcPort;
+    }
+
+    public void setInnerGrpcPort(int innerGrpcPort) {
+        InitCopyContext.innerGrpcPort = innerGrpcPort;
+    }
 }

@@ -1,15 +1,16 @@
 package cn.com.unary.initcopy.filecopy.init;
 
 import cn.com.unary.initcopy.dao.FileManager;
-import cn.com.unary.initcopy.entity.BaseFileInfo;
-import cn.com.unary.initcopy.entity.FileInfo;
+import cn.com.unary.initcopy.entity.BaseFileInfoDO;
+import cn.com.unary.initcopy.entity.ClientInitReqDO;
+import cn.com.unary.initcopy.entity.DiffFileInfoDO;
+import cn.com.unary.initcopy.entity.FileInfoDO;
+import cn.com.unary.initcopy.entity.ServerInitRespDO;
 import cn.com.unary.initcopy.grpc.entity.ClientInitReq;
 import cn.com.unary.initcopy.grpc.entity.DiffFileInfo;
 import cn.com.unary.initcopy.grpc.entity.FileBaseInfo;
 import cn.com.unary.initcopy.grpc.entity.ServerInitResp;
-import cn.com.unary.initcopy.grpc.entity.SyncTask;
 import cn.com.unary.initcopy.utils.BeanConvertUtil;
-import io.grpc.Server;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
@@ -31,29 +32,29 @@ public class ServerFileCopyInit {
     @Autowired
     @Qualifier("serverFM")
     private FileManager fm;
-    public ServerInitResp startInit(ClientInitReq req) throws Exception {
-        ServerInitResp.Builder builder = ServerInitResp.newBuilder();
-        builder.setReady(true).setMsg("success")
+    public ServerInitRespDO startInit(ClientInitReqDO req) throws Exception {
+        ServerInitRespDO resp = new ServerInitRespDO();
+        resp.setReady(true).setMsg("success")
                 .setTaskId(req.getTaskId());
         switch (req.getSyncType()) {
             case SYNC_DIFF:
-                builder.addAllDiffFileInfo(syncDiffInit(req.getFileBaseInfosList()));
+                resp.setDiffFileInfo(syncDiffInit(req.getFileBaseInfos()));
                 break;
             // as default option
             case SYNC_ALL:
                 default:
-                    FileInfo fi ;
-                    for(FileBaseInfo fbi : req.getFileBaseInfosList()) {
-                        fi = new FileInfo(BeanConvertUtil.takeFromGrpc(fbi));
+                    FileInfoDO fi ;
+                    for(BaseFileInfoDO fbi : req.getFileBaseInfos()) {
+                        fi = new FileInfoDO(fbi);
                         fi.setTaskId(req.getTaskId());
                         fm.save(fi);
                     }
                     break;
         }
-        return builder.build();
+        return resp;
     }
 
-    private Iterable<? extends DiffFileInfo> syncDiffInit(List<FileBaseInfo> fileBaseInfosList) {
+    private List<DiffFileInfoDO> syncDiffInit(List<BaseFileInfoDO> fileBaseInfosList) {
         return new ArrayList<>();
     }
 }
