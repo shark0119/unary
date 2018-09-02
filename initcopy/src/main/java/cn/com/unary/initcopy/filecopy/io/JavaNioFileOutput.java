@@ -72,11 +72,16 @@ public class JavaNioFileOutput extends AbstractFileOutput {
         this.currentFileName = fileName;
         File file = new File(fileName.substring(0, fileName.lastIndexOf("/")));
         if (!file.exists()) {
-            file.mkdirs();
-        }
-        file = new File(fileName);
-        if (!file.exists()) {
-            file.createNewFile();
+            if (file.mkdirs()) {
+                file = new File(fileName);
+                if (!file.exists()) {
+                    if (!file.createNewFile()) {
+                        throw new IOException("create dir fail");
+                    }
+                }
+            } else {
+                throw new IOException("create dir fail");
+            }
         }
         Path path = Paths.get(fileName);
         currentFileChannel = FileChannel.open(

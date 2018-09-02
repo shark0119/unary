@@ -22,8 +22,8 @@ public class RsyncResolver implements Resolver{
 	}
 
 	@Override
-	public Constants.PackType getPackType() {
-		return Constants.PackType.RSYNC_JAVA;
+	public Constants.PackerType getPackType() {
+		return Constants.PackerType.RSYNC_JAVA;
 	}
 
 	@Override

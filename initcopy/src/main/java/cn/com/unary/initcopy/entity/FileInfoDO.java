@@ -86,9 +86,7 @@ public class FileInfoDO extends BaseFileInfoDO {
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof FileInfoDO) {
-            if (((FileInfoDO) obj).getId().equals(this.getId())) {
-                return true;
-            }
+            return ((FileInfoDO) obj).getId().equals(this.getId());
         }
         return false;
     }

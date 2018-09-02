@@ -3,6 +3,7 @@ package cn.com.unary.initcopy.entity;
 import cn.com.unary.initcopy.common.Entity;
 import cn.com.unary.initcopy.grpc.constant.CompressType;
 import cn.com.unary.initcopy.grpc.constant.EncryptType;
+import cn.com.unary.initcopy.grpc.constant.PackType;
 import cn.com.unary.initcopy.grpc.constant.SyncType;
 
 import java.util.List;
@@ -19,7 +20,7 @@ public class SyncTaskDO implements Entity {
     private SyncType syncType;
     private CompressType compressType;
     private EncryptType encryptType;
-    private Constants.PackType packType;
+    private PackType packType;
     private Integer speedLimit;
     private String targetDir;
     private List<String> file;
@@ -79,11 +80,11 @@ public class SyncTaskDO implements Entity {
         this.encryptType = encryptType;
     }
 
-    public Constants.PackType getPackType() {
+    public PackType getPackType() {
         return packType;
     }
 
-    public void setPackType(Constants.PackType packType) {
+    public void setPackType(PackType packType) {
         this.packType = packType;
     }
 

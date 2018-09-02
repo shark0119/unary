@@ -21,7 +21,7 @@ public class CommonUtils {
         return   b[offset + 3] & 0xFF |
                 (b[offset + 2] & 0xFF) << 8 |
                 (b[offset + 1] & 0xFF) << 16 |
-                (b[offset + 0] & 0xFF) << 24;
+                (b[offset] & 0xFF) << 24;
     }
 
     /**

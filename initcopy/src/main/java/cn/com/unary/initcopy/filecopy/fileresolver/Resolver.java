@@ -1,6 +1,6 @@
 package cn.com.unary.initcopy.filecopy.fileresolver;
 
-import cn.com.unary.initcopy.entity.Constants.PackType;
+import cn.com.unary.initcopy.entity.Constants.PackerType;
 
 /**
  * 文件数据包解析器
@@ -21,7 +21,7 @@ public interface Resolver extends AutoCloseable {
      *
      * @return 此解析器对应的打包策略
      */
-    PackType getPackType();
+    PackerType getPackType();
 
     /**
      * 一个任务对应一个解析器，设置该解析器的任务Id作为标识

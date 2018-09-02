@@ -44,6 +44,7 @@ public class InitCopyContext extends AbstractLogable {
      */
     protected static int innerGrpcPort = 6002;
     protected static UnaryTServer uts;
+    private static final Object lock = new Object();
     private static volatile Boolean isActive = Boolean.FALSE;
     @Autowired
     protected UnaryProcess process;
@@ -69,7 +70,7 @@ public class InitCopyContext extends AbstractLogable {
     public void start(int transPort, int grpcPort, int innerGrpcPort) throws IOException, InterruptedException {
         // 判断上下文是否已经启动
         if (!isActive) {
-            synchronized (isActive) {
+            synchronized (lock) {
                 if (!isActive) {
                     // 初始化相关参数
                     InitCopyContext.transPort = transPort;

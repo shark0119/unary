@@ -1,7 +1,7 @@
 package cn.com.unary.initcopy.filecopy.filepacker;
 
 import api.UnaryTClient;
-import cn.com.unary.initcopy.entity.Constants.PackType;
+import cn.com.unary.initcopy.entity.Constants.PackerType;
 
 import java.io.IOException;
 import java.util.List;
@@ -51,7 +51,7 @@ public interface Packer extends AutoCloseable {
      *
      * @return 打包策略
      */
-    PackType getPackType();
+    PackerType getPackType();
 
     /**
      * 暂停当前打包进程

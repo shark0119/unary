@@ -39,7 +39,7 @@ public class SqliteFileManager extends AbstractLogable implements FileManager {
 			if (ValidateUtils.isEmpty(fileId)) {
 				fileId = "";
 			}
-			sb.append(fileId + "','");
+			sb.append(fileId).append("','");
 		}
 		sb.delete(sb.length()-2, sb.length());
 		sb.append(")");
@@ -78,7 +78,7 @@ public class SqliteFileManager extends AbstractLogable implements FileManager {
 	public void delete(String...fileIds) {
 		StringBuilder sb = new StringBuilder("DELETE FROM FILE_INFO WHERE FILE_ID IN ('");
 		for (String fileId : fileIds) {
-			sb.append(fileId + "',");
+			sb.append(fileId).append("',");
 		}
 		sb.delete(sb.length()-2, sb.length());
 		sb.append(")");

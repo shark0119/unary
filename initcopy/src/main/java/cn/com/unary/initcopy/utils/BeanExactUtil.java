@@ -25,7 +25,7 @@ public class BeanExactUtil {
             fi.setTaskId(rset.getInt("TASK_ID"));
             fis.add(fi);
         }
-        return null;
+        return fis;
     }
     public static String serToSql (FileInfoDO fi) {
         StringBuilder sb = new StringBuilder ("");

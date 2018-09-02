@@ -9,7 +9,6 @@ import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
-import java.util.Objects;
 
 /**
  * Java 文件读取写入类，采用NIO 在支持的环境下能通过零拷贝来提升效率

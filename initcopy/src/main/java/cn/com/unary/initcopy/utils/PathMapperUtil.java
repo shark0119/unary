@@ -8,8 +8,8 @@ package cn.com.unary.initcopy.utils;
  */
 public class PathMapperUtil {
 
-    public static final String SUFFIX = "/";
-    public static final String UNARY_PREFIX = "/win_driver_unary_";
+    private static final String SUFFIX = "/";
+    private static final String UNARY_WIN_PREFIX = "win_driver_unary_";
 
     public enum OS {
         /**
@@ -35,10 +35,9 @@ public class PathMapperUtil {
      * @return filePath 相对于 destPath 的源端文件路径名
      */
     public static String sourcePathMapper (String destPath, String filePath) {
-        // TODO use regex to achieve
         filePath = filePath.trim().replaceAll("\\\\", "/");
         destPath = destPath.trim().replaceAll("\\\\", "/");
-        filePath = "win_driver_unary_" + filePath.toLowerCase().charAt(0) + filePath.substring(2);
+        filePath = UNARY_WIN_PREFIX + filePath.toLowerCase().charAt(0) + filePath.substring(2);
         if (!destPath.endsWith(SUFFIX)) {
             destPath += SUFFIX;
         }
@@ -69,7 +68,7 @@ public class PathMapperUtil {
                     break;
                 case WINDOWS:
                     String driveLetter = "C:";
-                    if (filePath.startsWith(UNARY_PREFIX)) {
+                    if (filePath.startsWith(UNARY_WIN_PREFIX)) {
                         driveLetter = filePath.charAt(19) + ":";
                     }
                     filePath = driveLetter + filePath;

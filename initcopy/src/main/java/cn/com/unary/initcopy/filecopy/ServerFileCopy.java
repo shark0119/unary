@@ -9,8 +9,6 @@ import cn.com.unary.initcopy.filecopy.fileresolver.Resolver;
 import cn.com.unary.initcopy.filecopy.fileresolver.RsyncResolver;
 import cn.com.unary.initcopy.filecopy.fileresolver.SyncAllResolver;
 import cn.com.unary.initcopy.filecopy.init.ServerFileCopyInit;
-import cn.com.unary.initcopy.grpc.entity.ClientInitReq;
-import cn.com.unary.initcopy.grpc.entity.ServerInitResp;
 import cn.com.unary.initcopy.common.AbstractLogable;
 import cn.com.unary.initcopy.utils.CommonUtils;
 import org.springframework.beans.BeansException;
@@ -117,14 +115,14 @@ public class ServerFileCopy extends AbstractLogable implements ApplicationContex
     protected class CopyTask implements Runnable {
         private Resolver syncAllResolver;
         private Resolver syncDiffResolver;
-        private List<byte[]> packs;
+        private final List<byte[]> packs;
         private int taskId;
-        private Object lock;
+        private final Object lock;
         private boolean pause;
         private AtomicInteger wait = new AtomicInteger(0);
         private AtomicInteger notify = new AtomicInteger(0);
 
-        public CopyTask(int taskId, String targetDir) {
+        private CopyTask(int taskId, String targetDir) {
             this.taskId = taskId;
             this.syncAllResolver = context.getBean("SyncAllResolver", SyncAllResolver.class);
             this.syncDiffResolver = context.getBean("RsyncResolver", RsyncResolver.class);
@@ -159,9 +157,10 @@ public class ServerFileCopy extends AbstractLogable implements ApplicationContex
                         synchronized (lock) {
                             if (!pause) {
                                 logger.info(wait.getAndIncrement() +"'s wait when pack null.");
-                                lock.wait();
                                 pause = true;
+                                lock.wait();
                             }
+                            continue;
                         }
                     } catch (InterruptedException e) {
                         throw new IllegalStateException(e);
@@ -181,8 +180,8 @@ public class ServerFileCopy extends AbstractLogable implements ApplicationContex
                             synchronized (lock) {
                                 if (!pause) {
                                     logger.info(wait.getAndIncrement() +"'s wait when packs' empty.");
-                                    lock.wait();
                                     pause = true;
+                                    lock.wait();
                                 }
                             }
                         } catch (InterruptedException e) {
@@ -195,14 +194,14 @@ public class ServerFileCopy extends AbstractLogable implements ApplicationContex
         }
 
         private boolean resolve(byte[] pack) {
-            if (Constants.PackType.SYNC_ALL_JAVA.getValue() == pack[SyncAllPacker.HEAD_LENGTH-1]) {
+            if (Constants.PackerType.SYNC_ALL_JAVA.getValue() == pack[SyncAllPacker.HEAD_LENGTH-1]) {
                 return syncAllResolver.process(pack);
             } else {
                 return syncDiffResolver.process(pack);
             }
         }
 
-        public void addPack(byte[] pack) {
+        private void addPack(byte[] pack) {
             Objects.requireNonNull(pack);
             synchronized (packs) {
                 this.packs.add(pack);

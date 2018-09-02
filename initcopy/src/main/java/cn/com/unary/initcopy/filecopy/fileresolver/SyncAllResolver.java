@@ -1,7 +1,7 @@
 package cn.com.unary.initcopy.filecopy.fileresolver;
 
 import cn.com.unary.initcopy.dao.FileManager;
-import cn.com.unary.initcopy.entity.Constants.PackType;
+import cn.com.unary.initcopy.entity.Constants.PackerType;
 import cn.com.unary.initcopy.entity.FileInfoDO;
 import cn.com.unary.initcopy.exception.UnaryIoException;
 import cn.com.unary.initcopy.filecopy.filepacker.SyncAllPacker;
@@ -29,16 +29,16 @@ import java.nio.ByteBuffer;
 @Scope("prototype")
 public class SyncAllResolver extends AbstractLogable implements Resolver {
 
-    public static final int PACK_SIZE = SyncAllPacker.PACK_SIZE;
-    public static final int HEAD_LENGTH = SyncAllPacker.HEAD_LENGTH;
-    public static final int FILE_INFO_LENGTH = SyncAllPacker.FILE_INFO_LENGTH;
+    private static final int PACK_SIZE = SyncAllPacker.PACK_SIZE;
+    private static final int HEAD_LENGTH = SyncAllPacker.HEAD_LENGTH;
+    private static final int FILE_INFO_LENGTH = SyncAllPacker.FILE_INFO_LENGTH;
     /**
      * 文件信息长度，当被截断时，暂存此处
      */
     private final ByteBuffer fileInfoLenBuf = ByteBuffer.allocate(FILE_INFO_LENGTH);
     @Autowired
     @Qualifier("serverFM")
-    protected FileManager fm;
+    private FileManager fm;
     /**
      * 标识了这个文件在传输中的包分布情况，以下分别标识了开始和结束包，以及在其中的长度。
      * 默认文件是连续的形式，分布在中间的包，应该是填充满的。
@@ -66,7 +66,7 @@ public class SyncAllResolver extends AbstractLogable implements Resolver {
     public boolean process(byte[] data) {
         packIndex = CommonUtils.byteArrayToInt(data, 4);
         // get pack info
-        if (!PackType.valueOf(data[HEAD_LENGTH - 1]).equals(getPackType())) {
+        if (!getPackType().equals(PackerType.valueOf(data[HEAD_LENGTH - 1]))) {
             throw new IllegalStateException("ERROR 0x05 : Bad data pack format. Wrong Resolver");
         }
         int currentPos = HEAD_LENGTH;
@@ -250,9 +250,7 @@ public class SyncAllResolver extends AbstractLogable implements Resolver {
             throw new IllegalStateException("Program error");
         }
 
-        if (currentPos >= data.length) {
-            return currentPos;
-        } else if (currentPos + size > data.length) {
+        if (currentPos + size > data.length) {
             throw new IllegalStateException("Program error. Package valid data length sum error. PackIndex "
                     + packIndex + ", data size " + size);
         }
@@ -275,8 +273,8 @@ public class SyncAllResolver extends AbstractLogable implements Resolver {
     }
 
     @Override
-    public PackType getPackType() {
-        return PackType.SYNC_ALL_JAVA;
+    public PackerType getPackType() {
+        return PackerType.SYNC_ALL_JAVA;
     }
 
     @Override

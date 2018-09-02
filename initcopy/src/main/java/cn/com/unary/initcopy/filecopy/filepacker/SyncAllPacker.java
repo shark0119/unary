@@ -3,7 +3,7 @@ package cn.com.unary.initcopy.filecopy.filepacker;
 import api.UnaryTClient;
 import cn.com.unary.initcopy.InitCopyContext;
 import cn.com.unary.initcopy.dao.FileManager;
-import cn.com.unary.initcopy.entity.Constants.PackType;
+import cn.com.unary.initcopy.entity.Constants.PackerType;
 import cn.com.unary.initcopy.entity.FileInfoDO;
 import cn.com.unary.initcopy.filecopy.io.AbstractFileInput;
 import cn.com.unary.initcopy.common.AbstractLogable;
@@ -86,14 +86,14 @@ public class SyncAllPacker extends AbstractLogable implements Packer {
      */
     @Autowired
     @Qualifier("JavaNioFileInput")
-    protected AbstractFileInput input;
+    private AbstractFileInput input;
     @Autowired
     @Qualifier("clientFM")
-    protected FileManager fm;
+    private FileManager fm;
     @Autowired
-    protected InitCopyContext ctx;
+    private InitCopyContext ctx;
 
-    protected UnaryTClient utc;
+    private UnaryTClient utc;
 
     /**
      * ----我是另外一只分界线，以下是自定义全局变量----
@@ -106,10 +106,6 @@ public class SyncAllPacker extends AbstractLogable implements Packer {
      * 待读取的文件列表
      */
     private Iterator<FileInfoDO> fiIterator;
-    /**
-     * 已读取的文件 ID 列表
-     */
-    private List<String> readFileIds = new ArrayList<>();
     /**
      * 当前正在读取的文件
      */
@@ -138,7 +134,7 @@ public class SyncAllPacker extends AbstractLogable implements Packer {
      */
     protected boolean isReady() {
         if (isReady) {
-            return isReady;
+            return true;
         } else {
             isReady = input != null
                     && fm != null
@@ -179,9 +175,7 @@ public class SyncAllPacker extends AbstractLogable implements Packer {
             List<FileInfoDO> list = fm.queryByTaskId(taskId);
             List<FileInfoDO> unSyncFileList = new ArrayList<>();
             for (FileInfoDO fileInfo : list) {
-                if (fileInfo.getStateEnum().equals(FileInfoDO.STATE.SYNCED)) {
-                    continue;
-                } else {
+                if (!fileInfo.getStateEnum().equals(FileInfoDO.STATE.SYNCED)) {
                     fileInfo.setState(FileInfoDO.STATE.WAIT);
                     unSyncFileList.add(fileInfo);
                 }
@@ -327,7 +321,6 @@ public class SyncAllPacker extends AbstractLogable implements Packer {
         if (currentFileInfo != null) {
             currentFileInfo.setState(FileInfoDO.STATE.SYNCED);
             fm.save(currentFileInfo);
-            readFileIds.add(currentFileInfo.getId());
         }
         if (fiIterator.hasNext()) {
             currentFileInfo = fiIterator.next();
@@ -341,8 +334,8 @@ public class SyncAllPacker extends AbstractLogable implements Packer {
     }
 
     @Override
-    public PackType getPackType() {
-        return PackType.SYNC_ALL_JAVA;
+    public PackerType getPackType() {
+        return PackerType.SYNC_ALL_JAVA;
     }
 
     @Override

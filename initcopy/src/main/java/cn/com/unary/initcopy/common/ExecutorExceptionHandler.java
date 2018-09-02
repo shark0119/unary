@@ -11,7 +11,11 @@ import java.util.Objects;
  */
 public class ExecutorExceptionHandler implements Thread.UncaughtExceptionHandler {
 
-    private Object informer;
+    public ExecutorExceptionHandler(Object informer) {
+        this.informer = informer;
+    }
+
+    private final Object informer;
 
     @Override
     public void uncaughtException(Thread t, Throwable e) {
@@ -20,10 +24,5 @@ public class ExecutorExceptionHandler implements Thread.UncaughtExceptionHandler
                 informer.notifyAll();
             }
         }
-    }
-
-    public void setInformer(Object informer) {
-        Objects.requireNonNull(informer);
-        this.informer = informer;
     }
 }

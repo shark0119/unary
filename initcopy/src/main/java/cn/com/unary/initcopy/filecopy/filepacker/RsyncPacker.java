@@ -2,7 +2,7 @@ package cn.com.unary.initcopy.filecopy.filepacker;
 
 import api.UnaryTClient;
 import cn.com.unary.initcopy.dao.FileManager;
-import cn.com.unary.initcopy.entity.Constants.PackType;
+import cn.com.unary.initcopy.entity.Constants.PackerType;
 import cn.com.unary.initcopy.entity.FileInfoDO;
 import cn.com.unary.initcopy.filecopy.io.AbstractFileInput;
 import cn.com.unary.initcopy.grpc.entity.DiffFileInfo;
@@ -31,10 +31,10 @@ public class RsyncPacker implements SyncDiffPacker {
     private final List<String> readFileIds = new ArrayList<>();
     @Autowired
     @Qualifier("JavaNioFileInput")
-    protected AbstractFileInput afi;
+    private AbstractFileInput afi;
     @Autowired
-    protected FileManager fm;
-    protected UnaryTClient unaryTClient;
+    private FileManager fm;
+    private UnaryTClient unaryTClient;
 
     private boolean ready = false;
 
@@ -50,7 +50,6 @@ public class RsyncPacker implements SyncDiffPacker {
                         + fiMap.keySet().size()
                         + " files but " + dfiMap.keySet().size() + " diff file infos");
             }
-            return;
         }
     }
 
@@ -75,8 +74,8 @@ public class RsyncPacker implements SyncDiffPacker {
     }
 
     @Override
-    public PackType getPackType() {
-        return PackType.RSYNC_JAVA;
+    public PackerType getPackType() {
+        return PackerType.RSYNC_JAVA;
     }
 
     @Override

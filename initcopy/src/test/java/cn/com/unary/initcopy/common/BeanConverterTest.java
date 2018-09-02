@@ -1,6 +1,10 @@
 package cn.com.unary.initcopy.common;
 
+import cn.com.unary.initcopy.entity.BaseFileInfoDO;
+import cn.com.unary.initcopy.entity.ClientInitReqDO;
 import cn.com.unary.initcopy.entity.ExecResultDO;
+import cn.com.unary.initcopy.entity.SyncTaskDO;
+import cn.com.unary.initcopy.entity.TaskStateDO;
 import cn.com.unary.initcopy.grpc.constant.SyncType;
 import cn.com.unary.initcopy.grpc.entity.*;
 import javafx.concurrent.Task;
@@ -20,9 +24,26 @@ public class BeanConverterTest {
     @Test
     public void convert() throws Exception {
         ExecResult.Builder builder = ExecResult.newBuilder();
-        builder.setMsg("msg").setIsHealthy(false).setCode(3);
-        ExecResultDO resultDO = BeanConverter.convert(builder.build(), ExecResultDO.class);
-        System.out.println(resultDO);
+        builder.setMsg("msg").setIsHealthy(true).setCode(3);
+        /*ExecResultDO resultDO = BeanConverter.convert(builder.build(), ExecResultDO.class);
+        System.out.println(resultDO);*/
+        TaskState.Builder builder1 = TaskState.newBuilder();
+        builder1.setExecResult(builder).setTaskId(2);
+
+        TaskStateDO stateDO = BeanConverter.convert(builder1.build(), TaskStateDO.class);
+        System.out.println(stateDO);
+
+        SyncTask.Builder builder2 = SyncTask.newBuilder();
+        builder2.addFile("file1").addFile("3");
+        SyncTaskDO task = BeanConverter.convert(builder2.build(), SyncTaskDO.class);
+        System.out.println(task);
+
+        ClientInitReq.Builder builder3 = ClientInitReq.newBuilder();
+        builder3.addFileBaseInfos(FileBaseInfo.newBuilder().setModifyTime(1000).build());
+        ClientInitReqDO reqDO = BeanConverter.convert(builder3.build(), ClientInitReqDO.class);
+        System.out.println(reqDO);
+        BaseFileInfoDO infoDO = reqDO.getFileBaseInfos().get(0);
+        System.out.println(infoDO);
     }
 
     @Test
@@ -38,29 +59,29 @@ public class BeanConverterTest {
 
     @Test
     public void getFieldValue() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
-        FileBaseInfo.Builder builder1 = FileBaseInfo.newBuilder();
-        FileBaseInfo.Builder builder2 = FileBaseInfo.newBuilder();
-        builder1.setFileId("fileid").setTaskId(11).setCheckSum("checkSum");
-        builder2.mergeFrom(builder1.build());
-        List<FileBaseInfo> fbis = new ArrayList<>();
-        fbis.add(builder1.build());
-        ClientInitReq.Builder builder = ClientInitReq.newBuilder();
-        builder.setTaskId(1).setTargetDir("any").setTotalSize(1034L).addAllFileBaseInfos(fbis).setSyncType(SyncType.SYNC_DIFF);
-        Map<String, Method> getter = BeanConverter.getMethod(ClientInitReq.class,
+        TaskState.Builder builder = TaskState.newBuilder();
+        builder.setTaskId(1).setExecResult(ExecResult.newBuilder().setCode(1).setIsHealthy(true).setMsg("exec").build())
+                .setProgressInfo(ProgressInfo.newBuilder().setSyncedFileNum(10).build());
+        Map<String, Method> getter = BeanConverter.getMethod(TaskState.class,
                 BeanConverter.METHOD_TYPE.GETTER, "");
-        for (String key : getter.keySet()) {
+        /*for (String key : getter.keySet()) {
             System.out.println("" + key + "\t" + getter.get(key).getName());
-        }
+        }*/
         Map<String, Object> fieldValue = BeanConverter.getFieldValue(builder.build(), getter);
         for (String key : fieldValue.keySet()) {
-            System.out.println(fieldValue.get(key));
+            System.out.println("key:" + key + "; value:" + fieldValue.get(key));
         }
     }
 
     @Test
     public void getMethod() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
-        Map<String, Method> map = BeanConverter.getMethod(ExecResultDO.class,
-                BeanConverter.METHOD_TYPE.SETTER, "");
+        Map<String, Method> map = BeanConverter.getMethod(TaskState.class,
+                BeanConverter.METHOD_TYPE.GETTER, "");
+        for (String key : map.keySet()) {
+            System.out.println("" + key + "\n\t\t" + map.get(key).getName());
+        }
+        System.out.println(map.keySet().size());
+        map = BeanConverter.filterMap(map, "progressInfo");
         for (String key : map.keySet()) {
             System.out.println("" + key + "\n\t\t" + map.get(key).getName());
         }

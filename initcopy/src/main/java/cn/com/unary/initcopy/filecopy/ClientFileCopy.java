@@ -1,6 +1,7 @@
 package cn.com.unary.initcopy.filecopy;
 
 import api.UnaryTClient;
+import cn.com.unary.initcopy.common.AbstractLogable;
 import cn.com.unary.initcopy.dao.FileManager;
 import cn.com.unary.initcopy.entity.Constants;
 import cn.com.unary.initcopy.entity.FileInfoDO;
@@ -8,10 +9,8 @@ import cn.com.unary.initcopy.exception.TaskException;
 import cn.com.unary.initcopy.filecopy.filepacker.Packer;
 import cn.com.unary.initcopy.filecopy.filepacker.SyncDiffPacker;
 import cn.com.unary.initcopy.filecopy.init.ClientFileCopyInit;
-import cn.com.unary.initcopy.grpc.constant.ModifyType;
 import cn.com.unary.initcopy.grpc.entity.DiffFileInfo;
 import cn.com.unary.initcopy.grpc.entity.SyncTask;
-import cn.com.unary.initcopy.common.AbstractLogable;
 import cn.com.unary.initcopy.utils.BeanConvertUtil;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,12 +50,14 @@ public class ClientFileCopy extends AbstractLogable implements ApplicationContex
 
     /**
      * 对任务进行删除、暂停、唤醒等操作
-     * @param taskId 任务Id
+     *
+     * @param taskId     任务Id
      * @param modifyType 更新操作
      * @throws TaskException 任务异常
      */
-    public void updateTask (int taskId, Constants.UpdateType modifyType) throws TaskException {
+    public void updateTask(int taskId, Constants.UpdateType modifyType) throws TaskException {
     }
+
     /**
      * 源端接收到添加任务指令后，开始初始化；
      * 初始化结束以后开始文件打包；线程安全
@@ -151,7 +152,7 @@ public class ClientFileCopy extends AbstractLogable implements ApplicationContex
         private int taskId;
         private Packer packer;
 
-        public PackTask(int taskId, Packer packer, List<String> syncFileIds){
+        public PackTask(int taskId, Packer packer, List<String> syncFileIds) {
             this.taskId = taskId;
             this.packer = packer;
             this.syncFileIds = syncFileIds;
@@ -159,7 +160,7 @@ public class ClientFileCopy extends AbstractLogable implements ApplicationContex
 
         @Override
         public void run() {
-            Thread.currentThread().setName(Thread.currentThread().getName()+taskId);
+            Thread.currentThread().setName(Thread.currentThread().getName() + taskId);
             try {
                 packer.start(syncFileIds);
             } catch (IOException e) {

@@ -1,8 +1,7 @@
 package cn.com.unary.initcopy.config;
 
-import cn.com.unary.initcopy.dao.RamFileManager;
 import cn.com.unary.initcopy.common.ExecutorExceptionHandler;
-import cn.com.unary.initcopy.grpc.entity.ClientInitReq;
+import cn.com.unary.initcopy.dao.RamFileManager;
 import com.alibaba.druid.pool.DruidDataSource;
 import org.apache.commons.lang3.concurrent.BasicThreadFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,7 +13,6 @@ import org.springframework.context.annotation.Scope;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -67,54 +65,52 @@ public class BeanConfig {
 
     @Bean
     @Scope("singleton")
-    public ExecutorService serverExecutor () {
+    public ExecutorService serverExecutor() {
         ThreadFactory executorThreadFactory = new BasicThreadFactory.Builder()
                 .namingPattern("server-%d-task-")
-                .uncaughtExceptionHandler(new ExecutorExceptionHandler())
                 .build();
-        ExecutorService pool = new ThreadPoolExecutor(5,
+        return new ThreadPoolExecutor(5,
                 200, 1000L, TimeUnit.MILLISECONDS,
                 new LinkedBlockingQueue<Runnable>(1024),
                 executorThreadFactory,
                 new ThreadPoolExecutor.AbortPolicy());
-        return pool;
     }
+
     @Bean
     @Scope("singleton")
-    public ExecutorService clientExecutor () {
+    public ExecutorService clientExecutor() {
         ThreadFactory executorThreadFactory = new BasicThreadFactory.Builder()
                 .namingPattern("client-%d-pack-")
-                .uncaughtExceptionHandler(new ExecutorExceptionHandler())
                 .build();
-        ExecutorService pool = new ThreadPoolExecutor(5,
+        return new ThreadPoolExecutor(5,
                 200, 1000L, TimeUnit.MILLISECONDS,
                 new LinkedBlockingQueue<Runnable>(1024),
                 executorThreadFactory,
                 new ThreadPoolExecutor.AbortPolicy());
-        return pool;
     }
+
     @Bean
     @Scope("singleton")
-    public ExecutorService contextExecutor () {
+    public ExecutorService contextExecutor() {
         ThreadFactory executorThreadFactory = new BasicThreadFactory.Builder()
                 .namingPattern("init-copy-context-executor-%d")
-                .uncaughtExceptionHandler(new ExecutorExceptionHandler())
                 .build();
-        ExecutorService pool = new ThreadPoolExecutor(5,
+        return new ThreadPoolExecutor(5,
                 200, 1000L, TimeUnit.MILLISECONDS,
                 new LinkedBlockingQueue<Runnable>(1024),
                 executorThreadFactory,
                 new ThreadPoolExecutor.AbortPolicy());
-        return pool;
     }
+
     @Bean
     @Scope("singleton")
-    public RamFileManager clientFM () {
+    public RamFileManager clientFM() {
         return new RamFileManager();
     }
+
     @Bean
     @Scope("singleton")
-    public RamFileManager serverFM () {
+    public RamFileManager serverFM() {
         return new RamFileManager();
     }
 }

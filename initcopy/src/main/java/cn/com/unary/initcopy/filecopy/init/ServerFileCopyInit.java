@@ -6,11 +6,6 @@ import cn.com.unary.initcopy.entity.ClientInitReqDO;
 import cn.com.unary.initcopy.entity.DiffFileInfoDO;
 import cn.com.unary.initcopy.entity.FileInfoDO;
 import cn.com.unary.initcopy.entity.ServerInitRespDO;
-import cn.com.unary.initcopy.grpc.entity.ClientInitReq;
-import cn.com.unary.initcopy.grpc.entity.DiffFileInfo;
-import cn.com.unary.initcopy.grpc.entity.FileBaseInfo;
-import cn.com.unary.initcopy.grpc.entity.ServerInitResp;
-import cn.com.unary.initcopy.utils.BeanConvertUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
@@ -32,6 +27,7 @@ public class ServerFileCopyInit {
     @Autowired
     @Qualifier("serverFM")
     private FileManager fm;
+
     public ServerInitRespDO startInit(ClientInitReqDO req) throws Exception {
         ServerInitRespDO resp = new ServerInitRespDO();
         resp.setReady(true).setMsg("success")
@@ -42,14 +38,14 @@ public class ServerFileCopyInit {
                 break;
             // as default option
             case SYNC_ALL:
-                default:
-                    FileInfoDO fi ;
-                    for(BaseFileInfoDO fbi : req.getFileBaseInfos()) {
-                        fi = new FileInfoDO(fbi);
-                        fi.setTaskId(req.getTaskId());
-                        fm.save(fi);
-                    }
-                    break;
+            default:
+                FileInfoDO fi;
+                for (BaseFileInfoDO fbi : req.getFileBaseInfos()) {
+                    fi = new FileInfoDO(fbi);
+                    fi.setTaskId(req.getTaskId());
+                    fm.save(fi);
+                }
+                break;
         }
         return resp;
     }

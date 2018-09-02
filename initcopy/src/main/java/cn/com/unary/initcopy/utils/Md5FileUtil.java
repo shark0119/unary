@@ -45,7 +45,7 @@ public class Md5FileUtil extends AbstractLogable {
 	 */
 	private static String getMD5Lt2G(File file, FileInputStream fis) throws IOException {
 		// 加密码
-		String encrStr = "";
+		String encrStr;
 		FileChannel ch = fis.getChannel();
 		MappedByteBuffer byteBuffer = ch.map(FileChannel.MapMode.READ_ONLY, 0, file.length());
 		messagedigest.update(byteBuffer);
@@ -63,7 +63,7 @@ public class Md5FileUtil extends AbstractLogable {
 	private static String getMD5Gt2G(InputStream fis) throws IOException {
 		// 自定义文件块读写大小，一般为4M，对于小文件多的情况可以降低
 		byte[] buffer = new byte[1024 * 1024 * 4];
-		int numRead = 0;
+		int numRead;
 		while ((numRead = fis.read(buffer)) > 0) {
 			messagedigest.update(buffer, 0, numRead);
 		}
@@ -119,7 +119,7 @@ public class Md5FileUtil extends AbstractLogable {
 	 * @throws IOException 文件IO异常
 	 */
 	public static String getFileMD5(File file) throws IOException {
-		String encrStr = "";
+		String encrStr;
 		// 读取文件
 		FileInputStream fis = new FileInputStream(file);
 		// 当文件<2G可以直接读取

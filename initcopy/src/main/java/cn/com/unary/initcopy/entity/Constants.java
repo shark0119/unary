@@ -30,7 +30,7 @@ public final class Constants {
         OTHER,
     }
 
-    public enum PackType {
+    public enum PackerType {
         /**
          * 全复制- Java
          */
@@ -42,12 +42,12 @@ public final class Constants {
         ;
         private byte value;
 
-        PackType(int b) {
+        PackerType(int b) {
             value = (byte) b;
         }
 
-        public static PackType valueOf(byte b) {
-            for (PackType type : PackType.values()) {
+        public static PackerType valueOf(byte b) {
+            for (PackerType type : PackerType.values()) {
                 if (type.value == b) {
                     return type;
                 }
