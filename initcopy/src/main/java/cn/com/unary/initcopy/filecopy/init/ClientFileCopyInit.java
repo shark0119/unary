@@ -2,17 +2,18 @@ package cn.com.unary.initcopy.filecopy.init;
 
 import api.UnaryTClient;
 import cn.com.unary.initcopy.InitCopyContext;
+import cn.com.unary.initcopy.common.AbstractLoggable;
 import cn.com.unary.initcopy.dao.FileManager;
 import cn.com.unary.initcopy.entity.BaseFileInfoDO;
 import cn.com.unary.initcopy.entity.FileInfoDO;
+import cn.com.unary.initcopy.entity.SyncTaskDO;
+import cn.com.unary.initcopy.exception.InfoPersistenceException;
 import cn.com.unary.initcopy.grpc.client.ControlTaskGrpcClient;
 import cn.com.unary.initcopy.grpc.constant.SyncType;
 import cn.com.unary.initcopy.grpc.entity.ClientInitReq;
 import cn.com.unary.initcopy.grpc.entity.DiffFileInfo;
 import cn.com.unary.initcopy.grpc.entity.ServerInitResp;
-import cn.com.unary.initcopy.grpc.entity.SyncTask;
 import cn.com.unary.initcopy.grpc.linker.ControlTaskGrpcLinker;
-import cn.com.unary.initcopy.common.AbstractLogable;
 import cn.com.unary.initcopy.utils.BeanConvertUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -40,11 +41,11 @@ import java.util.UUID;
  */
 @Component("ClientFileCopyInit")
 @Scope("singleton")
-public class ClientFileCopyInit extends AbstractLogable {
+public class ClientFileCopyInit extends AbstractLoggable {
 
     @Autowired
     @Qualifier("clientFM")
-    protected FileManager fileManager;
+    protected FileManager fm;
 
     @Autowired
     protected InitCopyContext context;
@@ -66,27 +67,28 @@ public class ClientFileCopyInit extends AbstractLogable {
      * @throws RuntimeException Grpc 服务调用错误。
      */
     public List<String> startInit(UnaryTClient client,
-                                  final SyncTask syncTask,
+                                  final SyncTaskDO syncTask,
                                   final List<DiffFileInfo> diffFileInfos)
-            throws IOException {
+            throws IOException, InfoPersistenceException {
         logger.debug("Start init.");
         // TODO 设置加密压缩等选项
 
         logger.debug("Set transfer option done. Start to traversing files.");
-        List<FileInfoDO> syncFiles = traversingFiles(syncTask.getFileList());
+        List<FileInfoDO> syncFiles = traversingFiles(syncTask.getFile());
         List<String> syncFileIds = new ArrayList<>();
         int taskId = syncTask.getTaskId();
         for (FileInfoDO fi : syncFiles) {
             syncFileIds.add(fi.getId());
             fi.setTaskId(taskId);
-            fileManager.save(fi);
+            fm.save(fi);
         }
         logger.debug("We got " + syncFiles.size() + " files and " + syncFileIds.size()
                 + " file id from specified local directory in task " + syncTask.getTaskId());
 
+        // TODO 实体添加端口字段
         ControlTaskGrpcClient controlTaskGrpcClient =
                 new ControlTaskGrpcClient(syncTask.getTargetInfo().getIp(),
-                        InitCopyContext.CONTROL_TASK_GRPC_PORT);
+                        fm.queryTask(syncTask.getTaskId()).getTargetInfo().getPort());
 
         long totalSize = 0L;
         for (BaseFileInfoDO bfi : syncFiles) {

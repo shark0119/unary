@@ -24,6 +24,15 @@ public class SyncTaskDO implements Entity {
     private Integer speedLimit;
     private String targetDir;
     private List<String> file;
+    private Long totalSize;
+
+    public Long getTotalSize() {
+        return totalSize;
+    }
+
+    public void setTotalSize(Long totalSize) {
+        this.totalSize = totalSize;
+    }
 
     @Override
     public String toString() {

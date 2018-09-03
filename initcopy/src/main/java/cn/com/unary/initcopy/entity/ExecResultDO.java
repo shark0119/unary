@@ -10,6 +10,15 @@ public class ExecResultDO implements Entity {
     private Integer code;
     private String msg;
 
+    public ExecResultDO() {
+    }
+
+    public ExecResultDO(Boolean isHealthy, Integer code, String msg) {
+        this.isHealthy = isHealthy;
+        this.code = code;
+        this.msg = msg;
+    }
+
     @Override
     public String toString() {
         return "ExecResultDO{" +

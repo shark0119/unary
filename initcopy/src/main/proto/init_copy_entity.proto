@@ -8,9 +8,10 @@ import "init_copy_constant.proto";
 
 package cn.com.unary.initcopy.grpc.entity;
 
-message SyncTarget {  //目标端IP及端口信息
+message SyncTarget { //目标端IP及端口信息
     string ip = 1; //目标端IP
-    int32 port = 2;   //目标端端口号
+                     int32 transferPort = 2; //目标端传输模块监听的端口号
+                     int32 grpcPort = 3; // 目标端 GRPC 服务的端口号
 }
 
 message SyncTask { //同步任务

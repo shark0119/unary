@@ -19,6 +19,21 @@ public class TransferClient extends UnaryTClient {
     private UnaryChannel channel;
 
     @Override
+    public void setSpeedLimit(int limit) {
+
+    }
+
+    @Override
+    public void encrypt(String type) {
+
+    }
+
+    @Override
+    public void compress(String type) {
+
+    }
+
+    @Override
     public void setProcess(UnaryProcess process) {
 
     }

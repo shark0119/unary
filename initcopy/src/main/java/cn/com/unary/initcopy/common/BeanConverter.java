@@ -18,7 +18,7 @@ import java.util.*;
  * @author Shark.Yin
  * @since 1.0
  */
-class BeanConverter extends AbstractLogable {
+public class BeanConverter extends AbstractLoggable {
 
     private static final String OR_BUILDER_LIST = "OrBuilderList";
     private static final String BUILDER_LIST = "BuilderList";

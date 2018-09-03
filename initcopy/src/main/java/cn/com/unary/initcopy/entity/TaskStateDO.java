@@ -13,6 +13,15 @@ public class TaskStateDO implements Entity {
     private ExecResultDO execResult;
     private ProgressInfoDO progressInfo;
 
+    public TaskStateDO() {
+    }
+
+    public TaskStateDO(Integer taskId, ExecResultDO execResult, ProgressInfoDO progressInfo) {
+        this.taskId = taskId;
+        this.execResult = execResult;
+        this.progressInfo = progressInfo;
+    }
+
     @Override
     public String toString() {
         return "TaskStateDO{" +

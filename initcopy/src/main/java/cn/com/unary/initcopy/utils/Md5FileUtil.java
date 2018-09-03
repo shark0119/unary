@@ -1,6 +1,6 @@
 package cn.com.unary.initcopy.utils;
 
-import cn.com.unary.initcopy.common.AbstractLogable;
+import cn.com.unary.initcopy.common.AbstractLoggable;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -17,7 +17,7 @@ import java.security.NoSuchAlgorithmException;
  * @author Others
  * @since 1.0
  */
-public class Md5FileUtil extends AbstractLogable {
+public class Md5FileUtil extends AbstractLoggable {
 
 	private Md5FileUtil() {}
 	/**

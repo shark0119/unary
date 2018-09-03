@@ -1,9 +1,7 @@
 package cn.com.unary.initcopy.config;
 
-import cn.com.unary.initcopy.common.ExecutorExceptionHandler;
 import cn.com.unary.initcopy.dao.RamFileManager;
 import com.alibaba.druid.pool.DruidDataSource;
-import org.apache.commons.lang3.concurrent.BasicThreadFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -12,11 +10,6 @@ import org.springframework.context.annotation.Scope;
 
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
 /**
  * 用于 Spring 创建 Beans
@@ -61,45 +54,6 @@ public class BeanConfig {
     @Scope("singleton")
     public SimpleDateFormat sdf() {
         return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-    }
-
-    @Bean
-    @Scope("singleton")
-    public ExecutorService serverExecutor() {
-        ThreadFactory executorThreadFactory = new BasicThreadFactory.Builder()
-                .namingPattern("server-%d-task-")
-                .build();
-        return new ThreadPoolExecutor(5,
-                200, 1000L, TimeUnit.MILLISECONDS,
-                new LinkedBlockingQueue<Runnable>(1024),
-                executorThreadFactory,
-                new ThreadPoolExecutor.AbortPolicy());
-    }
-
-    @Bean
-    @Scope("singleton")
-    public ExecutorService clientExecutor() {
-        ThreadFactory executorThreadFactory = new BasicThreadFactory.Builder()
-                .namingPattern("client-%d-pack-")
-                .build();
-        return new ThreadPoolExecutor(5,
-                200, 1000L, TimeUnit.MILLISECONDS,
-                new LinkedBlockingQueue<Runnable>(1024),
-                executorThreadFactory,
-                new ThreadPoolExecutor.AbortPolicy());
-    }
-
-    @Bean
-    @Scope("singleton")
-    public ExecutorService contextExecutor() {
-        ThreadFactory executorThreadFactory = new BasicThreadFactory.Builder()
-                .namingPattern("init-copy-context-executor-%d")
-                .build();
-        return new ThreadPoolExecutor(5,
-                200, 1000L, TimeUnit.MILLISECONDS,
-                new LinkedBlockingQueue<Runnable>(1024),
-                executorThreadFactory,
-                new ThreadPoolExecutor.AbortPolicy());
     }
 
     @Bean

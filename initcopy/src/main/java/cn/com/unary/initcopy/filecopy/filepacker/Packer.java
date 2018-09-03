@@ -2,6 +2,7 @@ package cn.com.unary.initcopy.filecopy.filepacker;
 
 import api.UnaryTClient;
 import cn.com.unary.initcopy.entity.Constants.PackerType;
+import cn.com.unary.initcopy.exception.InfoPersistenceException;
 
 import java.io.IOException;
 import java.util.List;
@@ -37,7 +38,7 @@ public interface Packer extends AutoCloseable {
      * @param fileIds 文件的UUID
      * @throws IOException IO 异常
      */
-    void start(List<String> fileIds) throws IOException;
+    void start(List<String> fileIds) throws IOException, InfoPersistenceException;
 
     /**
      * 将某个暂停的任务恢复过来，继续同步

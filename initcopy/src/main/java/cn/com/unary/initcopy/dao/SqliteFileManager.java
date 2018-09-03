@@ -1,22 +1,20 @@
 package cn.com.unary.initcopy.dao;
 
+import cn.com.unary.initcopy.common.AbstractLoggable;
+import cn.com.unary.initcopy.entity.FileInfoDO;
+import cn.com.unary.initcopy.entity.SyncTaskDO;
+import cn.com.unary.initcopy.exception.InfoPersistenceException;
+import cn.com.unary.initcopy.utils.BeanExactUtil;
+import cn.com.unary.initcopy.utils.ValidateUtils;
+import com.alibaba.druid.pool.DruidDataSource;
+import org.springframework.beans.factory.annotation.Autowired;
+
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 import java.util.Objects;
-
-import cn.com.unary.initcopy.entity.SyncTaskDO;
-import cn.com.unary.initcopy.utils.BeanExactUtil;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import com.alibaba.druid.pool.DruidDataSource;
-
-import cn.com.unary.initcopy.entity.FileInfoDO;
-import cn.com.unary.initcopy.exception.InfoPersistenceException;
-import cn.com.unary.initcopy.common.AbstractLogable;
-import cn.com.unary.initcopy.utils.ValidateUtils;
 
 
 // TODO use AOP to log
@@ -25,13 +23,13 @@ import cn.com.unary.initcopy.utils.ValidateUtils;
  * @author shark
  *
  */
-public class SqliteFileManager extends AbstractLogable implements FileManager {
+public class SqliteFileManager extends AbstractLoggable implements FileManager {
 
 	@Autowired
 	private DruidDataSource dds;
 	
 	@Override
-	public List<FileInfoDO> query(String...fileIds) {
+	public List<FileInfoDO> query(String... fileIds) throws InfoPersistenceException {
 		ValidateUtils.requireNotEmpty(fileIds);
 		
 		StringBuilder sb = new StringBuilder("select * from FILE_INFO WHERE FILE_ID IN ('");
@@ -55,7 +53,7 @@ public class SqliteFileManager extends AbstractLogable implements FileManager {
 	}
 
 	@Override
-	public void save(FileInfoDO fi) {
+	public void save(FileInfoDO fi) throws InfoPersistenceException {
 		Objects.requireNonNull(fi);
 		try (
 			Connection conn = dds.getConnection();
@@ -68,14 +66,14 @@ public class SqliteFileManager extends AbstractLogable implements FileManager {
 	}
 
 	@Override
-	public void save(List<FileInfoDO> fis) {
+	public void save(List<FileInfoDO> fis) throws InfoPersistenceException {
 		for (FileInfoDO fi : fis) {
 			this.save(fi);
 		}
 	}
 
 	@Override
-	public void delete(String...fileIds) {
+	public void delete(String... fileIds) throws InfoPersistenceException {
 		StringBuilder sb = new StringBuilder("DELETE FROM FILE_INFO WHERE FILE_ID IN ('");
 		for (String fileId : fileIds) {
 			sb.append(fileId).append("',");

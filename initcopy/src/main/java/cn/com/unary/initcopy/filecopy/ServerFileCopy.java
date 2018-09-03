@@ -1,70 +1,92 @@
 package cn.com.unary.initcopy.filecopy;
 
+import cn.com.unary.initcopy.common.AbstractLoggable;
 import cn.com.unary.initcopy.entity.ClientInitReqDO;
 import cn.com.unary.initcopy.entity.Constants;
 import cn.com.unary.initcopy.entity.ServerInitRespDO;
-import cn.com.unary.initcopy.exception.TaskException;
+import cn.com.unary.initcopy.exception.InfoPersistenceException;
+import cn.com.unary.initcopy.exception.TaskFailException;
 import cn.com.unary.initcopy.filecopy.filepacker.SyncAllPacker;
 import cn.com.unary.initcopy.filecopy.fileresolver.Resolver;
 import cn.com.unary.initcopy.filecopy.fileresolver.RsyncResolver;
 import cn.com.unary.initcopy.filecopy.fileresolver.SyncAllResolver;
 import cn.com.unary.initcopy.filecopy.init.ServerFileCopyInit;
-import cn.com.unary.initcopy.common.AbstractLogable;
 import cn.com.unary.initcopy.utils.CommonUtils;
+import org.apache.commons.lang3.concurrent.BasicThreadFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PreDestroy;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * 目标端的文件复制模块
  * 线程安全
- * 会处理所有下层抛出的异常
  *
  * @author Shark.Yin
  * @since 1.0
  */
 @Component("ServerFileCopy")
 @Scope("singleton")
-public class ServerFileCopy extends AbstractLogable implements ApplicationContextAware {
+public class ServerFileCopy extends AbstractLoggable implements ApplicationContextAware {
 
     private ApplicationContext context;
-    @Autowired
-    @Qualifier("serverExecutor")
     private ExecutorService fileCopyExec;
+    private volatile boolean isShutdown = false;
+    private ReentrantLock lock = new ReentrantLock();
     @Autowired
     private ServerFileCopyInit init;
 
     /**
      * 已放入线程池中执行的任务
      */
-    private Map<Integer, CopyTask> execTaskMap = new HashMap<>();
+    private Map<Integer, CopyTask> execTaskMap = new HashMap<>(10);
     /**
      * 任务列表
-      */
-    private Map<Integer, CopyTask> taskMap = new HashMap<>();
-    private ReentrantLock lock = new ReentrantLock();
+     */
+    private Map<Integer, CopyTask> taskMap = new HashMap<>(10);
+
+    public ServerFileCopy() {
+        ThreadFactory executorThreadFactory = new BasicThreadFactory.Builder()
+                .namingPattern("server-%d-task-")
+                .uncaughtExceptionHandler(new ExecExceptHandler())
+                .build();
+        fileCopyExec = new ThreadPoolExecutor(10,
+                200, 0L, TimeUnit.MILLISECONDS,
+                new LinkedBlockingQueue<Runnable>(1024),
+                executorThreadFactory,
+                new ThreadPoolExecutor.AbortPolicy());
+    }
 
     /**
      * 先根据包信息来确定属于哪个任务。
      *
      * @param data 数据包
+     * @throws TaskFailException 当前任务停止时，抛出异常
      */
-    public void resolverPack(byte[] data) {
+    public void resolverPack(byte[] data) throws TaskFailException {
         int taskId = CommonUtils.byteArrayToInt(data, 0);
         lock.lock();
+        if (isShutdown) {
+            lock.unlock();
+            throw new TaskFailException("FileCopy already shutdown.");
+        }
         if (execTaskMap.containsKey(taskId)) {
             execTaskMap.get(taskId).addPack(data);
         } else {
@@ -85,26 +107,41 @@ public class ServerFileCopy extends AbstractLogable implements ApplicationContex
      *
      * @param req 初始化请求
      * @return 初始化响应
-     * @throws TaskException 任务初始化失败异常
+     * @throws TaskFailException 任务初始化失败异常
      */
-    public ServerInitRespDO startInit(ClientInitReqDO req) throws TaskException {
-        try {
-            CopyTask task = new CopyTask(req.getTaskId(), req.getTargetDir());
-            lock.lock();
-            taskMap.put(req.getTaskId(), task);
+    public ServerInitRespDO startInit(ClientInitReqDO req) throws TaskFailException {
+        CopyTask task = new CopyTask(req.getTaskId(), req.getTargetDir());
+        lock.lock();
+        if (isShutdown) {
             lock.unlock();
+            throw new TaskFailException("FileCopy already shutdown.");
+        }
+        taskMap.put(req.getTaskId(), task);
+        lock.unlock();
+        try {
             return init.startInit(req);
-        } catch (Exception e) {
-            logger.error("Grpc Server Internal Error.", e);
+        } catch (InfoPersistenceException e) {
+            throw new TaskFailException("init task failed.", e);
+        } finally {
+            if (lock.isLocked()) {
+                lock.unlock();
+            }
             // 初始化失败后，移除当前任务
             lock.lock();
             taskMap.remove(req.getTaskId());
             lock.unlock();
-            ServerInitRespDO resp = new ServerInitRespDO();
-            resp.setMsg(e.getMessage());
-            resp.setReady(false);
-            return resp;
         }
+    }
+
+    @PreDestroy
+    public void destroy() {
+        lock.lock();
+        fileCopyExec.shutdownNow();
+        for (Integer i : taskMap.keySet()) {
+            taskMap.get(i).shutdown();
+        }
+        isShutdown = true;
+        lock.unlock();
     }
 
     @Override
@@ -113,14 +150,14 @@ public class ServerFileCopy extends AbstractLogable implements ApplicationContex
     }
 
     protected class CopyTask implements Runnable {
-        private Resolver syncAllResolver;
-        private Resolver syncDiffResolver;
         private final List<byte[]> packs;
+        private final ReentrantLock lock;
+        private Resolver syncAllResolver, syncDiffResolver;
         private int taskId;
-        private final Object lock;
-        private boolean pause;
+        private boolean pause, shutdown;
         private AtomicInteger wait = new AtomicInteger(0);
         private AtomicInteger notify = new AtomicInteger(0);
+        private long execTime, tempTime;
 
         private CopyTask(int taskId, String targetDir) {
             this.taskId = taskId;
@@ -128,9 +165,10 @@ public class ServerFileCopy extends AbstractLogable implements ApplicationContex
             this.syncDiffResolver = context.getBean("RsyncResolver", RsyncResolver.class);
             syncAllResolver.setBackupPath(targetDir).setTaskId(taskId);
             syncDiffResolver.setBackupPath(targetDir).setTaskId(taskId);
-            packs = new ArrayList<>();
-            lock = new Object();
+            packs = new ArrayList<>(30);
+            lock = new ReentrantLock();
             pause = false;
+            shutdown = false;
         }
 
         /**
@@ -138,8 +176,8 @@ public class ServerFileCopy extends AbstractLogable implements ApplicationContex
          */
         @Override
         public void run() {
-            Thread.currentThread().setName(Thread.currentThread().getName()+taskId);
-            long time = System.nanoTime();
+            Thread.currentThread().setName(Thread.currentThread().getName() + taskId);
+            tempTime = System.nanoTime();
             byte[] pack = null;
             while (true) {
                 synchronized (packs) {
@@ -152,15 +190,20 @@ public class ServerFileCopy extends AbstractLogable implements ApplicationContex
                     try {
                         if (!packs.isEmpty()) {
                             throw new IllegalStateException("Program error."
-                                    +"Pack size: " + packs.size());
+                                    + "Pack size: " + packs.size());
                         }
                         synchronized (lock) {
                             if (!pause) {
-                                logger.info(wait.getAndIncrement() +"'s wait when pack null.");
+                                logger.info(wait.getAndIncrement() + "'s wait when pack null.");
                                 pause = true;
+                                execTime += (System.nanoTime() - tempTime);
                                 lock.wait();
                             }
-                            continue;
+                            if (shutdown) {
+                                break;
+                            } else {
+                                continue;
+                            }
                         }
                     } catch (InterruptedException e) {
                         throw new IllegalStateException(e);
@@ -170,7 +213,7 @@ public class ServerFileCopy extends AbstractLogable implements ApplicationContex
                 if (resolve(pack)) {
                     if (!packs.isEmpty()) {
                         throw new IllegalStateException("Program error. Task Done but "
-                                +"Pack size: " + packs.size());
+                                + "Pack size: " + packs.size());
                     }
                     break;
                 } else {
@@ -179,9 +222,13 @@ public class ServerFileCopy extends AbstractLogable implements ApplicationContex
                         try {
                             synchronized (lock) {
                                 if (!pause) {
-                                    logger.info(wait.getAndIncrement() +"'s wait when packs' empty.");
+                                    logger.info(wait.getAndIncrement() + "'s wait when packs' empty.");
                                     pause = true;
+                                    execTime += (System.nanoTime() - tempTime);
                                     lock.wait();
+                                    if (shutdown) {
+                                        break;
+                                    }
                                 }
                             }
                         } catch (InterruptedException e) {
@@ -190,29 +237,65 @@ public class ServerFileCopy extends AbstractLogable implements ApplicationContex
                     }
                 }
             }
-            logger.info("Task resolver done. Use " + (System.nanoTime() - time));
+            this.shutdown();
         }
 
         private boolean resolve(byte[] pack) {
-            if (Constants.PackerType.SYNC_ALL_JAVA.getValue() == pack[SyncAllPacker.HEAD_LENGTH-1]) {
-                return syncAllResolver.process(pack);
-            } else {
-                return syncDiffResolver.process(pack);
+            try {
+                if (Constants.PackerType.SYNC_ALL_JAVA.getValue() == pack[SyncAllPacker.HEAD_LENGTH - 1]) {
+                    return syncAllResolver.process(pack);
+                } else {
+                    return syncDiffResolver.process(pack);
+                }
+            } catch (IOException e) {
+                throw new IllegalStateException("ERROR 0x01 : IO error.", e);
+            } catch (InfoPersistenceException e) {
+                throw new IllegalStateException("ERROR 0x02 : Persistence error.", e);
             }
         }
 
         private void addPack(byte[] pack) {
             Objects.requireNonNull(pack);
+            this.lock.lock();
+            if (shutdown) {
+                return;
+            }
+            lock.unlock();
             synchronized (packs) {
                 this.packs.add(pack);
-                synchronized (lock) {
-                    if (pause) {
-                        logger.info(notify.getAndIncrement() +"'s notify when pack arrive.");
+                if (pause) {
+                    synchronized (lock) {
+                        logger.info(notify.getAndIncrement() + "'s notify when pack arrive.");
                         lock.notify();
                         pause = false;
+                        tempTime = System.nanoTime();
                     }
                 }
             }
+        }
+
+        private void shutdown() {
+            this.lock.lock();
+            if (shutdown) {
+                return;
+            }
+            this.lock.unlock();
+            ServerFileCopy.this.lock.lock();
+            ServerFileCopy.this.execTaskMap.remove(this.taskId);
+            ServerFileCopy.this.taskMap.remove(this.taskId);
+            ServerFileCopy.this.lock.unlock();
+            this.lock.lock();
+            shutdown = true;
+            this.lock.unlock();
+            logger.info("Task resolver done. Use " + execTime + ".");
+        }
+    }
+
+    private class ExecExceptHandler implements Thread.UncaughtExceptionHandler {
+        @Override
+        public void uncaughtException(Thread t, Throwable e) {
+            logger.error(t.getName(), e);
+            ServerFileCopy.this.destroy();
         }
     }
 }

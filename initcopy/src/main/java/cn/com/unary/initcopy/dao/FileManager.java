@@ -2,6 +2,7 @@ package cn.com.unary.initcopy.dao;
 
 import cn.com.unary.initcopy.entity.FileInfoDO;
 import cn.com.unary.initcopy.entity.SyncTaskDO;
+import cn.com.unary.initcopy.exception.InfoPersistenceException;
 
 import java.util.List;
 
@@ -17,14 +18,14 @@ public interface FileManager {
      * @param fileIds 文件ID
      * @return Id为空时返回空集合
      */
-    List<FileInfoDO> query(String... fileIds);
+    List<FileInfoDO> query(String... fileIds) throws InfoPersistenceException;
 
     /**
      * 保存文件实体信息
      *
      * @param fi 文件信息实体
      */
-    void save(FileInfoDO fi);
+    void save(FileInfoDO fi) throws InfoPersistenceException;
 
     /**
      * 保存传进来的数据，如无文件Id，则做新增操作，自动生成Id。
@@ -32,14 +33,14 @@ public interface FileManager {
      *
      * @param fis 文件信息实体
      */
-    void save(List<FileInfoDO> fis);
+    void save(List<FileInfoDO> fis) throws InfoPersistenceException;
 
     /**
      * 根据文件Id集合删除文件实体信息
      *
      * @param fileIds 文件ID
      */
-    void delete(String... fileIds);
+    void delete(String... fileIds) throws InfoPersistenceException;
 
     /**
      * 根据任务 Id 来查询文件信息实体

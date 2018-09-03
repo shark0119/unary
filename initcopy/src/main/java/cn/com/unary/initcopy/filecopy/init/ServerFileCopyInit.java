@@ -6,6 +6,7 @@ import cn.com.unary.initcopy.entity.ClientInitReqDO;
 import cn.com.unary.initcopy.entity.DiffFileInfoDO;
 import cn.com.unary.initcopy.entity.FileInfoDO;
 import cn.com.unary.initcopy.entity.ServerInitRespDO;
+import cn.com.unary.initcopy.exception.InfoPersistenceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
@@ -28,7 +29,7 @@ public class ServerFileCopyInit {
     @Qualifier("serverFM")
     private FileManager fm;
 
-    public ServerInitRespDO startInit(ClientInitReqDO req) throws Exception {
+    public ServerInitRespDO startInit(ClientInitReqDO req) throws InfoPersistenceException {
         ServerInitRespDO resp = new ServerInitRespDO();
         resp.setReady(true).setMsg("success")
                 .setTaskId(req.getTaskId());
@@ -36,7 +37,6 @@ public class ServerFileCopyInit {
             case SYNC_DIFF:
                 resp.setDiffFileInfo(syncDiffInit(req.getFileBaseInfos()));
                 break;
-            // as default option
             case SYNC_ALL:
             default:
                 FileInfoDO fi;

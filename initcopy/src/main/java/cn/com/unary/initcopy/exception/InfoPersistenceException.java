@@ -5,7 +5,7 @@ package cn.com.unary.initcopy.exception;
  * @author shark
  *
  */
-public class InfoPersistenceException extends RuntimeException {
+public class InfoPersistenceException extends Exception {
 
 	private static final long serialVersionUID = 8097701166213552429L;
 

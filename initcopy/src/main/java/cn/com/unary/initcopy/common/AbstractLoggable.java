@@ -7,10 +7,10 @@ import org.apache.log4j.Logger;
  *
  * @author shark
  */
-public abstract class AbstractLogable {
+public abstract class AbstractLoggable {
     protected static Logger logger;
 
-    public AbstractLogable() {
+    public AbstractLoggable() {
         logger = Logger.getLogger(this.getClass());
     }
 }

@@ -127,6 +127,12 @@ http://maven.apache.org/maven-v4_0_0.xsd">
                     <include>*.xml</include>
                 </includes>
             </resource>
+            <resource>
+                <directory>src/main/proto</directory>
+                <includes>
+                    <include>*.proto</include>
+                </includes>
+            </resource>
         </resources>
     </build>
 </project>

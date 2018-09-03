@@ -1,12 +1,12 @@
 package cn.com.unary.initcopy.filecopy.fileresolver;
 
+import cn.com.unary.initcopy.common.AbstractLoggable;
 import cn.com.unary.initcopy.dao.FileManager;
 import cn.com.unary.initcopy.entity.Constants.PackerType;
 import cn.com.unary.initcopy.entity.FileInfoDO;
-import cn.com.unary.initcopy.exception.UnaryIoException;
+import cn.com.unary.initcopy.exception.InfoPersistenceException;
 import cn.com.unary.initcopy.filecopy.filepacker.SyncAllPacker;
 import cn.com.unary.initcopy.filecopy.io.AbstractFileOutput;
-import cn.com.unary.initcopy.common.AbstractLogable;
 import cn.com.unary.initcopy.utils.CommonUtils;
 import cn.com.unary.initcopy.utils.PathMapperUtil;
 import com.alibaba.fastjson.JSON;
@@ -27,7 +27,7 @@ import java.nio.ByteBuffer;
  */
 @Component("SyncAllResolver")
 @Scope("prototype")
-public class SyncAllResolver extends AbstractLogable implements Resolver {
+public class SyncAllResolver extends AbstractLoggable implements Resolver {
 
     private static final int PACK_SIZE = SyncAllPacker.PACK_SIZE;
     private static final int HEAD_LENGTH = SyncAllPacker.HEAD_LENGTH;
@@ -63,7 +63,7 @@ public class SyncAllResolver extends AbstractLogable implements Resolver {
     }
 
     @Override
-    public boolean process(byte[] data) {
+    public boolean process(byte[] data) throws IOException, InfoPersistenceException {
         packIndex = CommonUtils.byteArrayToInt(data, 4);
         // get pack info
         if (!getPackType().equals(PackerType.valueOf(data[HEAD_LENGTH - 1]))) {
@@ -82,11 +82,7 @@ public class SyncAllResolver extends AbstractLogable implements Resolver {
                 // 从文件头读取
                 // 单个包中有多个文件
                 while (currentPos < data.length) {
-                    try {
-                        currentPos = readFileData(data, readFileInfo(data, currentPos));
-                    } catch (IOException e) {
-                        throw new UnaryIoException("ERROR 0x01 : IO error.", e);
-                    }
+                    currentPos = readFileData(data, readFileInfo(data, currentPos));
                 }
                 break;
             case FILE_INFO_DONE:
@@ -95,11 +91,7 @@ public class SyncAllResolver extends AbstractLogable implements Resolver {
                 // 同下，从文件内容读取
                 // 单个包中有多个文件
                 while (currentPos < data.length) {
-                    try {
-                        currentPos = readFileInfo(data, readFileData(data, currentPos));
-                    } catch (IOException e) {
-                        throw new UnaryIoException("ERROR 0x01 : IO error.", e);
-                    }
+                    currentPos = readFileInfo(data, readFileData(data, currentPos));
                 }
                 break;
             default:
@@ -229,7 +221,7 @@ public class SyncAllResolver extends AbstractLogable implements Resolver {
      * @param currentPos 偏移量
      * @return 读取完毕后的位置
      */
-    private int readFileData(byte[] data, int currentPos) throws IOException {
+    private int readFileData(byte[] data, int currentPos) throws IOException, InfoPersistenceException {
         logger.debug("currentPos when read file data:" + currentPos);
         if (currentPos >= data.length) {
             return currentPos;

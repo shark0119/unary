@@ -1,8 +1,6 @@
 package cn.com.unary.initcopy.common;
 
 
-import java.util.Objects;
-
 /**
  * 线程池内线程未知异常捕获处理
  *
@@ -11,11 +9,11 @@ import java.util.Objects;
  */
 public class ExecutorExceptionHandler implements Thread.UncaughtExceptionHandler {
 
+    private final Object informer;
+
     public ExecutorExceptionHandler(Object informer) {
         this.informer = informer;
     }
-
-    private final Object informer;
 
     @Override
     public void uncaughtException(Thread t, Throwable e) {

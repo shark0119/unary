@@ -1,6 +1,6 @@
 package cn.com.unary.initcopy.filecopy.io;
 
-import cn.com.unary.initcopy.common.AbstractLogable;
+import cn.com.unary.initcopy.common.AbstractLoggable;
 
 import java.io.IOException;
 import java.nio.channels.FileChannel;
@@ -11,7 +11,7 @@ import java.nio.channels.FileChannel;
  * @author Shark.Yin
  * @since 1.0
  */
-public abstract class AbstractFileOutput extends AbstractLogable implements AutoCloseable {
+public abstract class AbstractFileOutput extends AbstractLoggable implements AutoCloseable {
 
     /**
      * 设置当前写的文件

@@ -2,11 +2,12 @@ package cn.com.unary.initcopy.filecopy.filepacker;
 
 import api.UnaryTClient;
 import cn.com.unary.initcopy.InitCopyContext;
+import cn.com.unary.initcopy.common.AbstractLoggable;
 import cn.com.unary.initcopy.dao.FileManager;
 import cn.com.unary.initcopy.entity.Constants.PackerType;
 import cn.com.unary.initcopy.entity.FileInfoDO;
+import cn.com.unary.initcopy.exception.InfoPersistenceException;
 import cn.com.unary.initcopy.filecopy.io.AbstractFileInput;
-import cn.com.unary.initcopy.common.AbstractLogable;
 import cn.com.unary.initcopy.utils.CommonUtils;
 import com.alibaba.fastjson.JSON;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,7 +65,7 @@ import java.util.List;
  */
 @Component("SyncAllPacker")
 @Scope("prototype")
-public class SyncAllPacker extends AbstractLogable implements Packer {
+public class SyncAllPacker extends AbstractLoggable implements Packer {
 
     // 保留多少个字节来表示数据包头部长度。默认9个字节，
     /**
@@ -152,7 +153,7 @@ public class SyncAllPacker extends AbstractLogable implements Packer {
      * @throws IOException
      */
     @Override
-    public void start(List<String> fileIds) throws IOException {
+    public void start(List<String> fileIds) throws IOException, InfoPersistenceException {
         if (isReady() && !pause) {
             List<FileInfoDO> list = fm.query(fileIds.toArray(new String[fileIds.size()]));
             fiIterator = list.iterator();
@@ -200,7 +201,7 @@ public class SyncAllPacker extends AbstractLogable implements Packer {
      *
      * @return 如无数据，返回长度为0 的字节数组
      */
-    protected ByteBuffer pack() throws IOException {
+    protected ByteBuffer pack() throws IOException, InfoPersistenceException {
         if (pause) {
             try {
                 this.close();
@@ -302,7 +303,6 @@ public class SyncAllPacker extends AbstractLogable implements Packer {
     private ByteBuffer serializeFileInfo(FileInfoDO fi) {
         logger.debug("Ser to json.File id:" + fi.getId());
         try {
-            // byte[] fileInfoJsonBytes = mapper.writeValueAsBytes(fi);
             byte[] fileInfoJsonBytes = JSON.toJSONBytes(fi);
             ByteBuffer buffer = ByteBuffer.allocate(fileInfoJsonBytes.length + FILE_INFO_LENGTH);
             // set file info size
@@ -317,7 +317,7 @@ public class SyncAllPacker extends AbstractLogable implements Packer {
         }
     }
 
-    private FileInfoDO nextFile() throws IOException {
+    private FileInfoDO nextFile() throws IOException, InfoPersistenceException {
         if (currentFileInfo != null) {
             currentFileInfo.setState(FileInfoDO.STATE.SYNCED);
             fm.save(currentFileInfo);

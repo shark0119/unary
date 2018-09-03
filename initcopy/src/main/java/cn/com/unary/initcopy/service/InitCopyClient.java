@@ -2,7 +2,7 @@ package cn.com.unary.initcopy.service;
 
 /**
  * 初始化复制的客户端
- * 开启向外部开放的 GRPC 服务，提供任务的 CRUD
+ * 开启向外部开放的 GRPC 服务
  *
  * @author Shark.Yin
  * @since 1.0

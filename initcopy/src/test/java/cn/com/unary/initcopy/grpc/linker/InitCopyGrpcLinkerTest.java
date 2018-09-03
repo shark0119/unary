@@ -1,12 +1,12 @@
 package cn.com.unary.initcopy.grpc.linker;
 
 import cn.com.unary.initcopy.InitCopyContext;
+import cn.com.unary.initcopy.common.AbstractLoggable;
 import cn.com.unary.initcopy.config.BeanConfig;
 import cn.com.unary.initcopy.grpc.constant.SyncType;
 import cn.com.unary.initcopy.grpc.entity.ExecResult;
 import cn.com.unary.initcopy.grpc.entity.SyncTarget;
 import cn.com.unary.initcopy.grpc.entity.SyncTask;
-import cn.com.unary.initcopy.common.AbstractLogable;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class InitCopyGrpcLinkerTest extends AbstractLogable {
+public class InitCopyGrpcLinkerTest extends AbstractLoggable {
     AnnotationConfigApplicationContext ac;
     InitCopyGrpcLinker linker;
     InitCopyContext context;

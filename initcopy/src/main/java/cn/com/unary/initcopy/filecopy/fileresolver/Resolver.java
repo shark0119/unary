@@ -1,6 +1,9 @@
 package cn.com.unary.initcopy.filecopy.fileresolver;
 
 import cn.com.unary.initcopy.entity.Constants.PackerType;
+import cn.com.unary.initcopy.exception.InfoPersistenceException;
+
+import java.io.IOException;
 
 /**
  * 文件数据包解析器
@@ -14,7 +17,7 @@ public interface Resolver extends AutoCloseable {
      * @param data 文件数据包
      * @return 任务是否完成，完成返回 true
      */
-    boolean process(byte[] data);
+    boolean process(byte[] data) throws IOException, InfoPersistenceException;
 
     /**
      * 获取此解析器对应的打包策略

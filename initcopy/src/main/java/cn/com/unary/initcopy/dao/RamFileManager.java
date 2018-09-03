@@ -1,7 +1,7 @@
 package cn.com.unary.initcopy.dao;
 
+import cn.com.unary.initcopy.common.AbstractLoggable;
 import cn.com.unary.initcopy.entity.FileInfoDO;
-import cn.com.unary.initcopy.common.AbstractLogable;
 import cn.com.unary.initcopy.entity.SyncTaskDO;
 import cn.com.unary.initcopy.utils.ValidateUtils;
 
@@ -16,7 +16,7 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  * @author shark
  */
-public class RamFileManager extends AbstractLogable implements FileManager {
+public class RamFileManager extends AbstractLoggable implements FileManager {
 
     /**
      * key : fileId, field: 文件信息实体

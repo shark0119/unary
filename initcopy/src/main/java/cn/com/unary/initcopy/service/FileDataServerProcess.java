@@ -3,6 +3,7 @@ package cn.com.unary.initcopy.service;
 import api.UnaryChannel;
 import api.UnaryHandler;
 import api.UnaryProcess;
+import cn.com.unary.initcopy.exception.TaskFailException;
 import cn.com.unary.initcopy.filecopy.ServerFileCopy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -30,7 +31,11 @@ public class FileDataServerProcess implements UnaryProcess{
         @Override
         public void handler(byte[] data) {
             // TODO 调用解包程序，写入文件
-            fileCopy.resolverPack(data);
+            try {
+                fileCopy.resolverPack(data);
+            } catch (TaskFailException e) {
+                e.printStackTrace();
+            }
         }
     }
 }

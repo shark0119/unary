@@ -1,6 +1,6 @@
 package cn.com.unary.initcopy.filecopy.io;
 
-import cn.com.unary.initcopy.common.AbstractLogable;
+import cn.com.unary.initcopy.common.AbstractLoggable;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -12,7 +12,7 @@ import java.nio.channels.FileChannel;
  * @author Shark.Yin
  * @since 1.0
  */
-public abstract class AbstractFileInput extends AbstractLogable implements AutoCloseable {
+public abstract class AbstractFileInput extends AbstractLoggable implements AutoCloseable {
 
     /**
      * 打开文件，如果上个文件没有读完，关闭资源并做日志记录。

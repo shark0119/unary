@@ -1,8 +1,9 @@
 package cn.com.unary.initcopy.grpc;
 
-import cn.com.unary.initcopy.common.AbstractLogable;
+import cn.com.unary.initcopy.common.AbstractLoggable;
 import io.grpc.BindableService;
 import io.grpc.Server;
+import io.grpc.ServerBuilder;
 
 import java.io.IOException;
 
@@ -12,8 +13,8 @@ import java.io.IOException;
  * @author Shark.Yin
  * @since 1.0
  */
-public class GrpcServiceStarter extends AbstractLogable {
-    private int port ;
+public class GrpcServiceStarter extends AbstractLoggable {
+    private int port;
     private Server server;
     private BindableService service;
 
@@ -26,8 +27,9 @@ public class GrpcServiceStarter extends AbstractLogable {
         this.service = service;
         this.port = port;
     }
+
     public void start() throws IOException, InterruptedException {
-        /*server = ServerBuilder.forPort(port)
+        server = ServerBuilder.forPort(port)
                 .addService(service)
                 .build().start();
         logger.debug("service start...");
@@ -43,15 +45,14 @@ public class GrpcServiceStarter extends AbstractLogable {
                 logger.error("*** server shut down");
             }
         });
-        this.blockUntilShutdown();*/
+        if (server != null) {
+            server.awaitTermination();
+        }
     }
 
-    // block 一直到退出程序
-    private void blockUntilShutdown() throws InterruptedException {
-        synchronized (server) {
-            if (server != null) {
-                server.awaitTermination();
-            }
+    public void shutdown() {
+        if (server != null) {
+            server.shutdownNow();
         }
     }
 }

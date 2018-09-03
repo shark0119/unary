@@ -1,5 +1,6 @@
 package cn.com.unary.initcopy.grpc.client;
 
+import cn.com.unary.initcopy.common.AbstractLoggable;
 import cn.com.unary.initcopy.common.BeanConverter;
 import cn.com.unary.initcopy.entity.DeleteTaskDO;
 import cn.com.unary.initcopy.entity.ExecResultDO;
@@ -11,11 +12,8 @@ import cn.com.unary.initcopy.grpc.entity.ExecResult;
 import cn.com.unary.initcopy.grpc.entity.ModifyTask;
 import cn.com.unary.initcopy.grpc.entity.ServerInitResp;
 import cn.com.unary.initcopy.grpc.linker.ControlTaskGrpcLinker;
-import cn.com.unary.initcopy.common.AbstractLogable;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
-
-import java.lang.reflect.InvocationTargetException;
 
 /**
  * 源端和目标端之间，任务控制信息GRPC接口的调用方(客户端)
@@ -23,7 +21,7 @@ import java.lang.reflect.InvocationTargetException;
  * @author Shark.Yin
  * @since 1.0
  */
-public class ControlTaskGrpcClient extends AbstractLogable {
+public class ControlTaskGrpcClient extends AbstractLoggable {
 
     private ControlTaskGrpc.ControlTaskBlockingStub blockingStub;
     /**

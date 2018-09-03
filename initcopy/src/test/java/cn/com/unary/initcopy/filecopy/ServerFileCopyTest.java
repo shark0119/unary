@@ -1,12 +1,12 @@
 package cn.com.unary.initcopy.filecopy;
 
-import cn.com.unary.initcopy.common.AbstractLogable;
+import cn.com.unary.initcopy.common.AbstractLoggable;
 import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ServerFileCopyTest extends AbstractLogable {
+public class ServerFileCopyTest extends AbstractLoggable {
     @Test
     public void testCopyTask() throws InterruptedException {
         CopyTask task = new CopyTask();

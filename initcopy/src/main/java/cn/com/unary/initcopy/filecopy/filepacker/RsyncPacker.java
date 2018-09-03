@@ -4,6 +4,7 @@ import api.UnaryTClient;
 import cn.com.unary.initcopy.dao.FileManager;
 import cn.com.unary.initcopy.entity.Constants.PackerType;
 import cn.com.unary.initcopy.entity.FileInfoDO;
+import cn.com.unary.initcopy.exception.InfoPersistenceException;
 import cn.com.unary.initcopy.filecopy.io.AbstractFileInput;
 import cn.com.unary.initcopy.grpc.entity.DiffFileInfo;
 import cn.com.unary.initcopy.utils.ValidateUtils;
@@ -39,7 +40,7 @@ public class RsyncPacker implements SyncDiffPacker {
     private boolean ready = false;
 
     @Override
-    public void start(List<String> fileIds) {
+    public void start(List<String> fileIds) throws InfoPersistenceException {
         ValidateUtils.requireNotEmpty(fileIds);
         if (ready) {
             for (FileInfoDO fi : fm.query(fileIds.toArray(new String[fileIds.size()]))) {

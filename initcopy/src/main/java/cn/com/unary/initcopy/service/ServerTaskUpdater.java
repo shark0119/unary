@@ -1,12 +1,12 @@
 package cn.com.unary.initcopy.service;
 
-import cn.com.unary.initcopy.common.AbstractLogable;
+import cn.com.unary.initcopy.common.AbstractLoggable;
 import cn.com.unary.initcopy.dao.FileManager;
 import cn.com.unary.initcopy.entity.Constants;
 import cn.com.unary.initcopy.entity.DeleteTaskDO;
 import cn.com.unary.initcopy.entity.ExecResultDO;
 import cn.com.unary.initcopy.entity.ModifyTaskDO;
-import cn.com.unary.initcopy.exception.TaskException;
+import cn.com.unary.initcopy.exception.TaskFailException;
 import cn.com.unary.initcopy.filecopy.ClientFileCopy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -19,7 +19,7 @@ import org.springframework.stereotype.Component;
  * @since 1.0
  */
 @Component("ServerTaskUpdater")
-public class ServerTaskUpdater extends AbstractLogable {
+public class ServerTaskUpdater extends AbstractLoggable {
 
     @Autowired
     @Qualifier("serverFM")
@@ -33,14 +33,10 @@ public class ServerTaskUpdater extends AbstractLogable {
      * @param task 任务相关信息实体
      * @return 执行结果
      */
-    public ExecResultDO delete(DeleteTaskDO task) {
+    public ExecResultDO delete(DeleteTaskDO task) throws TaskFailException {
         ExecResultDO resultDO = new ExecResultDO();
-        try {
-            fileCopy.updateTask(task.getTaskId(), Constants.UpdateType.DELETE);
-            resultDO.setIsHealthy(true).setMsg("task success");
-        } catch (TaskException e) {
-            resultDO.setIsHealthy(false).setMsg(e.getMessage()).setCode(1);
-        }
+        fileCopy.updateTask(task.getTaskId(), Constants.UpdateType.DELETE);
+        resultDO.setIsHealthy(true).setMsg("task success");
         return resultDO;
     }
 
@@ -50,7 +46,7 @@ public class ServerTaskUpdater extends AbstractLogable {
      * @param task 任务实体
      * @return 执行结果
      */
-    public ExecResultDO modify(ModifyTaskDO task) {
+    public ExecResultDO modify(ModifyTaskDO task) throws TaskFailException {
         Constants.UpdateType updateType;
         switch (task.getModifyType()) {
             case SPEED_LIMIT:
@@ -65,12 +61,8 @@ public class ServerTaskUpdater extends AbstractLogable {
                 break;
         }
         ExecResultDO resultDO = new ExecResultDO();
-        try {
-            fileCopy.updateTask(task.getTaskId(), updateType);
-            resultDO.setIsHealthy(true).setMsg("task success");
-        } catch (TaskException e) {
-            resultDO.setIsHealthy(false).setMsg(e.getMessage()).setCode(1);
-        }
+        fileCopy.updateTask(task.getTaskId(), updateType);
+        resultDO.setIsHealthy(true).setMsg("task success");
         return resultDO;
     }
 }
