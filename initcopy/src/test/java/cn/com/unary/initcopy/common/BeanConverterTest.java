@@ -3,6 +3,7 @@ package cn.com.unary.initcopy.common;
 import cn.com.unary.initcopy.entity.BaseFileInfoDO;
 import cn.com.unary.initcopy.entity.ClientInitReqDO;
 import cn.com.unary.initcopy.entity.ExecResultDO;
+import cn.com.unary.initcopy.entity.ServerInitRespDO;
 import cn.com.unary.initcopy.entity.SyncTaskDO;
 import cn.com.unary.initcopy.entity.TaskStateDO;
 import cn.com.unary.initcopy.grpc.entity.*;
@@ -15,7 +16,8 @@ import java.util.Map;
 public class BeanConverterTest {
 
     @Test
-    public void convert() throws Exception {
+    public void convert() {
+        System.out.println("************grpc2pojo******************");
         ExecResult.Builder builder = ExecResult.newBuilder();
         builder.setMsg("msg").setIsHealthy(true).setCode(3);
         /*ExecResultDO resultDO = BeanConverter.convert(builder.build(), ExecResultDO.class);
@@ -35,10 +37,29 @@ public class BeanConverterTest {
         builder3.addBaseFileInfos(BaseFileInfo.newBuilder().setModifyTime(1000).build());
         ClientInitReqDO reqDO = BeanConverter.convert(builder3.build(), ClientInitReqDO.class);
         System.out.println(reqDO);
-        BaseFileInfoDO infoDO = reqDO.getFileBaseInfos().get(0);
+        System.out.println("************pojo2grpc******************");
+        BaseFileInfoDO infoDO = new BaseFileInfoDO();
+        infoDO.setFileId("fileId");
+        infoDO.setFileSize(10000L);
+        infoDO.setFullName("i modify just now..");
+        BaseFileInfo info = BeanConverter.convert(infoDO, BaseFileInfo.class);
+        System.out.println(info);
+        System.out.println("************pojo2pojo******************");
+        infoDO = BeanConverter.convert(infoDO, BaseFileInfoDO.class);
         System.out.println(infoDO);
+        System.out.println("************grpc2grpc******************");
+        info = BeanConverter.convert(info, BaseFileInfo.class);
+        System.out.println(info);
+        System.out.println(info.getModifyTime());
     }
 
+    @Test
+    public void test2() {
+        ServerInitRespDO respDO = new ServerInitRespDO();
+        ServerInitResp resp = BeanConverter.convert(respDO, ServerInitResp.class);
+        System.out.println(resp);
+        System.out.println(resp.getTaskId());
+    }
     @Test
     public void setFieldValue() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
         ExecResult.Builder builder = ExecResult.newBuilder();

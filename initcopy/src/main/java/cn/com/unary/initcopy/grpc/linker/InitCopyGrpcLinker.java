@@ -14,16 +14,21 @@ import cn.com.unary.initcopy.grpc.entity.QueryTask;
 import cn.com.unary.initcopy.grpc.entity.SyncTask;
 import cn.com.unary.initcopy.grpc.entity.TaskState;
 import cn.com.unary.initcopy.service.ClientTaskUpdater;
+import cn.com.unary.initcopy.utils.ValidateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import java.util.Objects;
+
 /**
- * 作为 GRPC 服务与业务代码通讯的中转站
- * 任务管理中心，初始化复制 GRPC 服务的具体业务逻辑处理
- * 同时负责 GRPC 实体和 POJO 的映射。
- * 会处理下层抛出的所有异常。
+ * 初始化复制 GRPC 服务的任务管理中心
+ * 作为 GRPC 服务与业务代码通讯的
  * 线程安全
+ * 1. 转发任务到具体业务逻辑
+ * 2. 负责 GRPC 实体和 POJO 的映射。
+ * 3. 参数合法校验
+ * 4. 会处理下层抛出的所有异常。
  *
  * @author Shark.Yin
  * @since 1.0
@@ -32,14 +37,29 @@ import org.springframework.stereotype.Component;
 @Scope("singleton")
 public class InitCopyGrpcLinker extends AbstractLoggable {
     @Autowired
-    private ClientFileCopy clientFileCopy;
+    private static ClientFileCopy fileCopy;
     @Autowired
-    private ClientTaskUpdater updater;
+    private static ClientTaskUpdater updater;
 
+    @Autowired
+    public void setServerFileCopy(ClientFileCopy fileCopy) {
+        InitCopyGrpcLinker.fileCopy = fileCopy;
+    }
+
+    @Autowired
+    public void setTaskUpdater(ClientTaskUpdater updater) {
+        InitCopyGrpcLinker.updater = updater;
+    }
 	public ExecResult add (SyncTask task) {
+        Objects.requireNonNull(task);
+        ValidateUtils.requireNotEmpty(task.getFilesList());
+        Objects.requireNonNull(task.getTargetInfo());
+        if (task.getTaskId() < 0) {
+            throw new IllegalArgumentException("task id can't be negative.");
+        }
 	    ExecResult.Builder builder = ExecResult.newBuilder();
         try {
-            clientFileCopy.addTask(BeanConverter.convert(task, SyncTaskDO.class));
+            fileCopy.addTask(BeanConverter.convert(task, SyncTaskDO.class));
             builder.setIsHealthy(true);
         } catch (Exception e) {
             logger.error("task add fail", e);
@@ -50,6 +70,10 @@ public class InitCopyGrpcLinker extends AbstractLoggable {
     }
 
     public TaskState query(QueryTask task) {
+        Objects.requireNonNull(task);
+        if (task.getTaskId() < 0) {
+            throw new IllegalArgumentException("task id can't be negative.");
+        }
         try {
             return BeanConverter.convert(updater.query(task.getTaskId()), TaskState.class);
         } catch (Exception e) {
@@ -61,6 +85,10 @@ public class InitCopyGrpcLinker extends AbstractLoggable {
     }
 
     public ExecResult delete(DeleteTask task) {
+        Objects.requireNonNull(task);
+        if (task.getTaskId() < 0) {
+            throw new IllegalArgumentException("task id can't be negative.");
+        }
         try {
             DeleteTaskDO taskDO = BeanConverter.convert(task, DeleteTaskDO.class);
             ExecResultDO resultDO = updater.delete(taskDO);
@@ -69,9 +97,15 @@ public class InitCopyGrpcLinker extends AbstractLoggable {
             return ExecResult.newBuilder().setIsHealthy(false).setMsg(e.getMessage()).build();
         }
 	}
-	public ExecResult modify (ModifyTask modifyTask) {
+
+    public ExecResult modify(ModifyTask task) {
+        Objects.requireNonNull(task);
+        if (task.getTaskId() < 0) {
+            throw new IllegalArgumentException("task id can't be negative.");
+        }
+        Objects.requireNonNull(task.getModifyType());
         try {
-            ModifyTaskDO taskDO = BeanConverter.convert(modifyTask, ModifyTaskDO.class);
+            ModifyTaskDO taskDO = BeanConverter.convert(task, ModifyTaskDO.class);
             ExecResultDO resultDO = updater.modify(taskDO);
             return BeanConverter.convert(resultDO, ExecResult.class);
         } catch (Exception e) {

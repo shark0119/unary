@@ -6,6 +6,8 @@ import com.google.protobuf.MessageOrBuilder;
 import com.google.protobuf.ProtocolMessageEnum;
 import org.springframework.beans.BeanUtils;
 
+import java.beans.Transient;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -148,7 +150,7 @@ public class BeanConverter extends AbstractLoggable {
                     fieldValueMap.remove(memName);
                 } else {
                     o = fieldValueMap.get(fieldName);
-                    if (Entity.class.isAssignableFrom(o.getClass())
+                    if (o == null || Entity.class.isAssignableFrom(o.getClass())
                         || MessageOrBuilder.class.isAssignableFrom(o.getClass())) {
                         continue;
                     }
@@ -162,7 +164,7 @@ public class BeanConverter extends AbstractLoggable {
         }
         // GRPC 需要额外生成
         if (containerIsGrpc) {
-            method = container.getMethod("build");
+            method = builder.getClass().getMethod("build");
             builder = method.invoke(builder);
         }
         return (T) builder;
@@ -210,15 +212,20 @@ public class BeanConverter extends AbstractLoggable {
      * @return 属性名与方法的 Map
      */
     static <T> Map<String, Method> getMethod(Class<T> cls, METHOD_TYPE methodType, String prefix) {
-        boolean isGrpcEntity = MessageOrBuilder.class.isAssignableFrom(cls);
-        boolean isAddAllMtd;
+        boolean isGrpcEntity = MessageOrBuilder.class.isAssignableFrom(cls), isAddAllMtd;
         String pattern = METHOD_TYPE.GETTER.equals(methodType) ? GET_PATTERN : SET_PATTERN;
         prefix = ValidateUtils.isEmpty(prefix) ? "" : prefix + DOT;
         Map<String, Method> fieldMethodMap = new HashMap<>(10);
         String fieldName, methodName, fullFieldName;
         Class<?> memType;
+        loopMethod:
         for (Method method : cls.getMethods()) {
             methodName = method.getName();
+            for (Annotation annotation : method.getAnnotations()) {
+                if (annotation instanceof Transient) {
+                    continue loopMethod;
+                }
+            }
             if (methodName.startsWith(pattern)) {
                 if (isGrpcEntity && GRPC_EX_METHOD.containsKey(methodName)) {
                     continue;

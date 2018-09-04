@@ -9,7 +9,7 @@ import cn.com.unary.initcopy.common.Entity;
  * @since 1.0
  */
 public class TaskStateDO implements Entity {
-    private Integer taskId;
+    private int taskId;
     private ExecResultDO execResult;
     private ProgressInfoDO progressInfo;
 

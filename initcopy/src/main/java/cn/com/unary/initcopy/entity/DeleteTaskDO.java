@@ -7,8 +7,8 @@ package cn.com.unary.initcopy.entity;
  * @since 1.0
  */
 public class DeleteTaskDO {
-    private Integer taskId;
-    private Boolean deleteFile;
+    private int taskId;
+    private boolean deleteFile;
 
     @Override
     public String toString() {

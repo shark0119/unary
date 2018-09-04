@@ -12,10 +12,10 @@ import java.beans.Transient;
  */
 public class FileInfoDO extends BaseFileInfoDO {
     private static final long serialVersionUID = 7000233780395813428L;
-    private Integer taskId;
+    private int taskId;
     private FileType fileType;
-    private Integer beginPackIndex;
-    private Integer finishPackIndex;
+    private int beginPackIndex;
+    private int finishPackIndex;
     private FileAttr attr;
     private STATE state;
 
@@ -68,7 +68,7 @@ public class FileInfoDO extends BaseFileInfoDO {
     }
 
     public String getState() {
-        return state.toString();
+        return state == null ? "" : state.toString();
     }
 
     public void setState(String state) {

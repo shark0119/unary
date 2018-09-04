@@ -10,8 +10,8 @@ import cn.com.unary.initcopy.common.Entity;
  */
 public class SyncTargetDO implements Entity {
     private String ip;
-    private Integer transferPort;
-    private Integer grpcPort;
+    private int transferPort;
+    private int grpcPort;
 
     public String getIp() {
         return ip;

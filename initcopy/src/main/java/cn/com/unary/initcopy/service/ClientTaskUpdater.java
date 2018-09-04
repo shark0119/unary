@@ -49,7 +49,6 @@ public class ClientTaskUpdater extends AbstractLoggable {
                 if (client == null) {
                     throw new TaskFailException("task doesn't exist");
                 }
-                // TODO set code
                 client.setSpeedLimit(task.getSpeedLimit());
                 return new ExecResultDO(true, 0, "");
             case START:

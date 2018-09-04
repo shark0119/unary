@@ -12,7 +12,7 @@ public class ExecExceptionsHandler extends AbstractLoggable implements Thread.Un
 
     private Closeable resource;
 
-    public ExecExceptionsHandler (Closeable closeable) {
+    public ExecExceptionsHandler(Closeable closeable) {
         this.resource = closeable;
     }
 

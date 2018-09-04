@@ -30,12 +30,12 @@ public class TransferClient extends UnaryTClient {
     }
 
     @Override
-    public void encrypt(String type) {
+    public void setEncryptType(Object type) {
 
     }
 
     @Override
-    public void compress(String type) {
+    public void setCompressType(Object type) {
 
     }
 

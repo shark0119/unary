@@ -9,9 +9,9 @@ import cn.com.unary.initcopy.grpc.constant.ModifyType;
  * @since 1.0
  */
 public class ModifyTaskDO {
-    private Integer taskId;
+    private int taskId;
     private ModifyType modifyType;
-    private Integer speedLimit;
+    private int speedLimit;
 
     @Override
     public String toString() {

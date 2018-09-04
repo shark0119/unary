@@ -30,6 +30,13 @@ public class ControlTaskGrpcClient extends AbstractLoggable {
     private ControlTaskGrpcLinker linker;
 
     /**
+     * 测试代码
+     */
+    public ControlTaskGrpcClient() {
+        this.linker = new ControlTaskGrpcLinker();
+    }
+
+    /**
      * 配置 GRPC 服务的相关信息
      *
      * @param host GRPC 服务地址

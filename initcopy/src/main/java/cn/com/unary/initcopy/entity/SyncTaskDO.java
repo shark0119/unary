@@ -15,18 +15,18 @@ import java.util.List;
  * @since 1.0
  */
 public class SyncTaskDO implements Entity {
-    private Integer taskId;
+    private int taskId;
     private SyncTargetDO targetInfo;
     private SyncType syncType;
     private CompressType compressType;
     private EncryptType encryptType;
     private PackType packType;
-    private Integer speedLimit;
+    private int speedLimit;
     private String targetDir;
     private List<String> files;
-    private Long totalSize;
+    private long totalSize;
 
-    public Long getTotalSize() {
+    public long getTotalSize() {
         return totalSize;
     }
 

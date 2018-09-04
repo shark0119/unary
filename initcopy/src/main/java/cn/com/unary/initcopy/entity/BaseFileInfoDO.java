@@ -12,8 +12,8 @@ public class BaseFileInfoDO implements Entity {
 
 	private static final long serialVersionUID = 1852745479396286807L;
 	private String fileId;
-	private Long modifyTime;
-	private Long fileSize;
+	private long modifyTime;
+	private long fileSize;
 	private String fullName;
 
 	public String getFullName() {		return fullName;	}
@@ -25,10 +25,10 @@ public class BaseFileInfoDO implements Entity {
     public String getFileId() {        return fileId;    }
     public void setFileId(String fileId) {        this.fileId = fileId;    }
 
-    @Override
+	@Override
 	public String toString() {
 		return "BaseFileInfoDO{" +
-				", id='" + fileId + '\'' +
+				"fileId='" + fileId + '\'' +
 				", modifyTime=" + modifyTime +
 				", fileSize=" + fileSize +
 				", fullName='" + fullName + '\'' +

@@ -6,8 +6,8 @@ import cn.com.unary.initcopy.common.Entity;
  * @author shark
  */
 public class ExecResultDO implements Entity {
-    private Boolean isHealthy;
-    private Integer code;
+    private boolean isHealthy;
+    private int code;
     private String msg;
 
     public ExecResultDO() {

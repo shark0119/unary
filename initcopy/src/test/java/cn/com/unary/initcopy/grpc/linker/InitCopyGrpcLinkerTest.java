@@ -12,7 +12,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -44,7 +43,7 @@ public class InitCopyGrpcLinkerTest extends AbstractLoggable {
     }
 
     @Test
-    public void add(String source, String target) throws IOException, InterruptedException {
+    public void add(String source, String target) {
         try {
             // 客户端添加任务。
             SyncTask.Builder builder = SyncTask.newBuilder();

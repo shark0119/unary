@@ -13,11 +13,11 @@ import java.util.List;
  */
 public class ClientInitReqDO implements Entity {
 
-    private Integer taskId;
-    private Long totalSize;
+    private int taskId;
+    private long totalSize;
     private String targetDir;
     private SyncType syncType;
-    private List<BaseFileInfoDO> fileBaseInfos;
+    private List<BaseFileInfoDO> baseFileInfos;
 
     @Override
     public String toString() {
@@ -26,7 +26,7 @@ public class ClientInitReqDO implements Entity {
                 ", totalSize=" + totalSize +
                 ", targetDir='" + targetDir + '\'' +
                 ", syncType=" + syncType +
-                ", fileBaseInfos=" + fileBaseInfos +
+                ", fileBaseInfos=" + baseFileInfos +
                 '}';
     }
 
@@ -38,6 +38,12 @@ public class ClientInitReqDO implements Entity {
     public void setTargetDir(String targetDir) {        this.targetDir = targetDir;    }
     public SyncType getSyncType() {        return syncType;    }
     public void setSyncType(SyncType syncType) {        this.syncType = syncType;    }
-    public List<BaseFileInfoDO> getFileBaseInfos() {        return fileBaseInfos;    }
-    public void setFileBaseInfos(List<BaseFileInfoDO> fileBaseInfos) {        this.fileBaseInfos = fileBaseInfos;    }
+
+    public List<BaseFileInfoDO> getBaseFileInfos() {
+        return baseFileInfos;
+    }
+
+    public void setBaseFileInfos(List<BaseFileInfoDO> baseFileInfos) {
+        this.baseFileInfos = baseFileInfos;
+    }
 }

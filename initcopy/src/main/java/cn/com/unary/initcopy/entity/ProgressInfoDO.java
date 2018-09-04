@@ -9,12 +9,12 @@ import cn.com.unary.initcopy.common.Entity;
  * @since 1.0
  */
 public class ProgressInfoDO implements Entity {
-    private Integer stage;
-    private Integer progress;
-    private Long totalFileNum;
-    private Long totalFileSize;
-    private Long syncedFileNum;
-    private Long syncedFileSize;
+    private int stage;
+    private int progress;
+    private long totalFileNum;
+    private long totalFileSize;
+    private long syncedFileNum;
+    private long syncedFileSize;
     private String syncingFileName;
 
     @Override

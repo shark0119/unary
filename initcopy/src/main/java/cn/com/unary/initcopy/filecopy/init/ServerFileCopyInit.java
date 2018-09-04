@@ -35,12 +35,12 @@ public class ServerFileCopyInit {
                 .setTaskId(req.getTaskId());
         switch (req.getSyncType()) {
             case SYNC_DIFF:
-                resp.setDiffFileInfos(syncDiffInit(req.getFileBaseInfos()));
+                resp.setDiffFileInfos(syncDiffInit(req.getBaseFileInfos()));
                 break;
             case SYNC_ALL:
             default:
                 FileInfoDO fi;
-                for (BaseFileInfoDO fbi : req.getFileBaseInfos()) {
+                for (BaseFileInfoDO fbi : req.getBaseFileInfos()) {
                     fi = new FileInfoDO(fbi);
                     fi.setTaskId(req.getTaskId());
                     fm.save(fi);

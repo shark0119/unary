@@ -15,7 +15,6 @@ import cn.com.unary.initcopy.grpc.entity.BaseFileInfo;
 import cn.com.unary.initcopy.grpc.entity.ClientInitReq;
 import cn.com.unary.initcopy.grpc.entity.DiffFileInfo;
 import cn.com.unary.initcopy.grpc.entity.ServerInitResp;
-import cn.com.unary.initcopy.grpc.linker.ControlTaskGrpcLinker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
@@ -51,9 +50,6 @@ public class ClientFileCopyInit extends AbstractLoggable {
     @Autowired
     protected InitCopyContext context;
 
-    @Autowired
-    protected ControlTaskGrpcLinker linker;
-
     /**
      * 文件复制前的初始化工作
      * 1.包括设置加密压缩等选项；
@@ -72,7 +68,9 @@ public class ClientFileCopyInit extends AbstractLoggable {
                                   final List<DiffFileInfo> diffFileInfos)
             throws IOException, InfoPersistenceException {
         logger.debug("Start init.");
-        // TODO 设置加密压缩等选项
+        client.setSpeedLimit(syncTask.getSpeedLimit());
+        client.setCompressType(syncTask.getCompressType());
+        client.setEncryptType(syncTask.getEncryptType());
 
         logger.debug("Set transfer option done. Start to traversing files.");
         List<FileInfoDO> syncFiles = traversingFiles(syncTask.getFiles());
@@ -86,10 +84,9 @@ public class ClientFileCopyInit extends AbstractLoggable {
         logger.debug("We got " + syncFiles.size() + " files and " + syncFileIds.size()
                 + " file id from specified local directory in task " + syncTask.getTaskId());
 
-        // TODO 实体添加端口字段
+        // TODO change to grpc client and server
         ControlTaskGrpcClient controlTaskGrpcClient =
-                new ControlTaskGrpcClient(syncTask.getTargetInfo().getIp(),
-                        fm.queryTask(syncTask.getTaskId()).getTargetInfo().getGrpcPort());
+                new ControlTaskGrpcClient();
 
         long totalSize = 0L;
         List<BaseFileInfo> bfis = new ArrayList<>(syncFiles.size());
@@ -114,6 +111,7 @@ public class ClientFileCopyInit extends AbstractLoggable {
                 syncAllInit(builder, controlTaskGrpcClient);
                 break;
         }
+        fm.saveTask(syncTask);
         return syncFileIds;
     }
 

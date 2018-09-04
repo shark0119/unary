@@ -11,8 +11,8 @@ import java.util.List;
  * @since 1.0
  */
 public class ServerInitRespDO implements Entity {
-    private Integer taskId;
-    private Boolean ready;
+    private int taskId;
+    private boolean ready;
     private String msg;
     private List<DiffFileInfoDO> diffFileInfo;
 
@@ -35,7 +35,7 @@ public class ServerInitRespDO implements Entity {
         return this;
     }
 
-    public boolean isReady() {
+    public boolean getReady() {
         return ready;
     }
 

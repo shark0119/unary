@@ -36,13 +36,13 @@ public class InitCopyContext extends AbstractLoggable implements Closeable {
     public static final int TASK_NUMBER = 10;
     private final Object lock;
     /**
-     * 传输模块监听的端口
-     */
-    private int transPort;
-    /**
      * 面向外部 GRPC 服务监听的端口
      */
     private int grpcPort;
+    /**
+     * 传输模块监听的端口
+     */
+    private int transPort;
     private boolean isActive;
     /**
      * 源端与目标端之间 GRPC 通讯监听的端口
@@ -112,7 +112,8 @@ public class InitCopyContext extends AbstractLoggable implements Closeable {
 
     private InitCopyContext clientInit() {
         // 启动向外部提供任务管理的 GRPC 服务（源端）
-        clientStarter = new GrpcServiceStarter(new InitCopyGrpcImpl(new InitCopyGrpcLinker()), getGrpcPort());
+        clientStarter = new GrpcServiceStarter(
+                new InitCopyGrpcImpl(new InitCopyGrpcLinker()), getGrpcPort());
         exec.execute(new Runnable() {
             @Override
             public void run() {
@@ -131,7 +132,8 @@ public class InitCopyContext extends AbstractLoggable implements Closeable {
         // 启动和初始化传输模块（目标端）
         uts.startServer(getTransPort());
         uts.setProcess(process);
-        serverStarter = new GrpcServiceStarter(new ControlTaskGrpcImpl(new ControlTaskGrpcLinker()), innerGrpcPort);
+        serverStarter = new GrpcServiceStarter(
+                new ControlTaskGrpcImpl(new ControlTaskGrpcLinker()), innerGrpcPort);
         // 启动内部控制任务信息的 GRPC 服务（目标端）
         exec.execute(new Runnable() {
             @Override

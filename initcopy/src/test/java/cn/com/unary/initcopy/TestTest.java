@@ -71,6 +71,17 @@ public class TestTest {
         }
     }
 
+    @Test
+    public void test4() {
+        loop:
+        for (int i = 0; i < 3; i++) {
+            System.out.println(i);
+            for (int j = 0; j < 4; j++) {
+                continue loop;
+            }
+            System.out.println("i: " + i);
+        }
+    }
     private class C implements Closeable {
         public void t () {
             System.out.println("TTTTTTT");
