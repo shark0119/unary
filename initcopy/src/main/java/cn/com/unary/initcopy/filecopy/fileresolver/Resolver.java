@@ -3,6 +3,7 @@ package cn.com.unary.initcopy.filecopy.fileresolver;
 import cn.com.unary.initcopy.entity.Constants.PackerType;
 import cn.com.unary.initcopy.exception.InfoPersistenceException;
 
+import java.io.Closeable;
 import java.io.IOException;
 
 /**
@@ -10,12 +11,14 @@ import java.io.IOException;
  *
  * @author shark
  */
-public interface Resolver extends AutoCloseable {
+public interface Resolver extends Closeable {
     /**
      * 解析文件数据包，如果解析器无法对应，则会抛 IllegalStateException
      *
      * @param data 文件数据包
      * @return 任务是否完成，完成返回 true
+     * @throws IOException IO error
+     * @throws InfoPersistenceException 持久层异常
      */
     boolean process(byte[] data) throws IOException, InfoPersistenceException;
 

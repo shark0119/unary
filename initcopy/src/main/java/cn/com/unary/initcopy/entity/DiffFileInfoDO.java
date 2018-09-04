@@ -12,13 +12,13 @@ import java.util.List;
  */
 public class DiffFileInfoDO implements Entity {
     private String fileId;
-    private List<DiffFileChunksDO> diffFileChunk;
+    private List<DiffFileChunksDO> diffFileChunks;
 
     @Override
     public String toString() {
         return "DiffFileInfoDO{" +
                 "fileId='" + fileId + '\'' +
-                ", diffFileChunk=" + diffFileChunk +
+                ", diffFileChunk=" + diffFileChunks +
                 '}';
     }
 
@@ -30,11 +30,11 @@ public class DiffFileInfoDO implements Entity {
         this.fileId = fileId;
     }
 
-    public List<DiffFileChunksDO> getDiffFileChunk() {
-        return diffFileChunk;
+    public List<DiffFileChunksDO> getDiffFileChunks() {
+        return diffFileChunks;
     }
 
-    public void setDiffFileChunk(List<DiffFileChunksDO> diffFileChunk) {
-        this.diffFileChunk = diffFileChunk;
+    public void setDiffFileChunks(List<DiffFileChunksDO> diffFileChunk) {
+        this.diffFileChunks = diffFileChunk;
     }
 }

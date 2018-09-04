@@ -28,26 +28,26 @@ public interface ServerInitRespOrBuilder extends
       getMsgBytes();
 
   /**
-   * <code>repeated .cn.com.unary.initcopy.grpc.entity.DiffFileInfo diffFileInfo = 4;</code>
+   * <code>repeated .cn.com.unary.initcopy.grpc.entity.DiffFileInfo diffFileInfos = 4;</code>
    */
   java.util.List<cn.com.unary.initcopy.grpc.entity.DiffFileInfo> 
-      getDiffFileInfoList();
+      getDiffFileInfosList();
   /**
-   * <code>repeated .cn.com.unary.initcopy.grpc.entity.DiffFileInfo diffFileInfo = 4;</code>
+   * <code>repeated .cn.com.unary.initcopy.grpc.entity.DiffFileInfo diffFileInfos = 4;</code>
    */
-  cn.com.unary.initcopy.grpc.entity.DiffFileInfo getDiffFileInfo(int index);
+  cn.com.unary.initcopy.grpc.entity.DiffFileInfo getDiffFileInfos(int index);
   /**
-   * <code>repeated .cn.com.unary.initcopy.grpc.entity.DiffFileInfo diffFileInfo = 4;</code>
+   * <code>repeated .cn.com.unary.initcopy.grpc.entity.DiffFileInfo diffFileInfos = 4;</code>
    */
-  int getDiffFileInfoCount();
+  int getDiffFileInfosCount();
   /**
-   * <code>repeated .cn.com.unary.initcopy.grpc.entity.DiffFileInfo diffFileInfo = 4;</code>
+   * <code>repeated .cn.com.unary.initcopy.grpc.entity.DiffFileInfo diffFileInfos = 4;</code>
    */
   java.util.List<? extends cn.com.unary.initcopy.grpc.entity.DiffFileInfoOrBuilder> 
-      getDiffFileInfoOrBuilderList();
+      getDiffFileInfosOrBuilderList();
   /**
-   * <code>repeated .cn.com.unary.initcopy.grpc.entity.DiffFileInfo diffFileInfo = 4;</code>
+   * <code>repeated .cn.com.unary.initcopy.grpc.entity.DiffFileInfo diffFileInfos = 4;</code>
    */
-  cn.com.unary.initcopy.grpc.entity.DiffFileInfoOrBuilder getDiffFileInfoOrBuilder(
+  cn.com.unary.initcopy.grpc.entity.DiffFileInfoOrBuilder getDiffFileInfosOrBuilder(
       int index);
 }

@@ -3,6 +3,7 @@ package cn.com.unary.initcopy;
 import api.UnaryProcess;
 import api.UnaryTServer;
 import cn.com.unary.initcopy.common.AbstractLoggable;
+import cn.com.unary.initcopy.common.ExecExceptionsHandler;
 import cn.com.unary.initcopy.grpc.GrpcServiceStarter;
 import cn.com.unary.initcopy.grpc.linker.ControlTaskGrpcLinker;
 import cn.com.unary.initcopy.grpc.linker.InitCopyGrpcLinker;
@@ -14,6 +15,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PreDestroy;
+import java.io.Closeable;
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -25,37 +27,38 @@ import java.util.concurrent.TimeUnit;
  * 初始化复制上下文启动类
  * 包括源端和目标端相关参数的初始化
  *
- * @author shark
+ * @author Shark.Yin
+ * @since 1.0
  */
 @Component("InitCopyContext")
 @Scope("singleton")
-public class InitCopyContext extends AbstractLoggable {
-    /**
-     * 以下全是全局的属性
-     */
-    public final static String CHARSET = "UTF-8";
-    private ExecutorService exec;
+public class InitCopyContext extends AbstractLoggable implements Closeable {
+    public static final int TASK_NUMBER = 10;
+    private final Object lock;
     /**
      * 传输模块监听的端口
      */
-    private static int transPort;
+    private int transPort;
     /**
      * 面向外部 GRPC 服务监听的端口
      */
-    private static int grpcPort;
-    private static UnaryTServer uts;
+    private int grpcPort;
+    private boolean isActive;
     /**
      * 源端与目标端之间 GRPC 通讯监听的端口
      */
-    private static int innerGrpcPort;
+    private int innerGrpcPort;
+    private ExecutorService exec;
     private GrpcServiceStarter clientStarter;
     private GrpcServiceStarter serverStarter;
-    private static final Object LOCK = new Object();
-    private static Boolean isActive = Boolean.FALSE;
     @Autowired
-    protected UnaryProcess process;
+    private UnaryTServer uts;
+    @Autowired
+    private UnaryProcess process;
 
     public InitCopyContext() {
+        lock = new Object();
+        isActive = false;
     }
 
     /**
@@ -67,21 +70,20 @@ public class InitCopyContext extends AbstractLoggable {
      * @param transPort     文件数据传输端口
      * @param grpcPort      服务监听的端口
      * @param innerGrpcPort 内部服务的监听端口
-     * @throws InterruptedException 服务被中断
-     * @throws IOException          端口占用
+     * @throws IOException 端口占用
      */
-    public void start(int transPort, int grpcPort, int innerGrpcPort) throws IOException, InterruptedException {
+    public void start(int transPort, int grpcPort, int innerGrpcPort) throws IOException {
         // 判断上下文是否已经启动
         if (!isActive) {
-            synchronized (LOCK) {
+            synchronized (lock) {
                 if (!isActive) {
                     // 初始化相关参数
-                    InitCopyContext.transPort = transPort;
-                    InitCopyContext.grpcPort = grpcPort;
-                    InitCopyContext.innerGrpcPort = innerGrpcPort;
+                    this.transPort = transPort;
+                    this.grpcPort = grpcPort;
+                    this.innerGrpcPort = innerGrpcPort;
                     ThreadFactory executorThreadFactory = new BasicThreadFactory.Builder()
                             .namingPattern("init-copy-context-executor-%d")
-                            .uncaughtExceptionHandler(new ContextExecExceptHandler())
+                            .uncaughtExceptionHandler(new ExecExceptionsHandler(this))
                             .build();
                     exec = new ThreadPoolExecutor(2,
                             2, 1000L, TimeUnit.MILLISECONDS,
@@ -96,26 +98,21 @@ public class InitCopyContext extends AbstractLoggable {
     }
 
     @PreDestroy
-    public void destroy() throws IOException {
+    @Override
+    public void close() throws IOException {
         uts.stopServer();
         exec.shutdownNow();
         if (clientStarter != null) {
-            clientStarter.shutdown();
+            clientStarter.close();
         }
         if (serverStarter != null) {
-            serverStarter.shutdown();
+            serverStarter.close();
         }
     }
 
-    @Autowired
-    public InitCopyContext setUts(UnaryTServer uts) {
-        InitCopyContext.uts = uts;
-        return this;
-    }
-
-    private InitCopyContext clientInit() throws IOException, InterruptedException {
+    private InitCopyContext clientInit() {
         // 启动向外部提供任务管理的 GRPC 服务（源端）
-        clientStarter = new GrpcServiceStarter(new InitCopyGrpcImpl(new InitCopyGrpcLinker()), grpcPort);
+        clientStarter = new GrpcServiceStarter(new InitCopyGrpcImpl(new InitCopyGrpcLinker()), getGrpcPort());
         exec.execute(new Runnable() {
             @Override
             public void run() {
@@ -130,11 +127,11 @@ public class InitCopyContext extends AbstractLoggable {
         return this;
     }
 
-    private InitCopyContext serverInit() throws IOException, InterruptedException {
+    private InitCopyContext serverInit() throws IOException {
         // 启动和初始化传输模块（目标端）
-        uts.startServer();
+        uts.startServer(getTransPort());
         uts.setProcess(process);
-        serverStarter = new GrpcServiceStarter(new ControlTaskGrpcImpl(new ControlTaskGrpcLinker()), grpcPort);
+        serverStarter = new GrpcServiceStarter(new ControlTaskGrpcImpl(new ControlTaskGrpcLinker()), innerGrpcPort);
         // 启动内部控制任务信息的 GRPC 服务（目标端）
         exec.execute(new Runnable() {
             @Override
@@ -159,17 +156,5 @@ public class InitCopyContext extends AbstractLoggable {
 
     public int getInnerGrpcPort() {
         return innerGrpcPort;
-    }
-
-    private class ContextExecExceptHandler implements Thread.UncaughtExceptionHandler {
-        @Override
-        public void uncaughtException(Thread t, Throwable e) {
-            logger.error(t.getName(), e);
-            try {
-                InitCopyContext.this.destroy();
-            } catch (IOException e1) {
-                logger.error(e1);
-            }
-        }
     }
 }

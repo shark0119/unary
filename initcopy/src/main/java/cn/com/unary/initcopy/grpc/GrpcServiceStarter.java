@@ -5,6 +5,7 @@ import io.grpc.BindableService;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
 
+import java.io.Closeable;
 import java.io.IOException;
 
 /**
@@ -13,7 +14,7 @@ import java.io.IOException;
  * @author Shark.Yin
  * @since 1.0
  */
-public class GrpcServiceStarter extends AbstractLoggable {
+public class GrpcServiceStarter extends AbstractLoggable implements Closeable {
     private int port;
     private Server server;
     private BindableService service;
@@ -50,7 +51,8 @@ public class GrpcServiceStarter extends AbstractLoggable {
         }
     }
 
-    public void shutdown() {
+    @Override
+    public void close() {
         if (server != null) {
             server.shutdownNow();
         }

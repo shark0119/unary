@@ -13,8 +13,8 @@ import org.springframework.stereotype.Component;
  * 目标端处理文件数据包
  * 线程安全
  *
- * @author shark
- *
+ * @author Shark.Yin
+ * @since 1.0
  */
 @Component("FileDataServerProcess")
 @Scope("singleton")

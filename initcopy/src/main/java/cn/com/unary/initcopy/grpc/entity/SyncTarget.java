@@ -20,7 +20,8 @@ public  final class SyncTarget extends
   }
   private SyncTarget() {
     ip_ = "";
-    port_ = 0;
+    transferPort_ = 0;
+    grpcPort_ = 0;
   }
 
   @java.lang.Override
@@ -56,7 +57,12 @@ public  final class SyncTarget extends
           }
           case 16: {
 
-            port_ = input.readInt32();
+            transferPort_ = input.readInt32();
+            break;
+          }
+          case 24: {
+
+            grpcPort_ = input.readInt32();
             break;
           }
         }
@@ -124,17 +130,30 @@ public  final class SyncTarget extends
     }
   }
 
-  public static final int PORT_FIELD_NUMBER = 2;
-  private int port_;
+  public static final int TRANSFERPORT_FIELD_NUMBER = 2;
+  private int transferPort_;
   /**
    * <pre>
-   *目标端端口号
+   *目标端传输模块监听的端口号
    * </pre>
    *
-   * <code>optional int32 port = 2;</code>
+   * <code>optional int32 transferPort = 2;</code>
    */
-  public int getPort() {
-    return port_;
+  public int getTransferPort() {
+    return transferPort_;
+  }
+
+  public static final int GRPCPORT_FIELD_NUMBER = 3;
+  private int grpcPort_;
+  /**
+   * <pre>
+   * 目标端 GRPC 服务的端口号
+   * </pre>
+   *
+   * <code>optional int32 grpcPort = 3;</code>
+   */
+  public int getGrpcPort() {
+    return grpcPort_;
   }
 
   private byte memoizedIsInitialized = -1;
@@ -152,8 +171,11 @@ public  final class SyncTarget extends
     if (!getIpBytes().isEmpty()) {
       com.google.protobuf.GeneratedMessageV3.writeString(output, 1, ip_);
     }
-    if (port_ != 0) {
-      output.writeInt32(2, port_);
+    if (transferPort_ != 0) {
+      output.writeInt32(2, transferPort_);
+    }
+    if (grpcPort_ != 0) {
+      output.writeInt32(3, grpcPort_);
     }
   }
 
@@ -165,9 +187,13 @@ public  final class SyncTarget extends
     if (!getIpBytes().isEmpty()) {
       size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, ip_);
     }
-    if (port_ != 0) {
+    if (transferPort_ != 0) {
       size += com.google.protobuf.CodedOutputStream
-        .computeInt32Size(2, port_);
+        .computeInt32Size(2, transferPort_);
+    }
+    if (grpcPort_ != 0) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeInt32Size(3, grpcPort_);
     }
     memoizedSize = size;
     return size;
@@ -187,8 +213,10 @@ public  final class SyncTarget extends
     boolean result = true;
     result = result && getIp()
         .equals(other.getIp());
-    result = result && (getPort()
-        == other.getPort());
+    result = result && (getTransferPort()
+        == other.getTransferPort());
+    result = result && (getGrpcPort()
+        == other.getGrpcPort());
     return result;
   }
 
@@ -201,8 +229,10 @@ public  final class SyncTarget extends
     hash = (19 * hash) + getDescriptorForType().hashCode();
     hash = (37 * hash) + IP_FIELD_NUMBER;
     hash = (53 * hash) + getIp().hashCode();
-    hash = (37 * hash) + PORT_FIELD_NUMBER;
-    hash = (53 * hash) + getPort();
+    hash = (37 * hash) + TRANSFERPORT_FIELD_NUMBER;
+    hash = (53 * hash) + getTransferPort();
+    hash = (37 * hash) + GRPCPORT_FIELD_NUMBER;
+    hash = (53 * hash) + getGrpcPort();
     hash = (29 * hash) + unknownFields.hashCode();
     memoizedHashCode = hash;
     return hash;
@@ -327,7 +357,9 @@ public  final class SyncTarget extends
       super.clear();
       ip_ = "";
 
-      port_ = 0;
+      transferPort_ = 0;
+
+      grpcPort_ = 0;
 
       return this;
     }
@@ -352,7 +384,8 @@ public  final class SyncTarget extends
     public cn.com.unary.initcopy.grpc.entity.SyncTarget buildPartial() {
       cn.com.unary.initcopy.grpc.entity.SyncTarget result = new cn.com.unary.initcopy.grpc.entity.SyncTarget(this);
       result.ip_ = ip_;
-      result.port_ = port_;
+      result.transferPort_ = transferPort_;
+      result.grpcPort_ = grpcPort_;
       onBuilt();
       return result;
     }
@@ -398,8 +431,11 @@ public  final class SyncTarget extends
         ip_ = other.ip_;
         onChanged();
       }
-      if (other.getPort() != 0) {
-        setPort(other.getPort());
+      if (other.getTransferPort() != 0) {
+        setTransferPort(other.getTransferPort());
+      }
+      if (other.getGrpcPort() != 0) {
+        setGrpcPort(other.getGrpcPort());
       }
       onChanged();
       return this;
@@ -516,40 +552,78 @@ public  final class SyncTarget extends
       return this;
     }
 
-    private int port_ ;
+    private int transferPort_ ;
     /**
      * <pre>
-     *目标端端口号
+     *目标端传输模块监听的端口号
      * </pre>
      *
-     * <code>optional int32 port = 2;</code>
+     * <code>optional int32 transferPort = 2;</code>
      */
-    public int getPort() {
-      return port_;
+    public int getTransferPort() {
+      return transferPort_;
     }
     /**
      * <pre>
-     *目标端端口号
+     *目标端传输模块监听的端口号
      * </pre>
      *
-     * <code>optional int32 port = 2;</code>
+     * <code>optional int32 transferPort = 2;</code>
      */
-    public Builder setPort(int value) {
+    public Builder setTransferPort(int value) {
       
-      port_ = value;
+      transferPort_ = value;
       onChanged();
       return this;
     }
     /**
      * <pre>
-     *目标端端口号
+     *目标端传输模块监听的端口号
      * </pre>
      *
-     * <code>optional int32 port = 2;</code>
+     * <code>optional int32 transferPort = 2;</code>
      */
-    public Builder clearPort() {
+    public Builder clearTransferPort() {
       
-      port_ = 0;
+      transferPort_ = 0;
+      onChanged();
+      return this;
+    }
+
+    private int grpcPort_ ;
+    /**
+     * <pre>
+     * 目标端 GRPC 服务的端口号
+     * </pre>
+     *
+     * <code>optional int32 grpcPort = 3;</code>
+     */
+    public int getGrpcPort() {
+      return grpcPort_;
+    }
+    /**
+     * <pre>
+     * 目标端 GRPC 服务的端口号
+     * </pre>
+     *
+     * <code>optional int32 grpcPort = 3;</code>
+     */
+    public Builder setGrpcPort(int value) {
+      
+      grpcPort_ = value;
+      onChanged();
+      return this;
+    }
+    /**
+     * <pre>
+     * 目标端 GRPC 服务的端口号
+     * </pre>
+     *
+     * <code>optional int32 grpcPort = 3;</code>
+     */
+    public Builder clearGrpcPort() {
+      
+      grpcPort_ = 0;
       onChanged();
       return this;
     }

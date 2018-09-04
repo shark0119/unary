@@ -10,8 +10,8 @@ package cn.com.unary.initcopy.grpc.entity;
 
 message SyncTarget { //目标端IP及端口信息
     string ip = 1; //目标端IP
-                     int32 transferPort = 2; //目标端传输模块监听的端口号
-                     int32 grpcPort = 3; // 目标端 GRPC 服务的端口号
+    int32 transferPort = 2; //目标端传输模块监听的端口号
+    int32 grpcPort = 3; // 目标端 GRPC 服务的端口号
 }
 
 message SyncTask { //同步任务
@@ -23,7 +23,7 @@ message SyncTask { //同步任务
     cn.com.unary.initcopy.grpc.constant.PackType packType = 6;       //打包类型
     int32 speedLimit = 7;  //限速 以M为单位  0为不限速
     string TargetDir = 8;     //要同步的目标目录
-    repeated string file = 9; //要同步的源文件
+    repeated string files = 9; //要同步的源文件
 }
 
 message ExecResult {	// 任务执行结果
@@ -63,19 +63,19 @@ message DeleteTask { //删除任务信息
     bool deleteFile = 2;//目标端是否删除备份的文件
 }
 
-
-message FileBaseInfo {
+message BaseFileInfo {
 	string checkSum = 1;	// 校验码
 	sint64 modifyTime = 2;	// 修改时间
 	sint64 fileSize = 3;	// 文件大小
 	string fullName = 4;// 文件全路径名
+    string fileId = 5;
 }
 message ClientInitReq {
 	int32 taskId = 1;
-	int32 totalSize = 2;	//总大小
+	sint64 totalSize = 2;	//总大小
 	string targetDir = 3; //目标路径
 	cn.com.unary.initcopy.grpc.constant.SyncType syncType = 4; // 同步方式
-	repeated FileBaseInfo fileBaseInfos = 5; // 文件信息
+	repeated BaseFileInfo baseFileInfos = 5; // 文件信息
 }
 message DiffFileChunk {
 	string strongCheckCode = 1;// 强校验码Md5
@@ -84,11 +84,11 @@ message DiffFileChunk {
 }
 message DiffFileInfo {
 	string fileId = 1;// 文件Id
-	repeated DiffFileChunk diffFileChunk = 2;
+	repeated DiffFileChunk diffFileChunks = 2;
 }
 message ServerInitResp {
 	int32 taskId = 1;
 	bool ready = 2;
 	string msg = 3;
-	repeated DiffFileInfo diffFileInfo = 4;
+	repeated DiffFileInfo diffFileInfos = 4;
 }

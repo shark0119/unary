@@ -3,6 +3,7 @@ package cn.com.unary.initcopy.filecopy.init;
 import api.UnaryTClient;
 import cn.com.unary.initcopy.InitCopyContext;
 import cn.com.unary.initcopy.common.AbstractLoggable;
+import cn.com.unary.initcopy.common.BeanConverter;
 import cn.com.unary.initcopy.dao.FileManager;
 import cn.com.unary.initcopy.entity.BaseFileInfoDO;
 import cn.com.unary.initcopy.entity.FileInfoDO;
@@ -10,11 +11,11 @@ import cn.com.unary.initcopy.entity.SyncTaskDO;
 import cn.com.unary.initcopy.exception.InfoPersistenceException;
 import cn.com.unary.initcopy.grpc.client.ControlTaskGrpcClient;
 import cn.com.unary.initcopy.grpc.constant.SyncType;
+import cn.com.unary.initcopy.grpc.entity.BaseFileInfo;
 import cn.com.unary.initcopy.grpc.entity.ClientInitReq;
 import cn.com.unary.initcopy.grpc.entity.DiffFileInfo;
 import cn.com.unary.initcopy.grpc.entity.ServerInitResp;
 import cn.com.unary.initcopy.grpc.linker.ControlTaskGrpcLinker;
-import cn.com.unary.initcopy.utils.BeanConvertUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
@@ -74,11 +75,11 @@ public class ClientFileCopyInit extends AbstractLoggable {
         // TODO 设置加密压缩等选项
 
         logger.debug("Set transfer option done. Start to traversing files.");
-        List<FileInfoDO> syncFiles = traversingFiles(syncTask.getFile());
+        List<FileInfoDO> syncFiles = traversingFiles(syncTask.getFiles());
         List<String> syncFileIds = new ArrayList<>();
         int taskId = syncTask.getTaskId();
         for (FileInfoDO fi : syncFiles) {
-            syncFileIds.add(fi.getId());
+            syncFileIds.add(fi.getFileId());
             fi.setTaskId(taskId);
             fm.save(fi);
         }
@@ -88,17 +89,19 @@ public class ClientFileCopyInit extends AbstractLoggable {
         // TODO 实体添加端口字段
         ControlTaskGrpcClient controlTaskGrpcClient =
                 new ControlTaskGrpcClient(syncTask.getTargetInfo().getIp(),
-                        fm.queryTask(syncTask.getTaskId()).getTargetInfo().getPort());
+                        fm.queryTask(syncTask.getTaskId()).getTargetInfo().getGrpcPort());
 
         long totalSize = 0L;
+        List<BaseFileInfo> bfis = new ArrayList<>(syncFiles.size());
         for (BaseFileInfoDO bfi : syncFiles) {
             totalSize += bfi.getFileSize();
+            bfis.add(BeanConverter.convert(bfi, BaseFileInfo.class));
         }
         ClientInitReq.Builder builder = ClientInitReq.newBuilder()
                 .setTargetDir(syncTask.getTargetDir())
                 .setTaskId(taskId)
                 .setTotalSize(totalSize)
-                .addAllFileBaseInfos(BeanConvertUtil.takeToGrpc(syncFiles));
+                .addAllBaseFileInfos(bfis);
 
         logger.debug("Try to init according sync type.");
         switch (syncTask.getSyncType()) {
@@ -117,9 +120,9 @@ public class ClientFileCopyInit extends AbstractLoggable {
     /**
      * 差异复制向目标端发送初始化请求
      *
-     * @param builder 初始化请求的 Builder
+     * @param builder               初始化请求的 Builder
      * @param controlTaskGrpcClient 和控制任务 GRPC 通讯的客户端
-     * @param diffFileInfos 从目标端收到的文件同步差异信息数据
+     * @param diffFileInfos         从目标端收到的文件同步差异信息数据
      * @return 目标端确认后的待同步文件列表
      */
     private List<String> syncDiffInit(ClientInitReq.Builder builder,
@@ -130,7 +133,7 @@ public class ClientFileCopyInit extends AbstractLoggable {
         if (!resp.getReady()) {
             throw new IllegalStateException("ERROR 0x07 : Server intern Error." + resp.getMsg());
         }
-        diffFileInfos.addAll(resp.getDiffFileInfoList());
+        diffFileInfos.addAll(resp.getDiffFileInfosList());
 
         List<String> list = new ArrayList<>();
         for (DiffFileInfo dfi : diffFileInfos) {
@@ -179,7 +182,7 @@ public class ClientFileCopyInit extends AbstractLoggable {
     private BaseFileInfoDO takeFromFile(File file) {
         BaseFileInfoDO bfi = new BaseFileInfoDO();
         bfi.setFileSize(file.length());
-        bfi.setId(UUID.randomUUID().toString());
+        bfi.setFileId(UUID.randomUUID().toString());
         bfi.setModifyTime(file.lastModified());
         bfi.setFullName(file.getPath());
         return bfi;

@@ -12,6 +12,7 @@ import java.beans.Transient;
  */
 public class FileInfoDO extends BaseFileInfoDO {
     private static final long serialVersionUID = 7000233780395813428L;
+    private Integer taskId;
     private FileType fileType;
     private Integer beginPackIndex;
     private Integer finishPackIndex;
@@ -24,11 +25,12 @@ public class FileInfoDO extends BaseFileInfoDO {
     public FileInfoDO(BaseFileInfoDO bfi) {
         this.setFileSize(bfi.getFileSize());
         this.setFullName(bfi.getFullName());
-        this.setTaskId(bfi.getTaskId());
-        this.setId(bfi.getId());
+        this.setFileId(bfi.getFileId());
         this.setModifyTime(bfi.getModifyTime());
     }
 
+    public int getTaskId() {		return taskId;	}
+    public void setTaskId(int taskId) {		this.taskId = taskId;	}
     public static FileAttr newFileAttr() {
         return new FileAttr();
     }
@@ -86,7 +88,7 @@ public class FileInfoDO extends BaseFileInfoDO {
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof FileInfoDO) {
-            return ((FileInfoDO) obj).getId().equals(this.getId());
+            return ((FileInfoDO) obj).getFileId().equals(this.getFileId());
         }
         return false;
     }

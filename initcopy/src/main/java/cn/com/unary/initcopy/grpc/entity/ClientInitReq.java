@@ -19,7 +19,7 @@ public  final class ClientInitReq extends
     totalSize_ = 0L;
     targetDir_ = "";
     syncType_ = 0;
-    fileBaseInfos_ = java.util.Collections.emptyList();
+    baseFileInfos_ = java.util.Collections.emptyList();
   }
 
   @java.lang.Override
@@ -71,11 +71,11 @@ public  final class ClientInitReq extends
           }
           case 42: {
             if (!((mutable_bitField0_ & 0x00000010) == 0x00000010)) {
-              fileBaseInfos_ = new java.util.ArrayList<cn.com.unary.initcopy.grpc.entity.FileBaseInfo>();
+              baseFileInfos_ = new java.util.ArrayList<cn.com.unary.initcopy.grpc.entity.BaseFileInfo>();
               mutable_bitField0_ |= 0x00000010;
             }
-            fileBaseInfos_.add(
-                input.readMessage(cn.com.unary.initcopy.grpc.entity.FileBaseInfo.parser(), extensionRegistry));
+            baseFileInfos_.add(
+                input.readMessage(cn.com.unary.initcopy.grpc.entity.BaseFileInfo.parser(), extensionRegistry));
             break;
           }
         }
@@ -87,7 +87,7 @@ public  final class ClientInitReq extends
           e).setUnfinishedMessage(this);
     } finally {
       if (((mutable_bitField0_ & 0x00000010) == 0x00000010)) {
-        fileBaseInfos_ = java.util.Collections.unmodifiableList(fileBaseInfos_);
+        baseFileInfos_ = java.util.Collections.unmodifiableList(baseFileInfos_);
       }
       makeExtensionsImmutable();
     }
@@ -193,59 +193,59 @@ public  final class ClientInitReq extends
     return result == null ? cn.com.unary.initcopy.grpc.constant.SyncType.UNRECOGNIZED : result;
   }
 
-  public static final int FILEBASEINFOS_FIELD_NUMBER = 5;
-  private java.util.List<cn.com.unary.initcopy.grpc.entity.FileBaseInfo> fileBaseInfos_;
+  public static final int BASEFILEINFOS_FIELD_NUMBER = 5;
+  private java.util.List<cn.com.unary.initcopy.grpc.entity.BaseFileInfo> baseFileInfos_;
   /**
    * <pre>
    * 文件信息
    * </pre>
    *
-   * <code>repeated .cn.com.unary.initcopy.grpc.entity.FileBaseInfo fileBaseInfos = 5;</code>
+   * <code>repeated .cn.com.unary.initcopy.grpc.entity.BaseFileInfo baseFileInfos = 5;</code>
    */
-  public java.util.List<cn.com.unary.initcopy.grpc.entity.FileBaseInfo> getFileBaseInfosList() {
-    return fileBaseInfos_;
+  public java.util.List<cn.com.unary.initcopy.grpc.entity.BaseFileInfo> getBaseFileInfosList() {
+    return baseFileInfos_;
   }
   /**
    * <pre>
    * 文件信息
    * </pre>
    *
-   * <code>repeated .cn.com.unary.initcopy.grpc.entity.FileBaseInfo fileBaseInfos = 5;</code>
+   * <code>repeated .cn.com.unary.initcopy.grpc.entity.BaseFileInfo baseFileInfos = 5;</code>
    */
-  public java.util.List<? extends cn.com.unary.initcopy.grpc.entity.FileBaseInfoOrBuilder> 
-      getFileBaseInfosOrBuilderList() {
-    return fileBaseInfos_;
+  public java.util.List<? extends cn.com.unary.initcopy.grpc.entity.BaseFileInfoOrBuilder> 
+      getBaseFileInfosOrBuilderList() {
+    return baseFileInfos_;
   }
   /**
    * <pre>
    * 文件信息
    * </pre>
    *
-   * <code>repeated .cn.com.unary.initcopy.grpc.entity.FileBaseInfo fileBaseInfos = 5;</code>
+   * <code>repeated .cn.com.unary.initcopy.grpc.entity.BaseFileInfo baseFileInfos = 5;</code>
    */
-  public int getFileBaseInfosCount() {
-    return fileBaseInfos_.size();
+  public int getBaseFileInfosCount() {
+    return baseFileInfos_.size();
   }
   /**
    * <pre>
    * 文件信息
    * </pre>
    *
-   * <code>repeated .cn.com.unary.initcopy.grpc.entity.FileBaseInfo fileBaseInfos = 5;</code>
+   * <code>repeated .cn.com.unary.initcopy.grpc.entity.BaseFileInfo baseFileInfos = 5;</code>
    */
-  public cn.com.unary.initcopy.grpc.entity.FileBaseInfo getFileBaseInfos(int index) {
-    return fileBaseInfos_.get(index);
+  public cn.com.unary.initcopy.grpc.entity.BaseFileInfo getBaseFileInfos(int index) {
+    return baseFileInfos_.get(index);
   }
   /**
    * <pre>
    * 文件信息
    * </pre>
    *
-   * <code>repeated .cn.com.unary.initcopy.grpc.entity.FileBaseInfo fileBaseInfos = 5;</code>
+   * <code>repeated .cn.com.unary.initcopy.grpc.entity.BaseFileInfo baseFileInfos = 5;</code>
    */
-  public cn.com.unary.initcopy.grpc.entity.FileBaseInfoOrBuilder getFileBaseInfosOrBuilder(
+  public cn.com.unary.initcopy.grpc.entity.BaseFileInfoOrBuilder getBaseFileInfosOrBuilder(
       int index) {
-    return fileBaseInfos_.get(index);
+    return baseFileInfos_.get(index);
   }
 
   private byte memoizedIsInitialized = -1;
@@ -272,8 +272,8 @@ public  final class ClientInitReq extends
     if (syncType_ != cn.com.unary.initcopy.grpc.constant.SyncType.SYNC_ALL.getNumber()) {
       output.writeEnum(4, syncType_);
     }
-    for (int i = 0; i < fileBaseInfos_.size(); i++) {
-      output.writeMessage(5, fileBaseInfos_.get(i));
+    for (int i = 0; i < baseFileInfos_.size(); i++) {
+      output.writeMessage(5, baseFileInfos_.get(i));
     }
   }
 
@@ -297,9 +297,9 @@ public  final class ClientInitReq extends
       size += com.google.protobuf.CodedOutputStream
         .computeEnumSize(4, syncType_);
     }
-    for (int i = 0; i < fileBaseInfos_.size(); i++) {
+    for (int i = 0; i < baseFileInfos_.size(); i++) {
       size += com.google.protobuf.CodedOutputStream
-        .computeMessageSize(5, fileBaseInfos_.get(i));
+        .computeMessageSize(5, baseFileInfos_.get(i));
     }
     memoizedSize = size;
     return size;
@@ -324,8 +324,8 @@ public  final class ClientInitReq extends
     result = result && getTargetDir()
         .equals(other.getTargetDir());
     result = result && syncType_ == other.syncType_;
-    result = result && getFileBaseInfosList()
-        .equals(other.getFileBaseInfosList());
+    result = result && getBaseFileInfosList()
+        .equals(other.getBaseFileInfosList());
     return result;
   }
 
@@ -345,9 +345,9 @@ public  final class ClientInitReq extends
     hash = (53 * hash) + getTargetDir().hashCode();
     hash = (37 * hash) + SYNCTYPE_FIELD_NUMBER;
     hash = (53 * hash) + syncType_;
-    if (getFileBaseInfosCount() > 0) {
-      hash = (37 * hash) + FILEBASEINFOS_FIELD_NUMBER;
-      hash = (53 * hash) + getFileBaseInfosList().hashCode();
+    if (getBaseFileInfosCount() > 0) {
+      hash = (37 * hash) + BASEFILEINFOS_FIELD_NUMBER;
+      hash = (53 * hash) + getBaseFileInfosList().hashCode();
     }
     hash = (29 * hash) + unknownFields.hashCode();
     memoizedHashCode = hash;
@@ -463,7 +463,7 @@ public  final class ClientInitReq extends
     private void maybeForceBuilderInitialization() {
       if (com.google.protobuf.GeneratedMessageV3
               .alwaysUseFieldBuilders) {
-        getFileBaseInfosFieldBuilder();
+        getBaseFileInfosFieldBuilder();
       }
     }
     public Builder clear() {
@@ -476,11 +476,11 @@ public  final class ClientInitReq extends
 
       syncType_ = 0;
 
-      if (fileBaseInfosBuilder_ == null) {
-        fileBaseInfos_ = java.util.Collections.emptyList();
+      if (baseFileInfosBuilder_ == null) {
+        baseFileInfos_ = java.util.Collections.emptyList();
         bitField0_ = (bitField0_ & ~0x00000010);
       } else {
-        fileBaseInfosBuilder_.clear();
+        baseFileInfosBuilder_.clear();
       }
       return this;
     }
@@ -510,14 +510,14 @@ public  final class ClientInitReq extends
       result.totalSize_ = totalSize_;
       result.targetDir_ = targetDir_;
       result.syncType_ = syncType_;
-      if (fileBaseInfosBuilder_ == null) {
+      if (baseFileInfosBuilder_ == null) {
         if (((bitField0_ & 0x00000010) == 0x00000010)) {
-          fileBaseInfos_ = java.util.Collections.unmodifiableList(fileBaseInfos_);
+          baseFileInfos_ = java.util.Collections.unmodifiableList(baseFileInfos_);
           bitField0_ = (bitField0_ & ~0x00000010);
         }
-        result.fileBaseInfos_ = fileBaseInfos_;
+        result.baseFileInfos_ = baseFileInfos_;
       } else {
-        result.fileBaseInfos_ = fileBaseInfosBuilder_.build();
+        result.baseFileInfos_ = baseFileInfosBuilder_.build();
       }
       result.bitField0_ = to_bitField0_;
       onBuilt();
@@ -574,29 +574,29 @@ public  final class ClientInitReq extends
       if (other.syncType_ != 0) {
         setSyncTypeValue(other.getSyncTypeValue());
       }
-      if (fileBaseInfosBuilder_ == null) {
-        if (!other.fileBaseInfos_.isEmpty()) {
-          if (fileBaseInfos_.isEmpty()) {
-            fileBaseInfos_ = other.fileBaseInfos_;
+      if (baseFileInfosBuilder_ == null) {
+        if (!other.baseFileInfos_.isEmpty()) {
+          if (baseFileInfos_.isEmpty()) {
+            baseFileInfos_ = other.baseFileInfos_;
             bitField0_ = (bitField0_ & ~0x00000010);
           } else {
-            ensureFileBaseInfosIsMutable();
-            fileBaseInfos_.addAll(other.fileBaseInfos_);
+            ensureBaseFileInfosIsMutable();
+            baseFileInfos_.addAll(other.baseFileInfos_);
           }
           onChanged();
         }
       } else {
-        if (!other.fileBaseInfos_.isEmpty()) {
-          if (fileBaseInfosBuilder_.isEmpty()) {
-            fileBaseInfosBuilder_.dispose();
-            fileBaseInfosBuilder_ = null;
-            fileBaseInfos_ = other.fileBaseInfos_;
+        if (!other.baseFileInfos_.isEmpty()) {
+          if (baseFileInfosBuilder_.isEmpty()) {
+            baseFileInfosBuilder_.dispose();
+            baseFileInfosBuilder_ = null;
+            baseFileInfos_ = other.baseFileInfos_;
             bitField0_ = (bitField0_ & ~0x00000010);
-            fileBaseInfosBuilder_ = 
+            baseFileInfosBuilder_ = 
               com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
-                 getFileBaseInfosFieldBuilder() : null;
+                 getBaseFileInfosFieldBuilder() : null;
           } else {
-            fileBaseInfosBuilder_.addAllMessages(other.fileBaseInfos_);
+            baseFileInfosBuilder_.addAllMessages(other.baseFileInfos_);
           }
         }
       }
@@ -844,30 +844,30 @@ public  final class ClientInitReq extends
       return this;
     }
 
-    private java.util.List<cn.com.unary.initcopy.grpc.entity.FileBaseInfo> fileBaseInfos_ =
+    private java.util.List<cn.com.unary.initcopy.grpc.entity.BaseFileInfo> baseFileInfos_ =
       java.util.Collections.emptyList();
-    private void ensureFileBaseInfosIsMutable() {
+    private void ensureBaseFileInfosIsMutable() {
       if (!((bitField0_ & 0x00000010) == 0x00000010)) {
-        fileBaseInfos_ = new java.util.ArrayList<cn.com.unary.initcopy.grpc.entity.FileBaseInfo>(fileBaseInfos_);
+        baseFileInfos_ = new java.util.ArrayList<cn.com.unary.initcopy.grpc.entity.BaseFileInfo>(baseFileInfos_);
         bitField0_ |= 0x00000010;
        }
     }
 
     private com.google.protobuf.RepeatedFieldBuilderV3<
-        cn.com.unary.initcopy.grpc.entity.FileBaseInfo, cn.com.unary.initcopy.grpc.entity.FileBaseInfo.Builder, cn.com.unary.initcopy.grpc.entity.FileBaseInfoOrBuilder> fileBaseInfosBuilder_;
+        cn.com.unary.initcopy.grpc.entity.BaseFileInfo, cn.com.unary.initcopy.grpc.entity.BaseFileInfo.Builder, cn.com.unary.initcopy.grpc.entity.BaseFileInfoOrBuilder> baseFileInfosBuilder_;
 
     /**
      * <pre>
      * 文件信息
      * </pre>
      *
-     * <code>repeated .cn.com.unary.initcopy.grpc.entity.FileBaseInfo fileBaseInfos = 5;</code>
+     * <code>repeated .cn.com.unary.initcopy.grpc.entity.BaseFileInfo baseFileInfos = 5;</code>
      */
-    public java.util.List<cn.com.unary.initcopy.grpc.entity.FileBaseInfo> getFileBaseInfosList() {
-      if (fileBaseInfosBuilder_ == null) {
-        return java.util.Collections.unmodifiableList(fileBaseInfos_);
+    public java.util.List<cn.com.unary.initcopy.grpc.entity.BaseFileInfo> getBaseFileInfosList() {
+      if (baseFileInfosBuilder_ == null) {
+        return java.util.Collections.unmodifiableList(baseFileInfos_);
       } else {
-        return fileBaseInfosBuilder_.getMessageList();
+        return baseFileInfosBuilder_.getMessageList();
       }
     }
     /**
@@ -875,13 +875,13 @@ public  final class ClientInitReq extends
      * 文件信息
      * </pre>
      *
-     * <code>repeated .cn.com.unary.initcopy.grpc.entity.FileBaseInfo fileBaseInfos = 5;</code>
+     * <code>repeated .cn.com.unary.initcopy.grpc.entity.BaseFileInfo baseFileInfos = 5;</code>
      */
-    public int getFileBaseInfosCount() {
-      if (fileBaseInfosBuilder_ == null) {
-        return fileBaseInfos_.size();
+    public int getBaseFileInfosCount() {
+      if (baseFileInfosBuilder_ == null) {
+        return baseFileInfos_.size();
       } else {
-        return fileBaseInfosBuilder_.getCount();
+        return baseFileInfosBuilder_.getCount();
       }
     }
     /**
@@ -889,13 +889,13 @@ public  final class ClientInitReq extends
      * 文件信息
      * </pre>
      *
-     * <code>repeated .cn.com.unary.initcopy.grpc.entity.FileBaseInfo fileBaseInfos = 5;</code>
+     * <code>repeated .cn.com.unary.initcopy.grpc.entity.BaseFileInfo baseFileInfos = 5;</code>
      */
-    public cn.com.unary.initcopy.grpc.entity.FileBaseInfo getFileBaseInfos(int index) {
-      if (fileBaseInfosBuilder_ == null) {
-        return fileBaseInfos_.get(index);
+    public cn.com.unary.initcopy.grpc.entity.BaseFileInfo getBaseFileInfos(int index) {
+      if (baseFileInfosBuilder_ == null) {
+        return baseFileInfos_.get(index);
       } else {
-        return fileBaseInfosBuilder_.getMessage(index);
+        return baseFileInfosBuilder_.getMessage(index);
       }
     }
     /**
@@ -903,19 +903,19 @@ public  final class ClientInitReq extends
      * 文件信息
      * </pre>
      *
-     * <code>repeated .cn.com.unary.initcopy.grpc.entity.FileBaseInfo fileBaseInfos = 5;</code>
+     * <code>repeated .cn.com.unary.initcopy.grpc.entity.BaseFileInfo baseFileInfos = 5;</code>
      */
-    public Builder setFileBaseInfos(
-        int index, cn.com.unary.initcopy.grpc.entity.FileBaseInfo value) {
-      if (fileBaseInfosBuilder_ == null) {
+    public Builder setBaseFileInfos(
+        int index, cn.com.unary.initcopy.grpc.entity.BaseFileInfo value) {
+      if (baseFileInfosBuilder_ == null) {
         if (value == null) {
           throw new NullPointerException();
         }
-        ensureFileBaseInfosIsMutable();
-        fileBaseInfos_.set(index, value);
+        ensureBaseFileInfosIsMutable();
+        baseFileInfos_.set(index, value);
         onChanged();
       } else {
-        fileBaseInfosBuilder_.setMessage(index, value);
+        baseFileInfosBuilder_.setMessage(index, value);
       }
       return this;
     }
@@ -924,16 +924,16 @@ public  final class ClientInitReq extends
      * 文件信息
      * </pre>
      *
-     * <code>repeated .cn.com.unary.initcopy.grpc.entity.FileBaseInfo fileBaseInfos = 5;</code>
+     * <code>repeated .cn.com.unary.initcopy.grpc.entity.BaseFileInfo baseFileInfos = 5;</code>
      */
-    public Builder setFileBaseInfos(
-        int index, cn.com.unary.initcopy.grpc.entity.FileBaseInfo.Builder builderForValue) {
-      if (fileBaseInfosBuilder_ == null) {
-        ensureFileBaseInfosIsMutable();
-        fileBaseInfos_.set(index, builderForValue.build());
+    public Builder setBaseFileInfos(
+        int index, cn.com.unary.initcopy.grpc.entity.BaseFileInfo.Builder builderForValue) {
+      if (baseFileInfosBuilder_ == null) {
+        ensureBaseFileInfosIsMutable();
+        baseFileInfos_.set(index, builderForValue.build());
         onChanged();
       } else {
-        fileBaseInfosBuilder_.setMessage(index, builderForValue.build());
+        baseFileInfosBuilder_.setMessage(index, builderForValue.build());
       }
       return this;
     }
@@ -942,18 +942,18 @@ public  final class ClientInitReq extends
      * 文件信息
      * </pre>
      *
-     * <code>repeated .cn.com.unary.initcopy.grpc.entity.FileBaseInfo fileBaseInfos = 5;</code>
+     * <code>repeated .cn.com.unary.initcopy.grpc.entity.BaseFileInfo baseFileInfos = 5;</code>
      */
-    public Builder addFileBaseInfos(cn.com.unary.initcopy.grpc.entity.FileBaseInfo value) {
-      if (fileBaseInfosBuilder_ == null) {
+    public Builder addBaseFileInfos(cn.com.unary.initcopy.grpc.entity.BaseFileInfo value) {
+      if (baseFileInfosBuilder_ == null) {
         if (value == null) {
           throw new NullPointerException();
         }
-        ensureFileBaseInfosIsMutable();
-        fileBaseInfos_.add(value);
+        ensureBaseFileInfosIsMutable();
+        baseFileInfos_.add(value);
         onChanged();
       } else {
-        fileBaseInfosBuilder_.addMessage(value);
+        baseFileInfosBuilder_.addMessage(value);
       }
       return this;
     }
@@ -962,19 +962,19 @@ public  final class ClientInitReq extends
      * 文件信息
      * </pre>
      *
-     * <code>repeated .cn.com.unary.initcopy.grpc.entity.FileBaseInfo fileBaseInfos = 5;</code>
+     * <code>repeated .cn.com.unary.initcopy.grpc.entity.BaseFileInfo baseFileInfos = 5;</code>
      */
-    public Builder addFileBaseInfos(
-        int index, cn.com.unary.initcopy.grpc.entity.FileBaseInfo value) {
-      if (fileBaseInfosBuilder_ == null) {
+    public Builder addBaseFileInfos(
+        int index, cn.com.unary.initcopy.grpc.entity.BaseFileInfo value) {
+      if (baseFileInfosBuilder_ == null) {
         if (value == null) {
           throw new NullPointerException();
         }
-        ensureFileBaseInfosIsMutable();
-        fileBaseInfos_.add(index, value);
+        ensureBaseFileInfosIsMutable();
+        baseFileInfos_.add(index, value);
         onChanged();
       } else {
-        fileBaseInfosBuilder_.addMessage(index, value);
+        baseFileInfosBuilder_.addMessage(index, value);
       }
       return this;
     }
@@ -983,16 +983,16 @@ public  final class ClientInitReq extends
      * 文件信息
      * </pre>
      *
-     * <code>repeated .cn.com.unary.initcopy.grpc.entity.FileBaseInfo fileBaseInfos = 5;</code>
+     * <code>repeated .cn.com.unary.initcopy.grpc.entity.BaseFileInfo baseFileInfos = 5;</code>
      */
-    public Builder addFileBaseInfos(
-        cn.com.unary.initcopy.grpc.entity.FileBaseInfo.Builder builderForValue) {
-      if (fileBaseInfosBuilder_ == null) {
-        ensureFileBaseInfosIsMutable();
-        fileBaseInfos_.add(builderForValue.build());
+    public Builder addBaseFileInfos(
+        cn.com.unary.initcopy.grpc.entity.BaseFileInfo.Builder builderForValue) {
+      if (baseFileInfosBuilder_ == null) {
+        ensureBaseFileInfosIsMutable();
+        baseFileInfos_.add(builderForValue.build());
         onChanged();
       } else {
-        fileBaseInfosBuilder_.addMessage(builderForValue.build());
+        baseFileInfosBuilder_.addMessage(builderForValue.build());
       }
       return this;
     }
@@ -1001,16 +1001,16 @@ public  final class ClientInitReq extends
      * 文件信息
      * </pre>
      *
-     * <code>repeated .cn.com.unary.initcopy.grpc.entity.FileBaseInfo fileBaseInfos = 5;</code>
+     * <code>repeated .cn.com.unary.initcopy.grpc.entity.BaseFileInfo baseFileInfos = 5;</code>
      */
-    public Builder addFileBaseInfos(
-        int index, cn.com.unary.initcopy.grpc.entity.FileBaseInfo.Builder builderForValue) {
-      if (fileBaseInfosBuilder_ == null) {
-        ensureFileBaseInfosIsMutable();
-        fileBaseInfos_.add(index, builderForValue.build());
+    public Builder addBaseFileInfos(
+        int index, cn.com.unary.initcopy.grpc.entity.BaseFileInfo.Builder builderForValue) {
+      if (baseFileInfosBuilder_ == null) {
+        ensureBaseFileInfosIsMutable();
+        baseFileInfos_.add(index, builderForValue.build());
         onChanged();
       } else {
-        fileBaseInfosBuilder_.addMessage(index, builderForValue.build());
+        baseFileInfosBuilder_.addMessage(index, builderForValue.build());
       }
       return this;
     }
@@ -1019,17 +1019,17 @@ public  final class ClientInitReq extends
      * 文件信息
      * </pre>
      *
-     * <code>repeated .cn.com.unary.initcopy.grpc.entity.FileBaseInfo fileBaseInfos = 5;</code>
+     * <code>repeated .cn.com.unary.initcopy.grpc.entity.BaseFileInfo baseFileInfos = 5;</code>
      */
-    public Builder addAllFileBaseInfos(
-        java.lang.Iterable<? extends cn.com.unary.initcopy.grpc.entity.FileBaseInfo> values) {
-      if (fileBaseInfosBuilder_ == null) {
-        ensureFileBaseInfosIsMutable();
+    public Builder addAllBaseFileInfos(
+        java.lang.Iterable<? extends cn.com.unary.initcopy.grpc.entity.BaseFileInfo> values) {
+      if (baseFileInfosBuilder_ == null) {
+        ensureBaseFileInfosIsMutable();
         com.google.protobuf.AbstractMessageLite.Builder.addAll(
-            values, fileBaseInfos_);
+            values, baseFileInfos_);
         onChanged();
       } else {
-        fileBaseInfosBuilder_.addAllMessages(values);
+        baseFileInfosBuilder_.addAllMessages(values);
       }
       return this;
     }
@@ -1038,15 +1038,15 @@ public  final class ClientInitReq extends
      * 文件信息
      * </pre>
      *
-     * <code>repeated .cn.com.unary.initcopy.grpc.entity.FileBaseInfo fileBaseInfos = 5;</code>
+     * <code>repeated .cn.com.unary.initcopy.grpc.entity.BaseFileInfo baseFileInfos = 5;</code>
      */
-    public Builder clearFileBaseInfos() {
-      if (fileBaseInfosBuilder_ == null) {
-        fileBaseInfos_ = java.util.Collections.emptyList();
+    public Builder clearBaseFileInfos() {
+      if (baseFileInfosBuilder_ == null) {
+        baseFileInfos_ = java.util.Collections.emptyList();
         bitField0_ = (bitField0_ & ~0x00000010);
         onChanged();
       } else {
-        fileBaseInfosBuilder_.clear();
+        baseFileInfosBuilder_.clear();
       }
       return this;
     }
@@ -1055,15 +1055,15 @@ public  final class ClientInitReq extends
      * 文件信息
      * </pre>
      *
-     * <code>repeated .cn.com.unary.initcopy.grpc.entity.FileBaseInfo fileBaseInfos = 5;</code>
+     * <code>repeated .cn.com.unary.initcopy.grpc.entity.BaseFileInfo baseFileInfos = 5;</code>
      */
-    public Builder removeFileBaseInfos(int index) {
-      if (fileBaseInfosBuilder_ == null) {
-        ensureFileBaseInfosIsMutable();
-        fileBaseInfos_.remove(index);
+    public Builder removeBaseFileInfos(int index) {
+      if (baseFileInfosBuilder_ == null) {
+        ensureBaseFileInfosIsMutable();
+        baseFileInfos_.remove(index);
         onChanged();
       } else {
-        fileBaseInfosBuilder_.remove(index);
+        baseFileInfosBuilder_.remove(index);
       }
       return this;
     }
@@ -1072,24 +1072,24 @@ public  final class ClientInitReq extends
      * 文件信息
      * </pre>
      *
-     * <code>repeated .cn.com.unary.initcopy.grpc.entity.FileBaseInfo fileBaseInfos = 5;</code>
+     * <code>repeated .cn.com.unary.initcopy.grpc.entity.BaseFileInfo baseFileInfos = 5;</code>
      */
-    public cn.com.unary.initcopy.grpc.entity.FileBaseInfo.Builder getFileBaseInfosBuilder(
+    public cn.com.unary.initcopy.grpc.entity.BaseFileInfo.Builder getBaseFileInfosBuilder(
         int index) {
-      return getFileBaseInfosFieldBuilder().getBuilder(index);
+      return getBaseFileInfosFieldBuilder().getBuilder(index);
     }
     /**
      * <pre>
      * 文件信息
      * </pre>
      *
-     * <code>repeated .cn.com.unary.initcopy.grpc.entity.FileBaseInfo fileBaseInfos = 5;</code>
+     * <code>repeated .cn.com.unary.initcopy.grpc.entity.BaseFileInfo baseFileInfos = 5;</code>
      */
-    public cn.com.unary.initcopy.grpc.entity.FileBaseInfoOrBuilder getFileBaseInfosOrBuilder(
+    public cn.com.unary.initcopy.grpc.entity.BaseFileInfoOrBuilder getBaseFileInfosOrBuilder(
         int index) {
-      if (fileBaseInfosBuilder_ == null) {
-        return fileBaseInfos_.get(index);  } else {
-        return fileBaseInfosBuilder_.getMessageOrBuilder(index);
+      if (baseFileInfosBuilder_ == null) {
+        return baseFileInfos_.get(index);  } else {
+        return baseFileInfosBuilder_.getMessageOrBuilder(index);
       }
     }
     /**
@@ -1097,14 +1097,14 @@ public  final class ClientInitReq extends
      * 文件信息
      * </pre>
      *
-     * <code>repeated .cn.com.unary.initcopy.grpc.entity.FileBaseInfo fileBaseInfos = 5;</code>
+     * <code>repeated .cn.com.unary.initcopy.grpc.entity.BaseFileInfo baseFileInfos = 5;</code>
      */
-    public java.util.List<? extends cn.com.unary.initcopy.grpc.entity.FileBaseInfoOrBuilder> 
-         getFileBaseInfosOrBuilderList() {
-      if (fileBaseInfosBuilder_ != null) {
-        return fileBaseInfosBuilder_.getMessageOrBuilderList();
+    public java.util.List<? extends cn.com.unary.initcopy.grpc.entity.BaseFileInfoOrBuilder> 
+         getBaseFileInfosOrBuilderList() {
+      if (baseFileInfosBuilder_ != null) {
+        return baseFileInfosBuilder_.getMessageOrBuilderList();
       } else {
-        return java.util.Collections.unmodifiableList(fileBaseInfos_);
+        return java.util.Collections.unmodifiableList(baseFileInfos_);
       }
     }
     /**
@@ -1112,48 +1112,48 @@ public  final class ClientInitReq extends
      * 文件信息
      * </pre>
      *
-     * <code>repeated .cn.com.unary.initcopy.grpc.entity.FileBaseInfo fileBaseInfos = 5;</code>
+     * <code>repeated .cn.com.unary.initcopy.grpc.entity.BaseFileInfo baseFileInfos = 5;</code>
      */
-    public cn.com.unary.initcopy.grpc.entity.FileBaseInfo.Builder addFileBaseInfosBuilder() {
-      return getFileBaseInfosFieldBuilder().addBuilder(
-          cn.com.unary.initcopy.grpc.entity.FileBaseInfo.getDefaultInstance());
+    public cn.com.unary.initcopy.grpc.entity.BaseFileInfo.Builder addBaseFileInfosBuilder() {
+      return getBaseFileInfosFieldBuilder().addBuilder(
+          cn.com.unary.initcopy.grpc.entity.BaseFileInfo.getDefaultInstance());
     }
     /**
      * <pre>
      * 文件信息
      * </pre>
      *
-     * <code>repeated .cn.com.unary.initcopy.grpc.entity.FileBaseInfo fileBaseInfos = 5;</code>
+     * <code>repeated .cn.com.unary.initcopy.grpc.entity.BaseFileInfo baseFileInfos = 5;</code>
      */
-    public cn.com.unary.initcopy.grpc.entity.FileBaseInfo.Builder addFileBaseInfosBuilder(
+    public cn.com.unary.initcopy.grpc.entity.BaseFileInfo.Builder addBaseFileInfosBuilder(
         int index) {
-      return getFileBaseInfosFieldBuilder().addBuilder(
-          index, cn.com.unary.initcopy.grpc.entity.FileBaseInfo.getDefaultInstance());
+      return getBaseFileInfosFieldBuilder().addBuilder(
+          index, cn.com.unary.initcopy.grpc.entity.BaseFileInfo.getDefaultInstance());
     }
     /**
      * <pre>
      * 文件信息
      * </pre>
      *
-     * <code>repeated .cn.com.unary.initcopy.grpc.entity.FileBaseInfo fileBaseInfos = 5;</code>
+     * <code>repeated .cn.com.unary.initcopy.grpc.entity.BaseFileInfo baseFileInfos = 5;</code>
      */
-    public java.util.List<cn.com.unary.initcopy.grpc.entity.FileBaseInfo.Builder> 
-         getFileBaseInfosBuilderList() {
-      return getFileBaseInfosFieldBuilder().getBuilderList();
+    public java.util.List<cn.com.unary.initcopy.grpc.entity.BaseFileInfo.Builder> 
+         getBaseFileInfosBuilderList() {
+      return getBaseFileInfosFieldBuilder().getBuilderList();
     }
     private com.google.protobuf.RepeatedFieldBuilderV3<
-        cn.com.unary.initcopy.grpc.entity.FileBaseInfo, cn.com.unary.initcopy.grpc.entity.FileBaseInfo.Builder, cn.com.unary.initcopy.grpc.entity.FileBaseInfoOrBuilder> 
-        getFileBaseInfosFieldBuilder() {
-      if (fileBaseInfosBuilder_ == null) {
-        fileBaseInfosBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
-            cn.com.unary.initcopy.grpc.entity.FileBaseInfo, cn.com.unary.initcopy.grpc.entity.FileBaseInfo.Builder, cn.com.unary.initcopy.grpc.entity.FileBaseInfoOrBuilder>(
-                fileBaseInfos_,
+        cn.com.unary.initcopy.grpc.entity.BaseFileInfo, cn.com.unary.initcopy.grpc.entity.BaseFileInfo.Builder, cn.com.unary.initcopy.grpc.entity.BaseFileInfoOrBuilder> 
+        getBaseFileInfosFieldBuilder() {
+      if (baseFileInfosBuilder_ == null) {
+        baseFileInfosBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
+            cn.com.unary.initcopy.grpc.entity.BaseFileInfo, cn.com.unary.initcopy.grpc.entity.BaseFileInfo.Builder, cn.com.unary.initcopy.grpc.entity.BaseFileInfoOrBuilder>(
+                baseFileInfos_,
                 ((bitField0_ & 0x00000010) == 0x00000010),
                 getParentForChildren(),
                 isClean());
-        fileBaseInfos_ = null;
+        baseFileInfos_ = null;
       }
-      return fileBaseInfosBuilder_;
+      return baseFileInfosBuilder_;
     }
     public final Builder setUnknownFields(
         final com.google.protobuf.UnknownFieldSet unknownFields) {

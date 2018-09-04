@@ -10,15 +10,8 @@ import cn.com.unary.initcopy.common.Entity;
  */
 public class SyncTargetDO implements Entity {
     private String ip;
-    private Integer port;
-
-    @Override
-    public String toString() {
-        return "SyncTargetDO{" +
-                "ip='" + ip + '\'' +
-                ", port=" + port +
-                '}';
-    }
+    private Integer transferPort;
+    private Integer grpcPort;
 
     public String getIp() {
         return ip;
@@ -28,11 +21,28 @@ public class SyncTargetDO implements Entity {
         this.ip = ip;
     }
 
-    public int getPort() {
-        return port;
+    public int getTransferPort() {
+        return transferPort;
     }
 
-    public void setPort(int port) {
-        this.port = port;
+    public void setTransferPort(Integer transferPort) {
+        this.transferPort = transferPort;
+    }
+
+    public int getGrpcPort() {
+        return grpcPort;
+    }
+
+    public void setGrpcPort(int grpcPort) {
+        this.grpcPort = grpcPort;
+    }
+
+    @Override
+    public String toString() {
+        return "SyncTargetDO{" +
+                "ip='" + ip + '\'' +
+                ", transferPort=" + transferPort +
+                ", grpcPort=" + grpcPort +
+                '}';
     }
 }

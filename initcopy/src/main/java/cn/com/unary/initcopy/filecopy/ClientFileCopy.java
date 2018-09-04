@@ -1,7 +1,9 @@
 package cn.com.unary.initcopy.filecopy;
 
 import api.UnaryTClient;
+import cn.com.unary.initcopy.InitCopyContext;
 import cn.com.unary.initcopy.common.AbstractLoggable;
+import cn.com.unary.initcopy.common.ExecExceptionsHandler;
 import cn.com.unary.initcopy.dao.FileManager;
 import cn.com.unary.initcopy.entity.Constants;
 import cn.com.unary.initcopy.entity.FileInfoDO;
@@ -12,7 +14,7 @@ import cn.com.unary.initcopy.filecopy.filepacker.Packer;
 import cn.com.unary.initcopy.filecopy.filepacker.SyncDiffPacker;
 import cn.com.unary.initcopy.filecopy.init.ClientFileCopyInit;
 import cn.com.unary.initcopy.grpc.entity.DiffFileInfo;
-import cn.com.unary.initcopy.utils.BeanConvertUtil;
+import cn.com.unary.initcopy.utils.BeanExactUtil;
 import org.apache.commons.lang3.concurrent.BasicThreadFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +24,8 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PreDestroy;
+import java.io.Closeable;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -43,17 +47,15 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 @Component("ClientFileCopy")
 @Scope("singleton")
-public class ClientFileCopy extends AbstractLoggable implements ApplicationContextAware {
+public class ClientFileCopy extends AbstractLoggable implements ApplicationContextAware, Closeable {
 
     @Autowired
-    protected ClientFileCopyInit clientFileCopyInit;
+    protected ClientFileCopyInit init;
     @Autowired
     @Qualifier("clientFM")
     protected FileManager fm;
-    @Autowired
-    @Qualifier("clientExecutor")
     protected ExecutorService exec;
-    private boolean shutdown;
+    private boolean close;
     private ReentrantLock lock;
     private ApplicationContext applicationContext;
     private Map<Integer, UnaryTClient> transferMap;
@@ -62,17 +64,17 @@ public class ClientFileCopy extends AbstractLoggable implements ApplicationConte
     public ClientFileCopy() {
         ThreadFactory executorThreadFactory = new BasicThreadFactory.Builder()
                 .namingPattern("client-%d-pack-")
-                .uncaughtExceptionHandler(new ExecExceptHandler())
+                .uncaughtExceptionHandler(new ExecExceptionsHandler(this))
                 .build();
         exec = new ThreadPoolExecutor(10,
                 200, 0L, TimeUnit.MILLISECONDS,
                 new LinkedBlockingQueue<Runnable>(1024),
                 executorThreadFactory,
                 new ThreadPoolExecutor.AbortPolicy());
-        shutdown = false;
+        close = false;
         lock = new ReentrantLock();
-        transferMap = new HashMap<>(10);
-        execTaskMap = new HashMap<>(10);
+        transferMap = new HashMap<>(InitCopyContext.TASK_NUMBER);
+        execTaskMap = new HashMap<>(InitCopyContext.TASK_NUMBER);
     }
 
     /**
@@ -95,7 +97,7 @@ public class ClientFileCopy extends AbstractLoggable implements ApplicationConte
     public void addTask(SyncTaskDO taskDO) throws TaskFailException {
         try {
             lock.lock();
-            if (shutdown) {
+            if (close) {
                 throw new TaskFailException("file copy already shutdown");
             }
             lock.unlock();
@@ -105,7 +107,7 @@ public class ClientFileCopy extends AbstractLoggable implements ApplicationConte
             transferMap.put(taskDO.getTaskId(), unaryTClient);
             lock.unlock();
             List<DiffFileInfo> diffFileInfos = new ArrayList<>();
-            List<String> syncFileIds = clientFileCopyInit.startInit(unaryTClient, taskDO, diffFileInfos);
+            List<String> syncFileIds = init.startInit(unaryTClient, taskDO, diffFileInfos);
             logger.debug("Got " + diffFileInfos.size() + " diff file info and "
                     + syncFileIds.size() + " file ids.");
             logger.debug("Remove invalid file info. Complete file info from base file info.");
@@ -115,10 +117,10 @@ public class ClientFileCopy extends AbstractLoggable implements ApplicationConte
                 map.put(id, id);
             }
             for (FileInfoDO fi : list1) {
-                if (map.containsKey(fi.getId())) {
-                    fm.save(BeanConvertUtil.readFromBaseFileInfo(fi));
+                if (map.containsKey(fi.getFileId())) {
+                    fm.save(BeanExactUtil.readFromBaseFileInfo(fi));
                 } else {
-                    fm.delete(fi.getId());
+                    fm.deleteByIds(fi.getFileId());
                 }
             }
             logger.debug("Try Start A Sync Task. Pack And Send File.");
@@ -126,11 +128,11 @@ public class ClientFileCopy extends AbstractLoggable implements ApplicationConte
             switch (taskDO.getSyncType()) {
                 // 差异复制
                 case SYNC_DIFF:
-                    startDiffSync(unaryTClient, taskDO.getTaskId(), syncFileIds, diffFileInfos);
+                    startDiffSync(unaryTClient, taskDO.getTaskId(), diffFileInfos);
                     break;
                 case SYNC_ALL:
                 default:
-                    startAllSync(unaryTClient, taskDO.getTaskId(), syncFileIds);
+                    startAllSync(unaryTClient, taskDO.getTaskId());
                     break;
             }
         } catch (IOException | InfoPersistenceException e) {
@@ -147,16 +149,14 @@ public class ClientFileCopy extends AbstractLoggable implements ApplicationConte
      *
      * @param unaryTClient  传输模块
      * @param taskId        任务Id作为当前线程名
-     * @param syncFileIds   待同步的文件Id集合
      * @param diffFileInfos 差异文件数据集合
      */
     private void startDiffSync(UnaryTClient unaryTClient, int taskId,
-                               final List<String> syncFileIds,
                                final List<DiffFileInfo> diffFileInfos) {
         final SyncDiffPacker syncDiffPacker =
-                applicationContext.getBean("RsyncPacker", SyncDiffPacker.class).setTaskId(taskId);
-        syncDiffPacker.setFileDiffInfos(diffFileInfos).setTransfer(unaryTClient);
-        final PackTask packTask = new PackTask(taskId, syncDiffPacker, syncFileIds);
+                applicationContext.getBean("RsyncPacker", SyncDiffPacker.class);
+        syncDiffPacker.setFileDiffInfos(diffFileInfos);
+        final PackTask packTask = new PackTask(taskId, syncDiffPacker, unaryTClient);
         lock.lock();
         execTaskMap.put(taskId, packTask);
         lock.unlock();
@@ -168,13 +168,11 @@ public class ClientFileCopy extends AbstractLoggable implements ApplicationConte
      *
      * @param unaryTClient 传输模块
      * @param taskId       任务Id作为当前线程名
-     * @param syncFileIds  待同步的文件ID
      */
-    private void startAllSync(UnaryTClient unaryTClient, int taskId, final List<String> syncFileIds) {
+    private void startAllSync(UnaryTClient unaryTClient, int taskId) {
         final Packer syncAllPacker =
-                applicationContext.getBean("SyncAllPacker", Packer.class).setTaskId(taskId);
-        syncAllPacker.setTransfer(unaryTClient);
-        final PackTask packTask = new PackTask(taskId, syncAllPacker, syncFileIds);
+                applicationContext.getBean("SyncAllPacker", Packer.class);
+        final PackTask packTask = new PackTask(taskId, syncAllPacker, unaryTClient);
         lock.lock();
         execTaskMap.put(taskId, packTask);
         lock.unlock();
@@ -190,58 +188,59 @@ public class ClientFileCopy extends AbstractLoggable implements ApplicationConte
         return transferMap;
     }
 
-    protected class PackTask implements Runnable {
+    @PreDestroy
+    @Override
+    public void close() throws IOException {
+        lock.lock();
+        // 关闭已执行的任务
+        for (Integer key : execTaskMap.keySet()) {
+            execTaskMap.get(key).close();
+        }
+        // 关闭相应的传输模块
+        for (Integer key : transferMap.keySet()) {
+            transferMap.get(key).stopClient();
+        }
+        execTaskMap.clear();
+        transferMap.clear();
+        close = true;
+        lock.unlock();
+    }
 
-        private final List<String> syncFileIds;
+    protected class PackTask implements Runnable, Closeable {
+
         private int taskId;
         private Packer packer;
+        private UnaryTClient transfer;
 
-        public PackTask(int taskId, Packer packer, List<String> syncFileIds) {
+        private PackTask(int taskId, Packer packer, UnaryTClient transfer) {
             this.taskId = taskId;
             this.packer = packer;
-            this.syncFileIds = syncFileIds;
+            this.transfer = transfer;
         }
 
         @Override
         public void run() {
             Thread.currentThread().setName(Thread.currentThread().getName() + taskId);
             try {
-                packer.start(syncFileIds);
+                packer.start(taskId, transfer);
             } catch (IOException | InfoPersistenceException e) {
                 logger.error("Exception happened .", e);
                 throw new IllegalStateException(e);
+            } finally {
+                try {
+                    packer.close();
+                } catch (IOException e) {
+                    logger.error("packer close error, taskId:" + taskId, e);
+                }
             }
             ClientFileCopy.this.lock.lock();
             execTaskMap.remove(this.taskId);
             ClientFileCopy.this.lock.unlock();
         }
 
-        public void shutdown() {
-
-        }
-    }
-
-    private class ExecExceptHandler implements Thread.UncaughtExceptionHandler {
         @Override
-        public void uncaughtException(Thread t, Throwable e) {
-            logger.error(t.getName(), e);
-            try {
-                ClientFileCopy.this.destroy();
-            } catch (IOException e1) {
-                logger.error("resource close error.", e1);
-            }
+        public void close() throws IOException {
+            packer.close();
         }
-    }
-
-    private void destroy() throws IOException {
-        lock.lock();
-        for (Integer key : execTaskMap.keySet()) {
-            execTaskMap.get(key).shutdown();
-        }
-        for (Integer key : transferMap.keySet()) {
-            transferMap.get(key).stopClient();
-        }
-        shutdown = true;
-        lock.unlock();
     }
 }

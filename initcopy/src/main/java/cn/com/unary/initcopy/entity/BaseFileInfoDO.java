@@ -11,28 +11,24 @@ import cn.com.unary.initcopy.common.Entity;
 public class BaseFileInfoDO implements Entity {
 
 	private static final long serialVersionUID = 1852745479396286807L;
-	private Integer taskId;
-	private String id;
+	private String fileId;
 	private Long modifyTime;
 	private Long fileSize;
 	private String fullName;
-	
-	public int getTaskId() {		return taskId;	}
-	public void setTaskId(int taskId) {		this.taskId = taskId;	}
+
 	public String getFullName() {		return fullName;	}
 	public void setFullName(String fullName) {		this.fullName = fullName;	}
-	public String getId() {		return id;	}
-	public void setId(String id) {		this.id = id;	}
 	public long getModifyTime() {		return modifyTime; }
 	public void setModifyTime(long modifyTime) {		this.modifyTime = modifyTime;	}
 	public long getFileSize() {		return fileSize;	}
 	public void setFileSize(long fileSize) {		this.fileSize = fileSize;	}
+    public String getFileId() {        return fileId;    }
+    public void setFileId(String fileId) {        this.fileId = fileId;    }
 
-	@Override
+    @Override
 	public String toString() {
 		return "BaseFileInfoDO{" +
-				"taskId=" + taskId +
-				", id='" + id + '\'' +
+				", id='" + fileId + '\'' +
 				", modifyTime=" + modifyTime +
 				", fileSize=" + fileSize +
 				", fullName='" + fullName + '\'' +

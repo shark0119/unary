@@ -276,7 +276,7 @@ public class SyncAllResolver extends AbstractLoggable implements Resolver {
     }
 
     @Override
-    public void close() throws Exception {
+    public void close() throws IOException {
         if (output != null) {
             output.close();
         }

@@ -9,7 +9,6 @@ package cn.com.unary.initcopy;
 public class IcMain {
 
     public static void main(String[] args) {
-
         /*boolean isServer = false;
         boolean isClient = false;
         boolean nextIsPort = false;

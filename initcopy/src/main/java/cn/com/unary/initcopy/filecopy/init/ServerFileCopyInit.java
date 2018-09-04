@@ -35,7 +35,7 @@ public class ServerFileCopyInit {
                 .setTaskId(req.getTaskId());
         switch (req.getSyncType()) {
             case SYNC_DIFF:
-                resp.setDiffFileInfo(syncDiffInit(req.getFileBaseInfos()));
+                resp.setDiffFileInfos(syncDiffInit(req.getFileBaseInfos()));
                 break;
             case SYNC_ALL:
             default:

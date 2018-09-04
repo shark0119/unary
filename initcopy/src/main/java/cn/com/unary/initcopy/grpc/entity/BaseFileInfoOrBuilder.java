@@ -3,8 +3,8 @@
 
 package cn.com.unary.initcopy.grpc.entity;
 
-public interface FileBaseInfoOrBuilder extends
-    // @@protoc_insertion_point(interface_extends:cn.com.unary.initcopy.grpc.entity.FileBaseInfo)
+public interface BaseFileInfoOrBuilder extends
+    // @@protoc_insertion_point(interface_extends:cn.com.unary.initcopy.grpc.entity.BaseFileInfo)
     com.google.protobuf.MessageOrBuilder {
 
   /**
@@ -60,4 +60,14 @@ public interface FileBaseInfoOrBuilder extends
    */
   com.google.protobuf.ByteString
       getFullNameBytes();
+
+  /**
+   * <code>optional string fileId = 5;</code>
+   */
+  java.lang.String getFileId();
+  /**
+   * <code>optional string fileId = 5;</code>
+   */
+  com.google.protobuf.ByteString
+      getFileIdBytes();
 }

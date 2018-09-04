@@ -26,7 +26,7 @@ public  final class SyncTask extends
     packType_ = 0;
     speedLimit_ = 0;
     targetDir_ = "";
-    file_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+    files_ = com.google.protobuf.LazyStringArrayList.EMPTY;
   }
 
   @java.lang.Override
@@ -110,10 +110,10 @@ public  final class SyncTask extends
           case 74: {
             java.lang.String s = input.readStringRequireUtf8();
             if (!((mutable_bitField0_ & 0x00000100) == 0x00000100)) {
-              file_ = new com.google.protobuf.LazyStringArrayList();
+              files_ = new com.google.protobuf.LazyStringArrayList();
               mutable_bitField0_ |= 0x00000100;
             }
-            file_.add(s);
+            files_.add(s);
             break;
           }
         }
@@ -125,7 +125,7 @@ public  final class SyncTask extends
           e).setUnfinishedMessage(this);
     } finally {
       if (((mutable_bitField0_ & 0x00000100) == 0x00000100)) {
-        file_ = file_.getUnmodifiableView();
+        files_ = files_.getUnmodifiableView();
       }
       makeExtensionsImmutable();
     }
@@ -340,49 +340,49 @@ public  final class SyncTask extends
     }
   }
 
-  public static final int FILE_FIELD_NUMBER = 9;
-  private com.google.protobuf.LazyStringList file_;
+  public static final int FILES_FIELD_NUMBER = 9;
+  private com.google.protobuf.LazyStringList files_;
   /**
    * <pre>
    *要同步的源文件
    * </pre>
    *
-   * <code>repeated string file = 9;</code>
+   * <code>repeated string files = 9;</code>
    */
   public com.google.protobuf.ProtocolStringList
-      getFileList() {
-    return file_;
+      getFilesList() {
+    return files_;
   }
   /**
    * <pre>
    *要同步的源文件
    * </pre>
    *
-   * <code>repeated string file = 9;</code>
+   * <code>repeated string files = 9;</code>
    */
-  public int getFileCount() {
-    return file_.size();
+  public int getFilesCount() {
+    return files_.size();
   }
   /**
    * <pre>
    *要同步的源文件
    * </pre>
    *
-   * <code>repeated string file = 9;</code>
+   * <code>repeated string files = 9;</code>
    */
-  public java.lang.String getFile(int index) {
-    return file_.get(index);
+  public java.lang.String getFiles(int index) {
+    return files_.get(index);
   }
   /**
    * <pre>
    *要同步的源文件
    * </pre>
    *
-   * <code>repeated string file = 9;</code>
+   * <code>repeated string files = 9;</code>
    */
   public com.google.protobuf.ByteString
-      getFileBytes(int index) {
-    return file_.getByteString(index);
+      getFilesBytes(int index) {
+    return files_.getByteString(index);
   }
 
   private byte memoizedIsInitialized = -1;
@@ -421,8 +421,8 @@ public  final class SyncTask extends
     if (!getTargetDirBytes().isEmpty()) {
       com.google.protobuf.GeneratedMessageV3.writeString(output, 8, targetDir_);
     }
-    for (int i = 0; i < file_.size(); i++) {
-      com.google.protobuf.GeneratedMessageV3.writeString(output, 9, file_.getRaw(i));
+    for (int i = 0; i < files_.size(); i++) {
+      com.google.protobuf.GeneratedMessageV3.writeString(output, 9, files_.getRaw(i));
     }
   }
 
@@ -464,11 +464,11 @@ public  final class SyncTask extends
     }
     {
       int dataSize = 0;
-      for (int i = 0; i < file_.size(); i++) {
-        dataSize += computeStringSizeNoTag(file_.getRaw(i));
+      for (int i = 0; i < files_.size(); i++) {
+        dataSize += computeStringSizeNoTag(files_.getRaw(i));
       }
       size += dataSize;
-      size += 1 * getFileList().size();
+      size += 1 * getFilesList().size();
     }
     memoizedSize = size;
     return size;
@@ -501,8 +501,8 @@ public  final class SyncTask extends
         == other.getSpeedLimit());
     result = result && getTargetDir()
         .equals(other.getTargetDir());
-    result = result && getFileList()
-        .equals(other.getFileList());
+    result = result && getFilesList()
+        .equals(other.getFilesList());
     return result;
   }
 
@@ -531,9 +531,9 @@ public  final class SyncTask extends
     hash = (53 * hash) + getSpeedLimit();
     hash = (37 * hash) + TARGETDIR_FIELD_NUMBER;
     hash = (53 * hash) + getTargetDir().hashCode();
-    if (getFileCount() > 0) {
-      hash = (37 * hash) + FILE_FIELD_NUMBER;
-      hash = (53 * hash) + getFileList().hashCode();
+    if (getFilesCount() > 0) {
+      hash = (37 * hash) + FILES_FIELD_NUMBER;
+      hash = (53 * hash) + getFilesList().hashCode();
     }
     hash = (29 * hash) + unknownFields.hashCode();
     memoizedHashCode = hash;
@@ -677,7 +677,7 @@ public  final class SyncTask extends
 
       targetDir_ = "";
 
-      file_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      files_ = com.google.protobuf.LazyStringArrayList.EMPTY;
       bitField0_ = (bitField0_ & ~0x00000100);
       return this;
     }
@@ -716,10 +716,10 @@ public  final class SyncTask extends
       result.speedLimit_ = speedLimit_;
       result.targetDir_ = targetDir_;
       if (((bitField0_ & 0x00000100) == 0x00000100)) {
-        file_ = file_.getUnmodifiableView();
+        files_ = files_.getUnmodifiableView();
         bitField0_ = (bitField0_ & ~0x00000100);
       }
-      result.file_ = file_;
+      result.files_ = files_;
       result.bitField0_ = to_bitField0_;
       onBuilt();
       return result;
@@ -787,13 +787,13 @@ public  final class SyncTask extends
         targetDir_ = other.targetDir_;
         onChanged();
       }
-      if (!other.file_.isEmpty()) {
-        if (file_.isEmpty()) {
-          file_ = other.file_;
+      if (!other.files_.isEmpty()) {
+        if (files_.isEmpty()) {
+          files_ = other.files_;
           bitField0_ = (bitField0_ & ~0x00000100);
         } else {
-          ensureFileIsMutable();
-          file_.addAll(other.file_);
+          ensureFilesIsMutable();
+          files_.addAll(other.files_);
         }
         onChanged();
       }
@@ -1398,10 +1398,10 @@ public  final class SyncTask extends
       return this;
     }
 
-    private com.google.protobuf.LazyStringList file_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-    private void ensureFileIsMutable() {
+    private com.google.protobuf.LazyStringList files_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+    private void ensureFilesIsMutable() {
       if (!((bitField0_ & 0x00000100) == 0x00000100)) {
-        file_ = new com.google.protobuf.LazyStringArrayList(file_);
+        files_ = new com.google.protobuf.LazyStringArrayList(files_);
         bitField0_ |= 0x00000100;
        }
     }
@@ -1410,57 +1410,57 @@ public  final class SyncTask extends
      *要同步的源文件
      * </pre>
      *
-     * <code>repeated string file = 9;</code>
+     * <code>repeated string files = 9;</code>
      */
     public com.google.protobuf.ProtocolStringList
-        getFileList() {
-      return file_.getUnmodifiableView();
+        getFilesList() {
+      return files_.getUnmodifiableView();
     }
     /**
      * <pre>
      *要同步的源文件
      * </pre>
      *
-     * <code>repeated string file = 9;</code>
+     * <code>repeated string files = 9;</code>
      */
-    public int getFileCount() {
-      return file_.size();
+    public int getFilesCount() {
+      return files_.size();
     }
     /**
      * <pre>
      *要同步的源文件
      * </pre>
      *
-     * <code>repeated string file = 9;</code>
+     * <code>repeated string files = 9;</code>
      */
-    public java.lang.String getFile(int index) {
-      return file_.get(index);
+    public java.lang.String getFiles(int index) {
+      return files_.get(index);
     }
     /**
      * <pre>
      *要同步的源文件
      * </pre>
      *
-     * <code>repeated string file = 9;</code>
+     * <code>repeated string files = 9;</code>
      */
     public com.google.protobuf.ByteString
-        getFileBytes(int index) {
-      return file_.getByteString(index);
+        getFilesBytes(int index) {
+      return files_.getByteString(index);
     }
     /**
      * <pre>
      *要同步的源文件
      * </pre>
      *
-     * <code>repeated string file = 9;</code>
+     * <code>repeated string files = 9;</code>
      */
-    public Builder setFile(
+    public Builder setFiles(
         int index, java.lang.String value) {
       if (value == null) {
     throw new NullPointerException();
   }
-  ensureFileIsMutable();
-      file_.set(index, value);
+  ensureFilesIsMutable();
+      files_.set(index, value);
       onChanged();
       return this;
     }
@@ -1469,15 +1469,15 @@ public  final class SyncTask extends
      *要同步的源文件
      * </pre>
      *
-     * <code>repeated string file = 9;</code>
+     * <code>repeated string files = 9;</code>
      */
-    public Builder addFile(
+    public Builder addFiles(
         java.lang.String value) {
       if (value == null) {
     throw new NullPointerException();
   }
-  ensureFileIsMutable();
-      file_.add(value);
+  ensureFilesIsMutable();
+      files_.add(value);
       onChanged();
       return this;
     }
@@ -1486,13 +1486,13 @@ public  final class SyncTask extends
      *要同步的源文件
      * </pre>
      *
-     * <code>repeated string file = 9;</code>
+     * <code>repeated string files = 9;</code>
      */
-    public Builder addAllFile(
+    public Builder addAllFiles(
         java.lang.Iterable<java.lang.String> values) {
-      ensureFileIsMutable();
+      ensureFilesIsMutable();
       com.google.protobuf.AbstractMessageLite.Builder.addAll(
-          values, file_);
+          values, files_);
       onChanged();
       return this;
     }
@@ -1501,10 +1501,10 @@ public  final class SyncTask extends
      *要同步的源文件
      * </pre>
      *
-     * <code>repeated string file = 9;</code>
+     * <code>repeated string files = 9;</code>
      */
-    public Builder clearFile() {
-      file_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+    public Builder clearFiles() {
+      files_ = com.google.protobuf.LazyStringArrayList.EMPTY;
       bitField0_ = (bitField0_ & ~0x00000100);
       onChanged();
       return this;
@@ -1514,16 +1514,16 @@ public  final class SyncTask extends
      *要同步的源文件
      * </pre>
      *
-     * <code>repeated string file = 9;</code>
+     * <code>repeated string files = 9;</code>
      */
-    public Builder addFileBytes(
+    public Builder addFilesBytes(
         com.google.protobuf.ByteString value) {
       if (value == null) {
     throw new NullPointerException();
   }
   checkByteStringIsUtf8(value);
-      ensureFileIsMutable();
-      file_.add(value);
+      ensureFilesIsMutable();
+      files_.add(value);
       onChanged();
       return this;
     }

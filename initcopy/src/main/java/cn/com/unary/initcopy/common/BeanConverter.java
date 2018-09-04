@@ -70,15 +70,14 @@ public class BeanConverter extends AbstractLoggable {
      * 如果是 GRPC 实体，应该内置了类型为 {@link MessageOrBuilder} 的 Builder。
      * 该 Builder 有相应的 Setter 方法且可以通过该 Builder 的 build() 方法来生成对应实体。
      * 该 GRPC 实体应有属性相对应的 Getter 方法。
-     * 如果是实体间同名不同类型集合赋值，会出现 {@link ClassCastException}
+     * 如果是实体间同名不同类型集合赋值，在使用时会出现 {@link ClassCastException}
      *
      * @param source    实体
      * @param targetCls 容纳属性的容器
      * @param <T>       实体
      * @return 已填充的实体
      */
-    public static <T> T convert(Object source, Class<T> targetCls, String... ignoreProperties)
-            throws Exception {
+    public static <T> T convert(Object source, Class<T> targetCls, String... ignoreProperties) {
         Objects.requireNonNull(targetCls);
         Objects.requireNonNull(source);
         boolean objNotGrpc = true, containerNotGrpc = true;
@@ -92,19 +91,23 @@ public class BeanConverter extends AbstractLoggable {
         } else if (!(Entity.class.isAssignableFrom(targetCls))) {
             throw new UnsupportedOperationException("must implements Entity Or MessageOrBuilder!");
         }
-        // 如果两个都不是 GRPC 实体，直接使用 Spring 内置的类属性拷贝工具。
-        if (objNotGrpc && containerNotGrpc) {
-            Constructor<T> constructor = targetCls.getConstructor();
-            T target = constructor.newInstance();
-            BeanUtils.copyProperties(source, target, ignoreProperties);
-            return target;
+        try {
+            // 如果两个都不是 GRPC 实体，直接使用 Spring 内置的类属性拷贝工具。
+            if (objNotGrpc && containerNotGrpc) {
+                Constructor<T> constructor = targetCls.getConstructor();
+                T target = constructor.newInstance();
+                BeanUtils.copyProperties(source, target, ignoreProperties);
+                return target;
+            }
+            Map<String, Method> getter = getMethod(source.getClass(), METHOD_TYPE.GETTER, "");
+            for (String ip : ignoreProperties) {
+                getter.remove(ip);
+            }
+            Map<String, Object> fieldValueMap = getFieldValue(source, getter);
+            return setFieldValue(targetCls, fieldValueMap);
+        } catch (Exception e) {
+            throw new IllegalStateException("Program error. Bean convert fail.", e);
         }
-        Map<String, Method> getter = getMethod(source.getClass(), METHOD_TYPE.GETTER, "");
-        for (String ip : ignoreProperties) {
-            getter.remove(ip);
-        }
-        Map<String, Object> fieldValueMap = getFieldValue(source, getter);
-        return setFieldValue(targetCls, fieldValueMap);
     }
 
     /**

@@ -17,21 +17,24 @@ public interface FileManager {
      *
      * @param fileIds 文件ID
      * @return Id为空时返回空集合
+     * @throws InfoPersistenceException 持久层异常
      */
-    List<FileInfoDO> query(String... fileIds) throws InfoPersistenceException;
+    List<FileInfoDO> queryByIds(String... fileIds) throws InfoPersistenceException;
 
     /**
      * 保存文件实体信息
      *
      * @param fi 文件信息实体
+     * @throws InfoPersistenceException 持久层异常
      */
-    void save(FileInfoDO fi) throws InfoPersistenceException;
+    FileInfoDO save(FileInfoDO fi) throws InfoPersistenceException;
 
     /**
      * 保存传进来的数据，如无文件Id，则做新增操作，自动生成Id。
      * 如有文件Id，则做保存操作。
      *
      * @param fis 文件信息实体
+     * @throws InfoPersistenceException 持久层异常
      */
     void save(List<FileInfoDO> fis) throws InfoPersistenceException;
 
@@ -39,8 +42,9 @@ public interface FileManager {
      * 根据文件Id集合删除文件实体信息
      *
      * @param fileIds 文件ID
+     * @throws InfoPersistenceException 持久层异常
      */
-    void delete(String... fileIds) throws InfoPersistenceException;
+    void deleteByIds(String... fileIds) throws InfoPersistenceException;
 
     /**
      * 根据任务 Id 来查询文件信息实体
@@ -49,6 +53,14 @@ public interface FileManager {
      * @return 文件信息实体集合
      */
     List<FileInfoDO> queryByTaskId(int taskId);
+
+    /**
+     * 查询某个任务中未同步的文件信息集合
+     *
+     * @param taskId 任务Id
+     * @return 实体集合
+     */
+    List<FileInfoDO> queryUnSyncFileByTaskId(int taskId);
 
     /**
      * 如果完成返回 true
@@ -78,5 +90,5 @@ public interface FileManager {
      *
      * @param taskDO 同步任务的相关信息
      */
-    void saveTask(SyncTaskDO taskDO);
+    SyncTaskDO saveTask(SyncTaskDO taskDO);
 }

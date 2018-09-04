@@ -5,18 +5,11 @@ import cn.com.unary.initcopy.entity.ClientInitReqDO;
 import cn.com.unary.initcopy.entity.ExecResultDO;
 import cn.com.unary.initcopy.entity.SyncTaskDO;
 import cn.com.unary.initcopy.entity.TaskStateDO;
-import cn.com.unary.initcopy.grpc.constant.SyncType;
 import cn.com.unary.initcopy.grpc.entity.*;
-import javafx.concurrent.Task;
 import org.junit.Test;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 public class BeanConverterTest {
@@ -34,12 +27,12 @@ public class BeanConverterTest {
         System.out.println(stateDO);
 
         SyncTask.Builder builder2 = SyncTask.newBuilder();
-        builder2.addFile("file1").addFile("3");
+        builder2.addFiles("file1").addFiles("3");
         SyncTaskDO task = BeanConverter.convert(builder2.build(), SyncTaskDO.class);
         System.out.println(task);
 
         ClientInitReq.Builder builder3 = ClientInitReq.newBuilder();
-        builder3.addFileBaseInfos(FileBaseInfo.newBuilder().setModifyTime(1000).build());
+        builder3.addBaseFileInfos(BaseFileInfo.newBuilder().setModifyTime(1000).build());
         ClientInitReqDO reqDO = BeanConverter.convert(builder3.build(), ClientInitReqDO.class);
         System.out.println(reqDO);
         BaseFileInfoDO infoDO = reqDO.getFileBaseInfos().get(0);

@@ -1,6 +1,8 @@
 package cn.com.unary.initcopy.filecopy;
 
+import cn.com.unary.initcopy.InitCopyContext;
 import cn.com.unary.initcopy.common.AbstractLoggable;
+import cn.com.unary.initcopy.common.ExecExceptionsHandler;
 import cn.com.unary.initcopy.entity.ClientInitReqDO;
 import cn.com.unary.initcopy.entity.Constants;
 import cn.com.unary.initcopy.entity.ServerInitRespDO;
@@ -21,6 +23,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PreDestroy;
+import java.io.Closeable;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -44,11 +47,11 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 @Component("ServerFileCopy")
 @Scope("singleton")
-public class ServerFileCopy extends AbstractLoggable implements ApplicationContextAware {
+public class ServerFileCopy extends AbstractLoggable implements ApplicationContextAware, Closeable {
 
     private ApplicationContext context;
     private ExecutorService fileCopyExec;
-    private volatile boolean isShutdown = false;
+    private volatile boolean close = false;
     private ReentrantLock lock = new ReentrantLock();
     @Autowired
     private ServerFileCopyInit init;
@@ -56,16 +59,16 @@ public class ServerFileCopy extends AbstractLoggable implements ApplicationConte
     /**
      * 已放入线程池中执行的任务
      */
-    private Map<Integer, CopyTask> execTaskMap = new HashMap<>(10);
+    private Map<Integer, CopyTask> execTaskMap = new HashMap <>(InitCopyContext.TASK_NUMBER);
     /**
      * 任务列表
      */
-    private Map<Integer, CopyTask> taskMap = new HashMap<>(10);
+    private Map<Integer, CopyTask> taskMap = new HashMap <>(InitCopyContext.TASK_NUMBER);
 
     public ServerFileCopy() {
         ThreadFactory executorThreadFactory = new BasicThreadFactory.Builder()
                 .namingPattern("server-%d-task-")
-                .uncaughtExceptionHandler(new ExecExceptHandler())
+                .uncaughtExceptionHandler(new ExecExceptionsHandler(this))
                 .build();
         fileCopyExec = new ThreadPoolExecutor(10,
                 200, 0L, TimeUnit.MILLISECONDS,
@@ -83,7 +86,7 @@ public class ServerFileCopy extends AbstractLoggable implements ApplicationConte
     public void resolverPack(byte[] data) throws TaskFailException {
         int taskId = CommonUtils.byteArrayToInt(data, 0);
         lock.lock();
-        if (isShutdown) {
+        if (close) {
             lock.unlock();
             throw new TaskFailException("FileCopy already shutdown.");
         }
@@ -112,7 +115,7 @@ public class ServerFileCopy extends AbstractLoggable implements ApplicationConte
     public ServerInitRespDO startInit(ClientInitReqDO req) throws TaskFailException {
         CopyTask task = new CopyTask(req.getTaskId(), req.getTargetDir());
         lock.lock();
-        if (isShutdown) {
+        if (close) {
             lock.unlock();
             throw new TaskFailException("FileCopy already shutdown.");
         }
@@ -134,13 +137,14 @@ public class ServerFileCopy extends AbstractLoggable implements ApplicationConte
     }
 
     @PreDestroy
-    public void destroy() {
+    @Override
+    public void close() {
         lock.lock();
         fileCopyExec.shutdownNow();
         for (Integer i : taskMap.keySet()) {
-            taskMap.get(i).shutdown();
+            taskMap.get(i).close();
         }
-        isShutdown = true;
+        close = true;
         lock.unlock();
     }
 
@@ -149,7 +153,7 @@ public class ServerFileCopy extends AbstractLoggable implements ApplicationConte
         this.context = applicationContext;
     }
 
-    protected class CopyTask implements Runnable {
+    protected class CopyTask implements Runnable, Closeable {
         private final List<byte[]> packs;
         private final ReentrantLock lock;
         private Resolver syncAllResolver, syncDiffResolver;
@@ -237,7 +241,7 @@ public class ServerFileCopy extends AbstractLoggable implements ApplicationConte
                     }
                 }
             }
-            this.shutdown();
+            this.close();
         }
 
         private boolean resolve(byte[] pack) {
@@ -274,7 +278,8 @@ public class ServerFileCopy extends AbstractLoggable implements ApplicationConte
             }
         }
 
-        private void shutdown() {
+        @Override
+        public void close() {
             this.lock.lock();
             if (shutdown) {
                 return;
@@ -288,14 +293,6 @@ public class ServerFileCopy extends AbstractLoggable implements ApplicationConte
             shutdown = true;
             this.lock.unlock();
             logger.info("Task resolver done. Use " + execTime + ".");
-        }
-    }
-
-    private class ExecExceptHandler implements Thread.UncaughtExceptionHandler {
-        @Override
-        public void uncaughtException(Thread t, Throwable e) {
-            logger.error(t.getName(), e);
-            ServerFileCopy.this.destroy();
         }
     }
 }

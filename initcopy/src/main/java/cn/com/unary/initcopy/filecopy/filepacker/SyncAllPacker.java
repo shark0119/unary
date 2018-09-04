@@ -16,10 +16,13 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.lang.reflect.ParameterizedType;
 import java.nio.ByteBuffer;
+import java.nio.channels.ClosedChannelException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * 文件打包
@@ -67,8 +70,8 @@ import java.util.List;
 @Scope("prototype")
 public class SyncAllPacker extends AbstractLoggable implements Packer {
 
-    // 保留多少个字节来表示数据包头部长度。默认9个字节，
     /**
+     * 保留 9个字节来表示数据包头部长度。默认 9个字节，
      * 4个字节存储了任务Id，4个字节存储了一个整型代表包序号,还有一个字节的解析器种类标识
      */
     public final static int HEAD_LENGTH = 4 + 4 + 1;
@@ -80,7 +83,7 @@ public class SyncAllPacker extends AbstractLoggable implements Packer {
      * 每个包的大小
      */
     public final static int PACK_SIZE = UnaryTClient.MAX_PACK_SIZE;
-    public final static int BUFFER_DIRECT_LIMIT = 16 * 1024 * 1024;
+    private final static int BUFFER_DIRECT_LIMIT = 16 * 1024 * 1024;
 
     /**
      * ----我来组成分割线，以下是 Spring 容器来管理的实体----
@@ -91,18 +94,11 @@ public class SyncAllPacker extends AbstractLoggable implements Packer {
     @Autowired
     @Qualifier("clientFM")
     private FileManager fm;
-    @Autowired
-    private InitCopyContext ctx;
-
-    private UnaryTClient utc;
+    private UnaryTClient transfer;
 
     /**
      * ----我是另外一只分界线，以下是自定义全局变量----
      */
-    /**
-     * 是否可以开始打包解析
-     */
-    private boolean isReady = false;
     /**
      * 待读取的文件列表
      */
@@ -114,7 +110,7 @@ public class SyncAllPacker extends AbstractLoggable implements Packer {
     /**
      * 文件信息数据
      */
-    private ByteBuffer fileInfoBuffer ;
+    private ByteBuffer fileInfoBuffer;
     /**
      * 当前的包序号
      */
@@ -122,92 +118,47 @@ public class SyncAllPacker extends AbstractLoggable implements Packer {
     /**
      * 任务ID。
      */
-    private int taskId = -1;
+    private Integer taskId;
     /**
      * 当前打包进程是否暂停
      */
-    private boolean pause = false;
+    private volatile boolean pause;
 
-    /**
-     * 相关成员参数不能为空，任务Id不能为-1
-     *
-     * @return 当前打包器是否就绪
-     */
-    protected boolean isReady() {
-        if (isReady) {
-            return true;
-        } else {
-            isReady = input != null
-                    && fm != null
-                    && ctx != null
-                    && utc != null
-                    && taskId != -1;
-            return isReady;
-        }
+    public SyncAllPacker (){
+        pause = false;
     }
-
-    /**
-     * 如果该任务是从暂停状态中恢复过来
-     *
-     * @param fileIds 文件的UUID
-     * @throws IOException
-     */
     @Override
-    public void start(List<String> fileIds) throws IOException, InfoPersistenceException {
-        if (isReady() && !pause) {
-            List<FileInfoDO> list = fm.query(fileIds.toArray(new String[fileIds.size()]));
-            fiIterator = list.iterator();
-            logger.debug("Got " + list.size() + " FileInfo with " + fileIds.size() + " FileId");
-            byte[] packData = CommonUtils.extractBytes(pack());
-            while (packData.length != HEAD_LENGTH) {
-                logger.debug("Pass " + packData.length + " bytes to Transfer.");
-                utc.sendData(packData);
+    public void start(Integer taskId, UnaryTClient transfer) throws IOException, InfoPersistenceException {
+        this.taskId = taskId;
+        this.transfer = transfer;
+        List<FileInfoDO> list = fm.queryUnSyncFileByTaskId(taskId);
+        fiIterator = list.iterator();
+        byte[] packData;
+        try {
+            packData = CommonUtils.extractBytes(pack());
+        } catch (ClosedChannelException e) {
+            logger.warn("packer stop because channel close.");
+            return;
+        }
+        while (packData.length > HEAD_LENGTH) {
+            logger.debug("Pass " + packData.length + " bytes to Transfer.");
+            this.transfer.sendData(packData);
+            try {
                 packData = CommonUtils.extractBytes(pack());
+            } catch (ClosedChannelException e) {
+                logger.warn("packer stop because channel close.");
+                return;
             }
-        } else {
-            throw new IllegalStateException("ERROR CODE 0X03:Object is not ready. ready & pause:"
-                    + isReady + "&" + pause);
         }
     }
 
-    @Override
-    public void restore(int taskId) throws Exception {
-        if (isReady() && !pause) {
-            List<FileInfoDO> list = fm.queryByTaskId(taskId);
-            List<FileInfoDO> unSyncFileList = new ArrayList<>();
-            for (FileInfoDO fileInfo : list) {
-                if (!fileInfo.getStateEnum().equals(FileInfoDO.STATE.SYNCED)) {
-                    fileInfo.setState(FileInfoDO.STATE.WAIT);
-                    unSyncFileList.add(fileInfo);
-                }
-            }
-            fiIterator = unSyncFileList.iterator();
-            pause = false;
-            logger.debug("Got " + list.size() + " FileInfo and "
-                    + unSyncFileList.size() + " unsync Files");
-            byte[] packData = CommonUtils.extractBytes(pack());
-            while (packData.length != HEAD_LENGTH) {
-                logger.debug("Pass " + packData.length + " bytes to Transfer.");
-                utc.sendData(packData);
-                packData = CommonUtils.extractBytes(pack());
-            }
-        } else {
-            throw new IllegalStateException("ERROR CODE 0X03:Object is not ready.");
-        }
-    }
-        
     /**
      * 将文件数据打包
      *
      * @return 如无数据，返回长度为0 的字节数组
      */
-    protected ByteBuffer pack() throws IOException, InfoPersistenceException {
+    private ByteBuffer pack() throws IOException, InfoPersistenceException {
         if (pause) {
-            try {
-                this.close();
-            } catch (Exception e) {
-                throw new IOException(e);
-            }
             return ByteBuffer.allocate(0);
         }
         ByteBuffer buffer;
@@ -301,7 +252,7 @@ public class SyncAllPacker extends AbstractLoggable implements Packer {
      * @return 包装了文件信息的实体
      */
     private ByteBuffer serializeFileInfo(FileInfoDO fi) {
-        logger.debug("Ser to json.File id:" + fi.getId());
+        logger.debug("Ser to json.File id:" + fi.getFileId());
         try {
             byte[] fileInfoJsonBytes = JSON.toJSONBytes(fi);
             ByteBuffer buffer = ByteBuffer.allocate(fileInfoJsonBytes.length + FILE_INFO_LENGTH);
@@ -309,7 +260,7 @@ public class SyncAllPacker extends AbstractLoggable implements Packer {
             buffer.putInt(fileInfoJsonBytes.length);
             // set file info
             buffer.put(fileInfoJsonBytes);
-            logger.debug("FileID: " + fi.getId() + ", file info json bytes length: " + buffer.capacity() + ".");
+            logger.debug("FileID: " + fi.getFileId() + ", file info json bytes length: " + buffer.capacity() + ".");
             buffer.flip();
             return buffer;
         } catch (Exception e) {
@@ -327,7 +278,7 @@ public class SyncAllPacker extends AbstractLoggable implements Packer {
             input.openFile(currentFileInfo.getFullName());
             currentFileInfo.setState(FileInfoDO.STATE.SYNCING);
             fm.save(currentFileInfo);
-            logger.debug("Got next file : " + currentFileInfo.getId());
+            logger.debug("Got next file : " + currentFileInfo.getFileId());
             return currentFileInfo;
         }
         return null;
@@ -339,26 +290,14 @@ public class SyncAllPacker extends AbstractLoggable implements Packer {
     }
 
     @Override
-    public void pause() {
-        pause = true;
-    }
-
-    @Override
-    public Packer setTransfer(UnaryTClient unaryTClient) {
-        this.utc = unaryTClient;
-        return this;
-    }
-
-    @Override
-    public Packer setTaskId(int taskId) {
-        this.taskId = taskId;
-        return this;
-    }
-
-    @Override
-    public void close() throws Exception {
+    public void close() throws IOException {
+        if (pause) {
+            return;
+        }
         if (input != null) {
             input.close();
         }
+        transfer.stopClient();
+        pause = true;
     }
 }

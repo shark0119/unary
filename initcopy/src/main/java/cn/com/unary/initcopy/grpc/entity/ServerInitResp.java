@@ -18,7 +18,7 @@ public  final class ServerInitResp extends
     taskId_ = 0;
     ready_ = false;
     msg_ = "";
-    diffFileInfo_ = java.util.Collections.emptyList();
+    diffFileInfos_ = java.util.Collections.emptyList();
   }
 
   @java.lang.Override
@@ -64,10 +64,10 @@ public  final class ServerInitResp extends
           }
           case 34: {
             if (!((mutable_bitField0_ & 0x00000008) == 0x00000008)) {
-              diffFileInfo_ = new java.util.ArrayList<cn.com.unary.initcopy.grpc.entity.DiffFileInfo>();
+              diffFileInfos_ = new java.util.ArrayList<cn.com.unary.initcopy.grpc.entity.DiffFileInfo>();
               mutable_bitField0_ |= 0x00000008;
             }
-            diffFileInfo_.add(
+            diffFileInfos_.add(
                 input.readMessage(cn.com.unary.initcopy.grpc.entity.DiffFileInfo.parser(), extensionRegistry));
             break;
           }
@@ -80,7 +80,7 @@ public  final class ServerInitResp extends
           e).setUnfinishedMessage(this);
     } finally {
       if (((mutable_bitField0_ & 0x00000008) == 0x00000008)) {
-        diffFileInfo_ = java.util.Collections.unmodifiableList(diffFileInfo_);
+        diffFileInfos_ = java.util.Collections.unmodifiableList(diffFileInfos_);
       }
       makeExtensionsImmutable();
     }
@@ -150,39 +150,39 @@ public  final class ServerInitResp extends
     }
   }
 
-  public static final int DIFFFILEINFO_FIELD_NUMBER = 4;
-  private java.util.List<cn.com.unary.initcopy.grpc.entity.DiffFileInfo> diffFileInfo_;
+  public static final int DIFFFILEINFOS_FIELD_NUMBER = 4;
+  private java.util.List<cn.com.unary.initcopy.grpc.entity.DiffFileInfo> diffFileInfos_;
   /**
-   * <code>repeated .cn.com.unary.initcopy.grpc.entity.DiffFileInfo diffFileInfo = 4;</code>
+   * <code>repeated .cn.com.unary.initcopy.grpc.entity.DiffFileInfo diffFileInfos = 4;</code>
    */
-  public java.util.List<cn.com.unary.initcopy.grpc.entity.DiffFileInfo> getDiffFileInfoList() {
-    return diffFileInfo_;
+  public java.util.List<cn.com.unary.initcopy.grpc.entity.DiffFileInfo> getDiffFileInfosList() {
+    return diffFileInfos_;
   }
   /**
-   * <code>repeated .cn.com.unary.initcopy.grpc.entity.DiffFileInfo diffFileInfo = 4;</code>
+   * <code>repeated .cn.com.unary.initcopy.grpc.entity.DiffFileInfo diffFileInfos = 4;</code>
    */
   public java.util.List<? extends cn.com.unary.initcopy.grpc.entity.DiffFileInfoOrBuilder> 
-      getDiffFileInfoOrBuilderList() {
-    return diffFileInfo_;
+      getDiffFileInfosOrBuilderList() {
+    return diffFileInfos_;
   }
   /**
-   * <code>repeated .cn.com.unary.initcopy.grpc.entity.DiffFileInfo diffFileInfo = 4;</code>
+   * <code>repeated .cn.com.unary.initcopy.grpc.entity.DiffFileInfo diffFileInfos = 4;</code>
    */
-  public int getDiffFileInfoCount() {
-    return diffFileInfo_.size();
+  public int getDiffFileInfosCount() {
+    return diffFileInfos_.size();
   }
   /**
-   * <code>repeated .cn.com.unary.initcopy.grpc.entity.DiffFileInfo diffFileInfo = 4;</code>
+   * <code>repeated .cn.com.unary.initcopy.grpc.entity.DiffFileInfo diffFileInfos = 4;</code>
    */
-  public cn.com.unary.initcopy.grpc.entity.DiffFileInfo getDiffFileInfo(int index) {
-    return diffFileInfo_.get(index);
+  public cn.com.unary.initcopy.grpc.entity.DiffFileInfo getDiffFileInfos(int index) {
+    return diffFileInfos_.get(index);
   }
   /**
-   * <code>repeated .cn.com.unary.initcopy.grpc.entity.DiffFileInfo diffFileInfo = 4;</code>
+   * <code>repeated .cn.com.unary.initcopy.grpc.entity.DiffFileInfo diffFileInfos = 4;</code>
    */
-  public cn.com.unary.initcopy.grpc.entity.DiffFileInfoOrBuilder getDiffFileInfoOrBuilder(
+  public cn.com.unary.initcopy.grpc.entity.DiffFileInfoOrBuilder getDiffFileInfosOrBuilder(
       int index) {
-    return diffFileInfo_.get(index);
+    return diffFileInfos_.get(index);
   }
 
   private byte memoizedIsInitialized = -1;
@@ -206,8 +206,8 @@ public  final class ServerInitResp extends
     if (!getMsgBytes().isEmpty()) {
       com.google.protobuf.GeneratedMessageV3.writeString(output, 3, msg_);
     }
-    for (int i = 0; i < diffFileInfo_.size(); i++) {
-      output.writeMessage(4, diffFileInfo_.get(i));
+    for (int i = 0; i < diffFileInfos_.size(); i++) {
+      output.writeMessage(4, diffFileInfos_.get(i));
     }
   }
 
@@ -227,9 +227,9 @@ public  final class ServerInitResp extends
     if (!getMsgBytes().isEmpty()) {
       size += com.google.protobuf.GeneratedMessageV3.computeStringSize(3, msg_);
     }
-    for (int i = 0; i < diffFileInfo_.size(); i++) {
+    for (int i = 0; i < diffFileInfos_.size(); i++) {
       size += com.google.protobuf.CodedOutputStream
-        .computeMessageSize(4, diffFileInfo_.get(i));
+        .computeMessageSize(4, diffFileInfos_.get(i));
     }
     memoizedSize = size;
     return size;
@@ -253,8 +253,8 @@ public  final class ServerInitResp extends
         == other.getReady());
     result = result && getMsg()
         .equals(other.getMsg());
-    result = result && getDiffFileInfoList()
-        .equals(other.getDiffFileInfoList());
+    result = result && getDiffFileInfosList()
+        .equals(other.getDiffFileInfosList());
     return result;
   }
 
@@ -272,9 +272,9 @@ public  final class ServerInitResp extends
         getReady());
     hash = (37 * hash) + MSG_FIELD_NUMBER;
     hash = (53 * hash) + getMsg().hashCode();
-    if (getDiffFileInfoCount() > 0) {
-      hash = (37 * hash) + DIFFFILEINFO_FIELD_NUMBER;
-      hash = (53 * hash) + getDiffFileInfoList().hashCode();
+    if (getDiffFileInfosCount() > 0) {
+      hash = (37 * hash) + DIFFFILEINFOS_FIELD_NUMBER;
+      hash = (53 * hash) + getDiffFileInfosList().hashCode();
     }
     hash = (29 * hash) + unknownFields.hashCode();
     memoizedHashCode = hash;
@@ -390,7 +390,7 @@ public  final class ServerInitResp extends
     private void maybeForceBuilderInitialization() {
       if (com.google.protobuf.GeneratedMessageV3
               .alwaysUseFieldBuilders) {
-        getDiffFileInfoFieldBuilder();
+        getDiffFileInfosFieldBuilder();
       }
     }
     public Builder clear() {
@@ -401,11 +401,11 @@ public  final class ServerInitResp extends
 
       msg_ = "";
 
-      if (diffFileInfoBuilder_ == null) {
-        diffFileInfo_ = java.util.Collections.emptyList();
+      if (diffFileInfosBuilder_ == null) {
+        diffFileInfos_ = java.util.Collections.emptyList();
         bitField0_ = (bitField0_ & ~0x00000008);
       } else {
-        diffFileInfoBuilder_.clear();
+        diffFileInfosBuilder_.clear();
       }
       return this;
     }
@@ -434,14 +434,14 @@ public  final class ServerInitResp extends
       result.taskId_ = taskId_;
       result.ready_ = ready_;
       result.msg_ = msg_;
-      if (diffFileInfoBuilder_ == null) {
+      if (diffFileInfosBuilder_ == null) {
         if (((bitField0_ & 0x00000008) == 0x00000008)) {
-          diffFileInfo_ = java.util.Collections.unmodifiableList(diffFileInfo_);
+          diffFileInfos_ = java.util.Collections.unmodifiableList(diffFileInfos_);
           bitField0_ = (bitField0_ & ~0x00000008);
         }
-        result.diffFileInfo_ = diffFileInfo_;
+        result.diffFileInfos_ = diffFileInfos_;
       } else {
-        result.diffFileInfo_ = diffFileInfoBuilder_.build();
+        result.diffFileInfos_ = diffFileInfosBuilder_.build();
       }
       result.bitField0_ = to_bitField0_;
       onBuilt();
@@ -495,29 +495,29 @@ public  final class ServerInitResp extends
         msg_ = other.msg_;
         onChanged();
       }
-      if (diffFileInfoBuilder_ == null) {
-        if (!other.diffFileInfo_.isEmpty()) {
-          if (diffFileInfo_.isEmpty()) {
-            diffFileInfo_ = other.diffFileInfo_;
+      if (diffFileInfosBuilder_ == null) {
+        if (!other.diffFileInfos_.isEmpty()) {
+          if (diffFileInfos_.isEmpty()) {
+            diffFileInfos_ = other.diffFileInfos_;
             bitField0_ = (bitField0_ & ~0x00000008);
           } else {
-            ensureDiffFileInfoIsMutable();
-            diffFileInfo_.addAll(other.diffFileInfo_);
+            ensureDiffFileInfosIsMutable();
+            diffFileInfos_.addAll(other.diffFileInfos_);
           }
           onChanged();
         }
       } else {
-        if (!other.diffFileInfo_.isEmpty()) {
-          if (diffFileInfoBuilder_.isEmpty()) {
-            diffFileInfoBuilder_.dispose();
-            diffFileInfoBuilder_ = null;
-            diffFileInfo_ = other.diffFileInfo_;
+        if (!other.diffFileInfos_.isEmpty()) {
+          if (diffFileInfosBuilder_.isEmpty()) {
+            diffFileInfosBuilder_.dispose();
+            diffFileInfosBuilder_ = null;
+            diffFileInfos_ = other.diffFileInfos_;
             bitField0_ = (bitField0_ & ~0x00000008);
-            diffFileInfoBuilder_ = 
+            diffFileInfosBuilder_ = 
               com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
-                 getDiffFileInfoFieldBuilder() : null;
+                 getDiffFileInfosFieldBuilder() : null;
           } else {
-            diffFileInfoBuilder_.addAllMessages(other.diffFileInfo_);
+            diffFileInfosBuilder_.addAllMessages(other.diffFileInfos_);
           }
         }
       }
@@ -669,244 +669,244 @@ public  final class ServerInitResp extends
       return this;
     }
 
-    private java.util.List<cn.com.unary.initcopy.grpc.entity.DiffFileInfo> diffFileInfo_ =
+    private java.util.List<cn.com.unary.initcopy.grpc.entity.DiffFileInfo> diffFileInfos_ =
       java.util.Collections.emptyList();
-    private void ensureDiffFileInfoIsMutable() {
+    private void ensureDiffFileInfosIsMutable() {
       if (!((bitField0_ & 0x00000008) == 0x00000008)) {
-        diffFileInfo_ = new java.util.ArrayList<cn.com.unary.initcopy.grpc.entity.DiffFileInfo>(diffFileInfo_);
+        diffFileInfos_ = new java.util.ArrayList<cn.com.unary.initcopy.grpc.entity.DiffFileInfo>(diffFileInfos_);
         bitField0_ |= 0x00000008;
        }
     }
 
     private com.google.protobuf.RepeatedFieldBuilderV3<
-        cn.com.unary.initcopy.grpc.entity.DiffFileInfo, cn.com.unary.initcopy.grpc.entity.DiffFileInfo.Builder, cn.com.unary.initcopy.grpc.entity.DiffFileInfoOrBuilder> diffFileInfoBuilder_;
+        cn.com.unary.initcopy.grpc.entity.DiffFileInfo, cn.com.unary.initcopy.grpc.entity.DiffFileInfo.Builder, cn.com.unary.initcopy.grpc.entity.DiffFileInfoOrBuilder> diffFileInfosBuilder_;
 
     /**
-     * <code>repeated .cn.com.unary.initcopy.grpc.entity.DiffFileInfo diffFileInfo = 4;</code>
+     * <code>repeated .cn.com.unary.initcopy.grpc.entity.DiffFileInfo diffFileInfos = 4;</code>
      */
-    public java.util.List<cn.com.unary.initcopy.grpc.entity.DiffFileInfo> getDiffFileInfoList() {
-      if (diffFileInfoBuilder_ == null) {
-        return java.util.Collections.unmodifiableList(diffFileInfo_);
+    public java.util.List<cn.com.unary.initcopy.grpc.entity.DiffFileInfo> getDiffFileInfosList() {
+      if (diffFileInfosBuilder_ == null) {
+        return java.util.Collections.unmodifiableList(diffFileInfos_);
       } else {
-        return diffFileInfoBuilder_.getMessageList();
+        return diffFileInfosBuilder_.getMessageList();
       }
     }
     /**
-     * <code>repeated .cn.com.unary.initcopy.grpc.entity.DiffFileInfo diffFileInfo = 4;</code>
+     * <code>repeated .cn.com.unary.initcopy.grpc.entity.DiffFileInfo diffFileInfos = 4;</code>
      */
-    public int getDiffFileInfoCount() {
-      if (diffFileInfoBuilder_ == null) {
-        return diffFileInfo_.size();
+    public int getDiffFileInfosCount() {
+      if (diffFileInfosBuilder_ == null) {
+        return diffFileInfos_.size();
       } else {
-        return diffFileInfoBuilder_.getCount();
+        return diffFileInfosBuilder_.getCount();
       }
     }
     /**
-     * <code>repeated .cn.com.unary.initcopy.grpc.entity.DiffFileInfo diffFileInfo = 4;</code>
+     * <code>repeated .cn.com.unary.initcopy.grpc.entity.DiffFileInfo diffFileInfos = 4;</code>
      */
-    public cn.com.unary.initcopy.grpc.entity.DiffFileInfo getDiffFileInfo(int index) {
-      if (diffFileInfoBuilder_ == null) {
-        return diffFileInfo_.get(index);
+    public cn.com.unary.initcopy.grpc.entity.DiffFileInfo getDiffFileInfos(int index) {
+      if (diffFileInfosBuilder_ == null) {
+        return diffFileInfos_.get(index);
       } else {
-        return diffFileInfoBuilder_.getMessage(index);
+        return diffFileInfosBuilder_.getMessage(index);
       }
     }
     /**
-     * <code>repeated .cn.com.unary.initcopy.grpc.entity.DiffFileInfo diffFileInfo = 4;</code>
+     * <code>repeated .cn.com.unary.initcopy.grpc.entity.DiffFileInfo diffFileInfos = 4;</code>
      */
-    public Builder setDiffFileInfo(
+    public Builder setDiffFileInfos(
         int index, cn.com.unary.initcopy.grpc.entity.DiffFileInfo value) {
-      if (diffFileInfoBuilder_ == null) {
+      if (diffFileInfosBuilder_ == null) {
         if (value == null) {
           throw new NullPointerException();
         }
-        ensureDiffFileInfoIsMutable();
-        diffFileInfo_.set(index, value);
+        ensureDiffFileInfosIsMutable();
+        diffFileInfos_.set(index, value);
         onChanged();
       } else {
-        diffFileInfoBuilder_.setMessage(index, value);
+        diffFileInfosBuilder_.setMessage(index, value);
       }
       return this;
     }
     /**
-     * <code>repeated .cn.com.unary.initcopy.grpc.entity.DiffFileInfo diffFileInfo = 4;</code>
+     * <code>repeated .cn.com.unary.initcopy.grpc.entity.DiffFileInfo diffFileInfos = 4;</code>
      */
-    public Builder setDiffFileInfo(
+    public Builder setDiffFileInfos(
         int index, cn.com.unary.initcopy.grpc.entity.DiffFileInfo.Builder builderForValue) {
-      if (diffFileInfoBuilder_ == null) {
-        ensureDiffFileInfoIsMutable();
-        diffFileInfo_.set(index, builderForValue.build());
+      if (diffFileInfosBuilder_ == null) {
+        ensureDiffFileInfosIsMutable();
+        diffFileInfos_.set(index, builderForValue.build());
         onChanged();
       } else {
-        diffFileInfoBuilder_.setMessage(index, builderForValue.build());
+        diffFileInfosBuilder_.setMessage(index, builderForValue.build());
       }
       return this;
     }
     /**
-     * <code>repeated .cn.com.unary.initcopy.grpc.entity.DiffFileInfo diffFileInfo = 4;</code>
+     * <code>repeated .cn.com.unary.initcopy.grpc.entity.DiffFileInfo diffFileInfos = 4;</code>
      */
-    public Builder addDiffFileInfo(cn.com.unary.initcopy.grpc.entity.DiffFileInfo value) {
-      if (diffFileInfoBuilder_ == null) {
+    public Builder addDiffFileInfos(cn.com.unary.initcopy.grpc.entity.DiffFileInfo value) {
+      if (diffFileInfosBuilder_ == null) {
         if (value == null) {
           throw new NullPointerException();
         }
-        ensureDiffFileInfoIsMutable();
-        diffFileInfo_.add(value);
+        ensureDiffFileInfosIsMutable();
+        diffFileInfos_.add(value);
         onChanged();
       } else {
-        diffFileInfoBuilder_.addMessage(value);
+        diffFileInfosBuilder_.addMessage(value);
       }
       return this;
     }
     /**
-     * <code>repeated .cn.com.unary.initcopy.grpc.entity.DiffFileInfo diffFileInfo = 4;</code>
+     * <code>repeated .cn.com.unary.initcopy.grpc.entity.DiffFileInfo diffFileInfos = 4;</code>
      */
-    public Builder addDiffFileInfo(
+    public Builder addDiffFileInfos(
         int index, cn.com.unary.initcopy.grpc.entity.DiffFileInfo value) {
-      if (diffFileInfoBuilder_ == null) {
+      if (diffFileInfosBuilder_ == null) {
         if (value == null) {
           throw new NullPointerException();
         }
-        ensureDiffFileInfoIsMutable();
-        diffFileInfo_.add(index, value);
+        ensureDiffFileInfosIsMutable();
+        diffFileInfos_.add(index, value);
         onChanged();
       } else {
-        diffFileInfoBuilder_.addMessage(index, value);
+        diffFileInfosBuilder_.addMessage(index, value);
       }
       return this;
     }
     /**
-     * <code>repeated .cn.com.unary.initcopy.grpc.entity.DiffFileInfo diffFileInfo = 4;</code>
+     * <code>repeated .cn.com.unary.initcopy.grpc.entity.DiffFileInfo diffFileInfos = 4;</code>
      */
-    public Builder addDiffFileInfo(
+    public Builder addDiffFileInfos(
         cn.com.unary.initcopy.grpc.entity.DiffFileInfo.Builder builderForValue) {
-      if (diffFileInfoBuilder_ == null) {
-        ensureDiffFileInfoIsMutable();
-        diffFileInfo_.add(builderForValue.build());
+      if (diffFileInfosBuilder_ == null) {
+        ensureDiffFileInfosIsMutable();
+        diffFileInfos_.add(builderForValue.build());
         onChanged();
       } else {
-        diffFileInfoBuilder_.addMessage(builderForValue.build());
+        diffFileInfosBuilder_.addMessage(builderForValue.build());
       }
       return this;
     }
     /**
-     * <code>repeated .cn.com.unary.initcopy.grpc.entity.DiffFileInfo diffFileInfo = 4;</code>
+     * <code>repeated .cn.com.unary.initcopy.grpc.entity.DiffFileInfo diffFileInfos = 4;</code>
      */
-    public Builder addDiffFileInfo(
+    public Builder addDiffFileInfos(
         int index, cn.com.unary.initcopy.grpc.entity.DiffFileInfo.Builder builderForValue) {
-      if (diffFileInfoBuilder_ == null) {
-        ensureDiffFileInfoIsMutable();
-        diffFileInfo_.add(index, builderForValue.build());
+      if (diffFileInfosBuilder_ == null) {
+        ensureDiffFileInfosIsMutable();
+        diffFileInfos_.add(index, builderForValue.build());
         onChanged();
       } else {
-        diffFileInfoBuilder_.addMessage(index, builderForValue.build());
+        diffFileInfosBuilder_.addMessage(index, builderForValue.build());
       }
       return this;
     }
     /**
-     * <code>repeated .cn.com.unary.initcopy.grpc.entity.DiffFileInfo diffFileInfo = 4;</code>
+     * <code>repeated .cn.com.unary.initcopy.grpc.entity.DiffFileInfo diffFileInfos = 4;</code>
      */
-    public Builder addAllDiffFileInfo(
+    public Builder addAllDiffFileInfos(
         java.lang.Iterable<? extends cn.com.unary.initcopy.grpc.entity.DiffFileInfo> values) {
-      if (diffFileInfoBuilder_ == null) {
-        ensureDiffFileInfoIsMutable();
+      if (diffFileInfosBuilder_ == null) {
+        ensureDiffFileInfosIsMutable();
         com.google.protobuf.AbstractMessageLite.Builder.addAll(
-            values, diffFileInfo_);
+            values, diffFileInfos_);
         onChanged();
       } else {
-        diffFileInfoBuilder_.addAllMessages(values);
+        diffFileInfosBuilder_.addAllMessages(values);
       }
       return this;
     }
     /**
-     * <code>repeated .cn.com.unary.initcopy.grpc.entity.DiffFileInfo diffFileInfo = 4;</code>
+     * <code>repeated .cn.com.unary.initcopy.grpc.entity.DiffFileInfo diffFileInfos = 4;</code>
      */
-    public Builder clearDiffFileInfo() {
-      if (diffFileInfoBuilder_ == null) {
-        diffFileInfo_ = java.util.Collections.emptyList();
+    public Builder clearDiffFileInfos() {
+      if (diffFileInfosBuilder_ == null) {
+        diffFileInfos_ = java.util.Collections.emptyList();
         bitField0_ = (bitField0_ & ~0x00000008);
         onChanged();
       } else {
-        diffFileInfoBuilder_.clear();
+        diffFileInfosBuilder_.clear();
       }
       return this;
     }
     /**
-     * <code>repeated .cn.com.unary.initcopy.grpc.entity.DiffFileInfo diffFileInfo = 4;</code>
+     * <code>repeated .cn.com.unary.initcopy.grpc.entity.DiffFileInfo diffFileInfos = 4;</code>
      */
-    public Builder removeDiffFileInfo(int index) {
-      if (diffFileInfoBuilder_ == null) {
-        ensureDiffFileInfoIsMutable();
-        diffFileInfo_.remove(index);
+    public Builder removeDiffFileInfos(int index) {
+      if (diffFileInfosBuilder_ == null) {
+        ensureDiffFileInfosIsMutable();
+        diffFileInfos_.remove(index);
         onChanged();
       } else {
-        diffFileInfoBuilder_.remove(index);
+        diffFileInfosBuilder_.remove(index);
       }
       return this;
     }
     /**
-     * <code>repeated .cn.com.unary.initcopy.grpc.entity.DiffFileInfo diffFileInfo = 4;</code>
+     * <code>repeated .cn.com.unary.initcopy.grpc.entity.DiffFileInfo diffFileInfos = 4;</code>
      */
-    public cn.com.unary.initcopy.grpc.entity.DiffFileInfo.Builder getDiffFileInfoBuilder(
+    public cn.com.unary.initcopy.grpc.entity.DiffFileInfo.Builder getDiffFileInfosBuilder(
         int index) {
-      return getDiffFileInfoFieldBuilder().getBuilder(index);
+      return getDiffFileInfosFieldBuilder().getBuilder(index);
     }
     /**
-     * <code>repeated .cn.com.unary.initcopy.grpc.entity.DiffFileInfo diffFileInfo = 4;</code>
+     * <code>repeated .cn.com.unary.initcopy.grpc.entity.DiffFileInfo diffFileInfos = 4;</code>
      */
-    public cn.com.unary.initcopy.grpc.entity.DiffFileInfoOrBuilder getDiffFileInfoOrBuilder(
+    public cn.com.unary.initcopy.grpc.entity.DiffFileInfoOrBuilder getDiffFileInfosOrBuilder(
         int index) {
-      if (diffFileInfoBuilder_ == null) {
-        return diffFileInfo_.get(index);  } else {
-        return diffFileInfoBuilder_.getMessageOrBuilder(index);
+      if (diffFileInfosBuilder_ == null) {
+        return diffFileInfos_.get(index);  } else {
+        return diffFileInfosBuilder_.getMessageOrBuilder(index);
       }
     }
     /**
-     * <code>repeated .cn.com.unary.initcopy.grpc.entity.DiffFileInfo diffFileInfo = 4;</code>
+     * <code>repeated .cn.com.unary.initcopy.grpc.entity.DiffFileInfo diffFileInfos = 4;</code>
      */
     public java.util.List<? extends cn.com.unary.initcopy.grpc.entity.DiffFileInfoOrBuilder> 
-         getDiffFileInfoOrBuilderList() {
-      if (diffFileInfoBuilder_ != null) {
-        return diffFileInfoBuilder_.getMessageOrBuilderList();
+         getDiffFileInfosOrBuilderList() {
+      if (diffFileInfosBuilder_ != null) {
+        return diffFileInfosBuilder_.getMessageOrBuilderList();
       } else {
-        return java.util.Collections.unmodifiableList(diffFileInfo_);
+        return java.util.Collections.unmodifiableList(diffFileInfos_);
       }
     }
     /**
-     * <code>repeated .cn.com.unary.initcopy.grpc.entity.DiffFileInfo diffFileInfo = 4;</code>
+     * <code>repeated .cn.com.unary.initcopy.grpc.entity.DiffFileInfo diffFileInfos = 4;</code>
      */
-    public cn.com.unary.initcopy.grpc.entity.DiffFileInfo.Builder addDiffFileInfoBuilder() {
-      return getDiffFileInfoFieldBuilder().addBuilder(
+    public cn.com.unary.initcopy.grpc.entity.DiffFileInfo.Builder addDiffFileInfosBuilder() {
+      return getDiffFileInfosFieldBuilder().addBuilder(
           cn.com.unary.initcopy.grpc.entity.DiffFileInfo.getDefaultInstance());
     }
     /**
-     * <code>repeated .cn.com.unary.initcopy.grpc.entity.DiffFileInfo diffFileInfo = 4;</code>
+     * <code>repeated .cn.com.unary.initcopy.grpc.entity.DiffFileInfo diffFileInfos = 4;</code>
      */
-    public cn.com.unary.initcopy.grpc.entity.DiffFileInfo.Builder addDiffFileInfoBuilder(
+    public cn.com.unary.initcopy.grpc.entity.DiffFileInfo.Builder addDiffFileInfosBuilder(
         int index) {
-      return getDiffFileInfoFieldBuilder().addBuilder(
+      return getDiffFileInfosFieldBuilder().addBuilder(
           index, cn.com.unary.initcopy.grpc.entity.DiffFileInfo.getDefaultInstance());
     }
     /**
-     * <code>repeated .cn.com.unary.initcopy.grpc.entity.DiffFileInfo diffFileInfo = 4;</code>
+     * <code>repeated .cn.com.unary.initcopy.grpc.entity.DiffFileInfo diffFileInfos = 4;</code>
      */
     public java.util.List<cn.com.unary.initcopy.grpc.entity.DiffFileInfo.Builder> 
-         getDiffFileInfoBuilderList() {
-      return getDiffFileInfoFieldBuilder().getBuilderList();
+         getDiffFileInfosBuilderList() {
+      return getDiffFileInfosFieldBuilder().getBuilderList();
     }
     private com.google.protobuf.RepeatedFieldBuilderV3<
         cn.com.unary.initcopy.grpc.entity.DiffFileInfo, cn.com.unary.initcopy.grpc.entity.DiffFileInfo.Builder, cn.com.unary.initcopy.grpc.entity.DiffFileInfoOrBuilder> 
-        getDiffFileInfoFieldBuilder() {
-      if (diffFileInfoBuilder_ == null) {
-        diffFileInfoBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
+        getDiffFileInfosFieldBuilder() {
+      if (diffFileInfosBuilder_ == null) {
+        diffFileInfosBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
             cn.com.unary.initcopy.grpc.entity.DiffFileInfo, cn.com.unary.initcopy.grpc.entity.DiffFileInfo.Builder, cn.com.unary.initcopy.grpc.entity.DiffFileInfoOrBuilder>(
-                diffFileInfo_,
+                diffFileInfos_,
                 ((bitField0_ & 0x00000008) == 0x00000008),
                 getParentForChildren(),
                 isClean());
-        diffFileInfo_ = null;
+        diffFileInfos_ = null;
       }
-      return diffFileInfoBuilder_;
+      return diffFileInfosBuilder_;
     }
     public final Builder setUnknownFields(
         final com.google.protobuf.UnknownFieldSet unknownFields) {

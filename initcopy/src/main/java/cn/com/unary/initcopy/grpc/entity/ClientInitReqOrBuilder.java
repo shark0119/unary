@@ -61,42 +61,42 @@ public interface ClientInitReqOrBuilder extends
    * 文件信息
    * </pre>
    *
-   * <code>repeated .cn.com.unary.initcopy.grpc.entity.FileBaseInfo fileBaseInfos = 5;</code>
+   * <code>repeated .cn.com.unary.initcopy.grpc.entity.BaseFileInfo baseFileInfos = 5;</code>
    */
-  java.util.List<cn.com.unary.initcopy.grpc.entity.FileBaseInfo> 
-      getFileBaseInfosList();
+  java.util.List<cn.com.unary.initcopy.grpc.entity.BaseFileInfo> 
+      getBaseFileInfosList();
   /**
    * <pre>
    * 文件信息
    * </pre>
    *
-   * <code>repeated .cn.com.unary.initcopy.grpc.entity.FileBaseInfo fileBaseInfos = 5;</code>
+   * <code>repeated .cn.com.unary.initcopy.grpc.entity.BaseFileInfo baseFileInfos = 5;</code>
    */
-  cn.com.unary.initcopy.grpc.entity.FileBaseInfo getFileBaseInfos(int index);
+  cn.com.unary.initcopy.grpc.entity.BaseFileInfo getBaseFileInfos(int index);
   /**
    * <pre>
    * 文件信息
    * </pre>
    *
-   * <code>repeated .cn.com.unary.initcopy.grpc.entity.FileBaseInfo fileBaseInfos = 5;</code>
+   * <code>repeated .cn.com.unary.initcopy.grpc.entity.BaseFileInfo baseFileInfos = 5;</code>
    */
-  int getFileBaseInfosCount();
+  int getBaseFileInfosCount();
   /**
    * <pre>
    * 文件信息
    * </pre>
    *
-   * <code>repeated .cn.com.unary.initcopy.grpc.entity.FileBaseInfo fileBaseInfos = 5;</code>
+   * <code>repeated .cn.com.unary.initcopy.grpc.entity.BaseFileInfo baseFileInfos = 5;</code>
    */
-  java.util.List<? extends cn.com.unary.initcopy.grpc.entity.FileBaseInfoOrBuilder> 
-      getFileBaseInfosOrBuilderList();
+  java.util.List<? extends cn.com.unary.initcopy.grpc.entity.BaseFileInfoOrBuilder> 
+      getBaseFileInfosOrBuilderList();
   /**
    * <pre>
    * 文件信息
    * </pre>
    *
-   * <code>repeated .cn.com.unary.initcopy.grpc.entity.FileBaseInfo fileBaseInfos = 5;</code>
+   * <code>repeated .cn.com.unary.initcopy.grpc.entity.BaseFileInfo baseFileInfos = 5;</code>
    */
-  cn.com.unary.initcopy.grpc.entity.FileBaseInfoOrBuilder getFileBaseInfosOrBuilder(
+  cn.com.unary.initcopy.grpc.entity.BaseFileInfoOrBuilder getBaseFileInfosOrBuilder(
       int index);
 }

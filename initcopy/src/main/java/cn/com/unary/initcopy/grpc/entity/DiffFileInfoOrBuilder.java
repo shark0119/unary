@@ -26,26 +26,26 @@ public interface DiffFileInfoOrBuilder extends
       getFileIdBytes();
 
   /**
-   * <code>repeated .cn.com.unary.initcopy.grpc.entity.DiffFileChunk diffFileChunk = 2;</code>
+   * <code>repeated .cn.com.unary.initcopy.grpc.entity.DiffFileChunk diffFileChunks = 2;</code>
    */
   java.util.List<cn.com.unary.initcopy.grpc.entity.DiffFileChunk> 
-      getDiffFileChunkList();
+      getDiffFileChunksList();
   /**
-   * <code>repeated .cn.com.unary.initcopy.grpc.entity.DiffFileChunk diffFileChunk = 2;</code>
+   * <code>repeated .cn.com.unary.initcopy.grpc.entity.DiffFileChunk diffFileChunks = 2;</code>
    */
-  cn.com.unary.initcopy.grpc.entity.DiffFileChunk getDiffFileChunk(int index);
+  cn.com.unary.initcopy.grpc.entity.DiffFileChunk getDiffFileChunks(int index);
   /**
-   * <code>repeated .cn.com.unary.initcopy.grpc.entity.DiffFileChunk diffFileChunk = 2;</code>
+   * <code>repeated .cn.com.unary.initcopy.grpc.entity.DiffFileChunk diffFileChunks = 2;</code>
    */
-  int getDiffFileChunkCount();
+  int getDiffFileChunksCount();
   /**
-   * <code>repeated .cn.com.unary.initcopy.grpc.entity.DiffFileChunk diffFileChunk = 2;</code>
+   * <code>repeated .cn.com.unary.initcopy.grpc.entity.DiffFileChunk diffFileChunks = 2;</code>
    */
   java.util.List<? extends cn.com.unary.initcopy.grpc.entity.DiffFileChunkOrBuilder> 
-      getDiffFileChunkOrBuilderList();
+      getDiffFileChunksOrBuilderList();
   /**
-   * <code>repeated .cn.com.unary.initcopy.grpc.entity.DiffFileChunk diffFileChunk = 2;</code>
+   * <code>repeated .cn.com.unary.initcopy.grpc.entity.DiffFileChunk diffFileChunks = 2;</code>
    */
-  cn.com.unary.initcopy.grpc.entity.DiffFileChunkOrBuilder getDiffFileChunkOrBuilder(
+  cn.com.unary.initcopy.grpc.entity.DiffFileChunkOrBuilder getDiffFileChunksOrBuilder(
       int index);
 }

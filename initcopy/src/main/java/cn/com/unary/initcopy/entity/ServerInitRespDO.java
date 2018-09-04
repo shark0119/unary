@@ -53,11 +53,11 @@ public class ServerInitRespDO implements Entity {
         return this;
     }
 
-    public List<DiffFileInfoDO> getDiffFileInfo() {
+    public List<DiffFileInfoDO> getDiffFileInfos() {
         return diffFileInfo;
     }
 
-    public ServerInitRespDO setDiffFileInfo(List<DiffFileInfoDO> diffFileInfo) {
+    public ServerInitRespDO setDiffFileInfos(List<DiffFileInfoDO> diffFileInfo) {
         this.diffFileInfo = diffFileInfo;
         return this;
     }

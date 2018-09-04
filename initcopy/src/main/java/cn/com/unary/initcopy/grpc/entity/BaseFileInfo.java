@@ -4,23 +4,22 @@
 package cn.com.unary.initcopy.grpc.entity;
 
 /**
- * Protobuf type {@code cn.com.unary.initcopy.grpc.entity.FileBaseInfo}
+ * Protobuf type {@code cn.com.unary.initcopy.grpc.entity.BaseFileInfo}
  */
-public  final class FileBaseInfo extends
+public  final class BaseFileInfo extends
     com.google.protobuf.GeneratedMessageV3 implements
-    // @@protoc_insertion_point(message_implements:cn.com.unary.initcopy.grpc.entity.FileBaseInfo)
-    FileBaseInfoOrBuilder {
-  // Use FileBaseInfo.newBuilder() to construct.
-  private FileBaseInfo(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+    // @@protoc_insertion_point(message_implements:cn.com.unary.initcopy.grpc.entity.BaseFileInfo)
+    BaseFileInfoOrBuilder {
+  // Use BaseFileInfo.newBuilder() to construct.
+  private BaseFileInfo(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
     super(builder);
   }
-  private FileBaseInfo() {
+  private BaseFileInfo() {
     checkSum_ = "";
     modifyTime_ = 0L;
     fileSize_ = 0L;
     fullName_ = "";
     fileId_ = "";
-    taskId_ = 0;
   }
 
   @java.lang.Override
@@ -28,7 +27,7 @@ public  final class FileBaseInfo extends
   getUnknownFields() {
     return com.google.protobuf.UnknownFieldSet.getDefaultInstance();
   }
-  private FileBaseInfo(
+  private BaseFileInfo(
       com.google.protobuf.CodedInputStream input,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws com.google.protobuf.InvalidProtocolBufferException {
@@ -76,11 +75,6 @@ public  final class FileBaseInfo extends
             fileId_ = s;
             break;
           }
-          case 48: {
-
-            taskId_ = input.readInt32();
-            break;
-          }
         }
       }
     } catch (com.google.protobuf.InvalidProtocolBufferException e) {
@@ -94,14 +88,14 @@ public  final class FileBaseInfo extends
   }
   public static final com.google.protobuf.Descriptors.Descriptor
       getDescriptor() {
-    return cn.com.unary.initcopy.grpc.entity.IC_Entity.internal_static_cn_com_unary_initcopy_grpc_entity_FileBaseInfo_descriptor;
+    return cn.com.unary.initcopy.grpc.entity.IC_Entity.internal_static_cn_com_unary_initcopy_grpc_entity_BaseFileInfo_descriptor;
   }
 
   protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internalGetFieldAccessorTable() {
-    return cn.com.unary.initcopy.grpc.entity.IC_Entity.internal_static_cn_com_unary_initcopy_grpc_entity_FileBaseInfo_fieldAccessorTable
+    return cn.com.unary.initcopy.grpc.entity.IC_Entity.internal_static_cn_com_unary_initcopy_grpc_entity_BaseFileInfo_fieldAccessorTable
         .ensureFieldAccessorsInitialized(
-            cn.com.unary.initcopy.grpc.entity.FileBaseInfo.class, cn.com.unary.initcopy.grpc.entity.FileBaseInfo.Builder.class);
+            cn.com.unary.initcopy.grpc.entity.BaseFileInfo.class, cn.com.unary.initcopy.grpc.entity.BaseFileInfo.Builder.class);
   }
 
   public static final int CHECKSUM_FIELD_NUMBER = 1;
@@ -248,15 +242,6 @@ public  final class FileBaseInfo extends
     }
   }
 
-  public static final int TASKID_FIELD_NUMBER = 6;
-  private int taskId_;
-  /**
-   * <code>optional int32 taskId = 6;</code>
-   */
-  public int getTaskId() {
-    return taskId_;
-  }
-
   private byte memoizedIsInitialized = -1;
   public final boolean isInitialized() {
     byte isInitialized = memoizedIsInitialized;
@@ -284,9 +269,6 @@ public  final class FileBaseInfo extends
     if (!getFileIdBytes().isEmpty()) {
       com.google.protobuf.GeneratedMessageV3.writeString(output, 5, fileId_);
     }
-    if (taskId_ != 0) {
-      output.writeInt32(6, taskId_);
-    }
   }
 
   public int getSerializedSize() {
@@ -311,10 +293,6 @@ public  final class FileBaseInfo extends
     if (!getFileIdBytes().isEmpty()) {
       size += com.google.protobuf.GeneratedMessageV3.computeStringSize(5, fileId_);
     }
-    if (taskId_ != 0) {
-      size += com.google.protobuf.CodedOutputStream
-        .computeInt32Size(6, taskId_);
-    }
     memoizedSize = size;
     return size;
   }
@@ -325,10 +303,10 @@ public  final class FileBaseInfo extends
     if (obj == this) {
      return true;
     }
-    if (!(obj instanceof cn.com.unary.initcopy.grpc.entity.FileBaseInfo)) {
+    if (!(obj instanceof cn.com.unary.initcopy.grpc.entity.BaseFileInfo)) {
       return super.equals(obj);
     }
-    cn.com.unary.initcopy.grpc.entity.FileBaseInfo other = (cn.com.unary.initcopy.grpc.entity.FileBaseInfo) obj;
+    cn.com.unary.initcopy.grpc.entity.BaseFileInfo other = (cn.com.unary.initcopy.grpc.entity.BaseFileInfo) obj;
 
     boolean result = true;
     result = result && getCheckSum()
@@ -341,8 +319,6 @@ public  final class FileBaseInfo extends
         .equals(other.getFullName());
     result = result && getFileId()
         .equals(other.getFileId());
-    result = result && (getTaskId()
-        == other.getTaskId());
     return result;
   }
 
@@ -365,65 +341,63 @@ public  final class FileBaseInfo extends
     hash = (53 * hash) + getFullName().hashCode();
     hash = (37 * hash) + FILEID_FIELD_NUMBER;
     hash = (53 * hash) + getFileId().hashCode();
-    hash = (37 * hash) + TASKID_FIELD_NUMBER;
-    hash = (53 * hash) + getTaskId();
     hash = (29 * hash) + unknownFields.hashCode();
     memoizedHashCode = hash;
     return hash;
   }
 
-  public static cn.com.unary.initcopy.grpc.entity.FileBaseInfo parseFrom(
+  public static cn.com.unary.initcopy.grpc.entity.BaseFileInfo parseFrom(
       com.google.protobuf.ByteString data)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data);
   }
-  public static cn.com.unary.initcopy.grpc.entity.FileBaseInfo parseFrom(
+  public static cn.com.unary.initcopy.grpc.entity.BaseFileInfo parseFrom(
       com.google.protobuf.ByteString data,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data, extensionRegistry);
   }
-  public static cn.com.unary.initcopy.grpc.entity.FileBaseInfo parseFrom(byte[] data)
+  public static cn.com.unary.initcopy.grpc.entity.BaseFileInfo parseFrom(byte[] data)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data);
   }
-  public static cn.com.unary.initcopy.grpc.entity.FileBaseInfo parseFrom(
+  public static cn.com.unary.initcopy.grpc.entity.BaseFileInfo parseFrom(
       byte[] data,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data, extensionRegistry);
   }
-  public static cn.com.unary.initcopy.grpc.entity.FileBaseInfo parseFrom(java.io.InputStream input)
+  public static cn.com.unary.initcopy.grpc.entity.BaseFileInfo parseFrom(java.io.InputStream input)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseWithIOException(PARSER, input);
   }
-  public static cn.com.unary.initcopy.grpc.entity.FileBaseInfo parseFrom(
+  public static cn.com.unary.initcopy.grpc.entity.BaseFileInfo parseFrom(
       java.io.InputStream input,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseWithIOException(PARSER, input, extensionRegistry);
   }
-  public static cn.com.unary.initcopy.grpc.entity.FileBaseInfo parseDelimitedFrom(java.io.InputStream input)
+  public static cn.com.unary.initcopy.grpc.entity.BaseFileInfo parseDelimitedFrom(java.io.InputStream input)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseDelimitedWithIOException(PARSER, input);
   }
-  public static cn.com.unary.initcopy.grpc.entity.FileBaseInfo parseDelimitedFrom(
+  public static cn.com.unary.initcopy.grpc.entity.BaseFileInfo parseDelimitedFrom(
       java.io.InputStream input,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
   }
-  public static cn.com.unary.initcopy.grpc.entity.FileBaseInfo parseFrom(
+  public static cn.com.unary.initcopy.grpc.entity.BaseFileInfo parseFrom(
       com.google.protobuf.CodedInputStream input)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseWithIOException(PARSER, input);
   }
-  public static cn.com.unary.initcopy.grpc.entity.FileBaseInfo parseFrom(
+  public static cn.com.unary.initcopy.grpc.entity.BaseFileInfo parseFrom(
       com.google.protobuf.CodedInputStream input,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws java.io.IOException {
@@ -435,7 +409,7 @@ public  final class FileBaseInfo extends
   public static Builder newBuilder() {
     return DEFAULT_INSTANCE.toBuilder();
   }
-  public static Builder newBuilder(cn.com.unary.initcopy.grpc.entity.FileBaseInfo prototype) {
+  public static Builder newBuilder(cn.com.unary.initcopy.grpc.entity.BaseFileInfo prototype) {
     return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
   }
   public Builder toBuilder() {
@@ -450,25 +424,25 @@ public  final class FileBaseInfo extends
     return builder;
   }
   /**
-   * Protobuf type {@code cn.com.unary.initcopy.grpc.entity.FileBaseInfo}
+   * Protobuf type {@code cn.com.unary.initcopy.grpc.entity.BaseFileInfo}
    */
   public static final class Builder extends
       com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
-      // @@protoc_insertion_point(builder_implements:cn.com.unary.initcopy.grpc.entity.FileBaseInfo)
-      cn.com.unary.initcopy.grpc.entity.FileBaseInfoOrBuilder {
+      // @@protoc_insertion_point(builder_implements:cn.com.unary.initcopy.grpc.entity.BaseFileInfo)
+      cn.com.unary.initcopy.grpc.entity.BaseFileInfoOrBuilder {
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return cn.com.unary.initcopy.grpc.entity.IC_Entity.internal_static_cn_com_unary_initcopy_grpc_entity_FileBaseInfo_descriptor;
+      return cn.com.unary.initcopy.grpc.entity.IC_Entity.internal_static_cn_com_unary_initcopy_grpc_entity_BaseFileInfo_descriptor;
     }
 
     protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return cn.com.unary.initcopy.grpc.entity.IC_Entity.internal_static_cn_com_unary_initcopy_grpc_entity_FileBaseInfo_fieldAccessorTable
+      return cn.com.unary.initcopy.grpc.entity.IC_Entity.internal_static_cn_com_unary_initcopy_grpc_entity_BaseFileInfo_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              cn.com.unary.initcopy.grpc.entity.FileBaseInfo.class, cn.com.unary.initcopy.grpc.entity.FileBaseInfo.Builder.class);
+              cn.com.unary.initcopy.grpc.entity.BaseFileInfo.class, cn.com.unary.initcopy.grpc.entity.BaseFileInfo.Builder.class);
     }
 
-    // Construct using cn.com.unary.initcopy.grpc.entity.FileBaseInfo.newBuilder()
+    // Construct using cn.com.unary.initcopy.grpc.entity.BaseFileInfo.newBuilder()
     private Builder() {
       maybeForceBuilderInitialization();
     }
@@ -495,36 +469,33 @@ public  final class FileBaseInfo extends
 
       fileId_ = "";
 
-      taskId_ = 0;
-
       return this;
     }
 
     public com.google.protobuf.Descriptors.Descriptor
         getDescriptorForType() {
-      return cn.com.unary.initcopy.grpc.entity.IC_Entity.internal_static_cn_com_unary_initcopy_grpc_entity_FileBaseInfo_descriptor;
+      return cn.com.unary.initcopy.grpc.entity.IC_Entity.internal_static_cn_com_unary_initcopy_grpc_entity_BaseFileInfo_descriptor;
     }
 
-    public cn.com.unary.initcopy.grpc.entity.FileBaseInfo getDefaultInstanceForType() {
-      return cn.com.unary.initcopy.grpc.entity.FileBaseInfo.getDefaultInstance();
+    public cn.com.unary.initcopy.grpc.entity.BaseFileInfo getDefaultInstanceForType() {
+      return cn.com.unary.initcopy.grpc.entity.BaseFileInfo.getDefaultInstance();
     }
 
-    public cn.com.unary.initcopy.grpc.entity.FileBaseInfo build() {
-      cn.com.unary.initcopy.grpc.entity.FileBaseInfo result = buildPartial();
+    public cn.com.unary.initcopy.grpc.entity.BaseFileInfo build() {
+      cn.com.unary.initcopy.grpc.entity.BaseFileInfo result = buildPartial();
       if (!result.isInitialized()) {
         throw newUninitializedMessageException(result);
       }
       return result;
     }
 
-    public cn.com.unary.initcopy.grpc.entity.FileBaseInfo buildPartial() {
-      cn.com.unary.initcopy.grpc.entity.FileBaseInfo result = new cn.com.unary.initcopy.grpc.entity.FileBaseInfo(this);
+    public cn.com.unary.initcopy.grpc.entity.BaseFileInfo buildPartial() {
+      cn.com.unary.initcopy.grpc.entity.BaseFileInfo result = new cn.com.unary.initcopy.grpc.entity.BaseFileInfo(this);
       result.checkSum_ = checkSum_;
       result.modifyTime_ = modifyTime_;
       result.fileSize_ = fileSize_;
       result.fullName_ = fullName_;
       result.fileId_ = fileId_;
-      result.taskId_ = taskId_;
       onBuilt();
       return result;
     }
@@ -556,16 +527,16 @@ public  final class FileBaseInfo extends
       return (Builder) super.addRepeatedField(field, value);
     }
     public Builder mergeFrom(com.google.protobuf.Message other) {
-      if (other instanceof cn.com.unary.initcopy.grpc.entity.FileBaseInfo) {
-        return mergeFrom((cn.com.unary.initcopy.grpc.entity.FileBaseInfo)other);
+      if (other instanceof cn.com.unary.initcopy.grpc.entity.BaseFileInfo) {
+        return mergeFrom((cn.com.unary.initcopy.grpc.entity.BaseFileInfo)other);
       } else {
         super.mergeFrom(other);
         return this;
       }
     }
 
-    public Builder mergeFrom(cn.com.unary.initcopy.grpc.entity.FileBaseInfo other) {
-      if (other == cn.com.unary.initcopy.grpc.entity.FileBaseInfo.getDefaultInstance()) return this;
+    public Builder mergeFrom(cn.com.unary.initcopy.grpc.entity.BaseFileInfo other) {
+      if (other == cn.com.unary.initcopy.grpc.entity.BaseFileInfo.getDefaultInstance()) return this;
       if (!other.getCheckSum().isEmpty()) {
         checkSum_ = other.checkSum_;
         onChanged();
@@ -584,9 +555,6 @@ public  final class FileBaseInfo extends
         fileId_ = other.fileId_;
         onChanged();
       }
-      if (other.getTaskId() != 0) {
-        setTaskId(other.getTaskId());
-      }
       onChanged();
       return this;
     }
@@ -599,11 +567,11 @@ public  final class FileBaseInfo extends
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      cn.com.unary.initcopy.grpc.entity.FileBaseInfo parsedMessage = null;
+      cn.com.unary.initcopy.grpc.entity.BaseFileInfo parsedMessage = null;
       try {
         parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
       } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        parsedMessage = (cn.com.unary.initcopy.grpc.entity.FileBaseInfo) e.getUnfinishedMessage();
+        parsedMessage = (cn.com.unary.initcopy.grpc.entity.BaseFileInfo) e.getUnfinishedMessage();
         throw e.unwrapIOException();
       } finally {
         if (parsedMessage != null) {
@@ -935,32 +903,6 @@ public  final class FileBaseInfo extends
       onChanged();
       return this;
     }
-
-    private int taskId_ ;
-    /**
-     * <code>optional int32 taskId = 6;</code>
-     */
-    public int getTaskId() {
-      return taskId_;
-    }
-    /**
-     * <code>optional int32 taskId = 6;</code>
-     */
-    public Builder setTaskId(int value) {
-      
-      taskId_ = value;
-      onChanged();
-      return this;
-    }
-    /**
-     * <code>optional int32 taskId = 6;</code>
-     */
-    public Builder clearTaskId() {
-      
-      taskId_ = 0;
-      onChanged();
-      return this;
-    }
     public final Builder setUnknownFields(
         final com.google.protobuf.UnknownFieldSet unknownFields) {
       return this;
@@ -972,39 +914,39 @@ public  final class FileBaseInfo extends
     }
 
 
-    // @@protoc_insertion_point(builder_scope:cn.com.unary.initcopy.grpc.entity.FileBaseInfo)
+    // @@protoc_insertion_point(builder_scope:cn.com.unary.initcopy.grpc.entity.BaseFileInfo)
   }
 
-  // @@protoc_insertion_point(class_scope:cn.com.unary.initcopy.grpc.entity.FileBaseInfo)
-  private static final cn.com.unary.initcopy.grpc.entity.FileBaseInfo DEFAULT_INSTANCE;
+  // @@protoc_insertion_point(class_scope:cn.com.unary.initcopy.grpc.entity.BaseFileInfo)
+  private static final cn.com.unary.initcopy.grpc.entity.BaseFileInfo DEFAULT_INSTANCE;
   static {
-    DEFAULT_INSTANCE = new cn.com.unary.initcopy.grpc.entity.FileBaseInfo();
+    DEFAULT_INSTANCE = new cn.com.unary.initcopy.grpc.entity.BaseFileInfo();
   }
 
-  public static cn.com.unary.initcopy.grpc.entity.FileBaseInfo getDefaultInstance() {
+  public static cn.com.unary.initcopy.grpc.entity.BaseFileInfo getDefaultInstance() {
     return DEFAULT_INSTANCE;
   }
 
-  private static final com.google.protobuf.Parser<FileBaseInfo>
-      PARSER = new com.google.protobuf.AbstractParser<FileBaseInfo>() {
-    public FileBaseInfo parsePartialFrom(
+  private static final com.google.protobuf.Parser<BaseFileInfo>
+      PARSER = new com.google.protobuf.AbstractParser<BaseFileInfo>() {
+    public BaseFileInfo parsePartialFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
-        return new FileBaseInfo(input, extensionRegistry);
+        return new BaseFileInfo(input, extensionRegistry);
     }
   };
 
-  public static com.google.protobuf.Parser<FileBaseInfo> parser() {
+  public static com.google.protobuf.Parser<BaseFileInfo> parser() {
     return PARSER;
   }
 
   @java.lang.Override
-  public com.google.protobuf.Parser<FileBaseInfo> getParserForType() {
+  public com.google.protobuf.Parser<BaseFileInfo> getParserForType() {
     return PARSER;
   }
 
-  public cn.com.unary.initcopy.grpc.entity.FileBaseInfo getDefaultInstanceForType() {
+  public cn.com.unary.initcopy.grpc.entity.BaseFileInfo getDefaultInstanceForType() {
     return DEFAULT_INSTANCE;
   }
 

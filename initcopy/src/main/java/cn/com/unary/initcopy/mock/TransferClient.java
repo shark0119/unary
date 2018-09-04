@@ -9,6 +9,12 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 
+/**
+ * 打桩使用的类
+ *
+ * @author Shark.Yin
+ * @since 1.0
+ */
 @Component("TransferClient")
 @Scope("prototype")
 public class TransferClient extends UnaryTClient {

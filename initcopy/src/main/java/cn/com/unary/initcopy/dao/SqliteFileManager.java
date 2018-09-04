@@ -29,7 +29,7 @@ public class SqliteFileManager extends AbstractLoggable implements FileManager {
 	private DruidDataSource dds;
 	
 	@Override
-	public List<FileInfoDO> query(String... fileIds) throws InfoPersistenceException {
+	public List<FileInfoDO> queryByIds(String... fileIds) throws InfoPersistenceException {
 		ValidateUtils.requireNotEmpty(fileIds);
 		
 		StringBuilder sb = new StringBuilder("select * from FILE_INFO WHERE FILE_ID IN ('");
@@ -53,7 +53,7 @@ public class SqliteFileManager extends AbstractLoggable implements FileManager {
 	}
 
 	@Override
-	public void save(FileInfoDO fi) throws InfoPersistenceException {
+	public FileInfoDO save(FileInfoDO fi) throws InfoPersistenceException {
 		Objects.requireNonNull(fi);
 		try (
 			Connection conn = dds.getConnection();
@@ -63,6 +63,7 @@ public class SqliteFileManager extends AbstractLoggable implements FileManager {
 		} catch (SQLException e) {
 			throw new InfoPersistenceException("ERROR 0x02: Save Error", e);
 		}
+		return fi;
 	}
 
 	@Override
@@ -73,7 +74,7 @@ public class SqliteFileManager extends AbstractLoggable implements FileManager {
 	}
 
 	@Override
-	public void delete(String... fileIds) throws InfoPersistenceException {
+	public void deleteByIds(String... fileIds) throws InfoPersistenceException {
 		StringBuilder sb = new StringBuilder("DELETE FROM FILE_INFO WHERE FILE_ID IN ('");
 		for (String fileId : fileIds) {
 			sb.append(fileId).append("',");
@@ -98,6 +99,11 @@ public class SqliteFileManager extends AbstractLoggable implements FileManager {
 	}
 
 	@Override
+	public List<FileInfoDO> queryUnSyncFileByTaskId(int taskId) {
+		return null;
+	}
+
+	@Override
 	public boolean taskFinished(int taskId) {
 		return false;
 	}
@@ -113,7 +119,8 @@ public class SqliteFileManager extends AbstractLoggable implements FileManager {
 	}
 
 	@Override
-	public void saveTask(SyncTaskDO taskDO) {
+	public SyncTaskDO saveTask(SyncTaskDO taskDO) {
 
+		return null;
 	}
 }

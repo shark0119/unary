@@ -5,6 +5,12 @@ import api.UnaryHandler;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+/**
+ * 打桩使用的类
+ *
+ * @author Shark.Yin
+ * @since 1.0
+ */
 @Component("TransferChannel")
 @Scope("singleton")
 public class TransferChannel implements UnaryChannel {

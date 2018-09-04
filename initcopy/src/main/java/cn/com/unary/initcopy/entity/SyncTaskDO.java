@@ -23,7 +23,7 @@ public class SyncTaskDO implements Entity {
     private PackType packType;
     private Integer speedLimit;
     private String targetDir;
-    private List<String> file;
+    private List<String> files;
     private Long totalSize;
 
     public Long getTotalSize() {
@@ -45,7 +45,7 @@ public class SyncTaskDO implements Entity {
                 ", packType=" + packType +
                 ", speedLimit=" + speedLimit +
                 ", targetDir='" + targetDir + '\'' +
-                ", file=" + file +
+                ", file=" + files +
                 '}';
     }
 
@@ -113,11 +113,11 @@ public class SyncTaskDO implements Entity {
         this.targetDir = targetDir;
     }
 
-    public List<String> getFile() {
-        return file;
+    public List<String> getFiles() {
+        return files;
     }
 
-    public void setFile(List<String> file) {
-        this.file = file;
+    public void setFiles(List<String> file) {
+        this.files = file;
     }
 }

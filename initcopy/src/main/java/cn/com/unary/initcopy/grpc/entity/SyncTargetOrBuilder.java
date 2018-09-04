@@ -27,10 +27,19 @@ public interface SyncTargetOrBuilder extends
 
   /**
    * <pre>
-   *目标端端口号
+   *目标端传输模块监听的端口号
    * </pre>
    *
-   * <code>optional int32 port = 2;</code>
+   * <code>optional int32 transferPort = 2;</code>
    */
-  int getPort();
+  int getTransferPort();
+
+  /**
+   * <pre>
+   * 目标端 GRPC 服务的端口号
+   * </pre>
+   *
+   * <code>optional int32 grpcPort = 3;</code>
+   */
+  int getGrpcPort();
 }

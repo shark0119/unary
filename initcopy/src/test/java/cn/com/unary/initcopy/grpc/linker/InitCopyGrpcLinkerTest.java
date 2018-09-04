@@ -22,22 +22,30 @@ public class InitCopyGrpcLinkerTest extends AbstractLoggable {
     InitCopyGrpcLinker linker;
     InitCopyContext context;
 
+    public static void main(String[] args) throws Exception {
+        args = new String[2];
+        args[0] = "G:/test";
+        args[1] = "G:";
+        InitCopyGrpcLinkerTest test = new InitCopyGrpcLinkerTest();
+        test.setUp();
+        test.add(args[0], args[1]);
+    }
+
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         ac = new AnnotationConfigApplicationContext(BeanConfig.class);
         context = ac.getBean(InitCopyContext.class);
         linker = ac.getBean(InitCopyGrpcLinker.class);
     }
+
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         //ac.close();
     }
 
     @Test
     public void add(String source, String target) throws IOException, InterruptedException {
         try {
-            // 启动服务端
-            context.start(34567,34568,34569);
             // 客户端添加任务。
             SyncTask.Builder builder = SyncTask.newBuilder();
             List<String> syncFiles = new ArrayList<>();
@@ -45,14 +53,16 @@ public class InitCopyGrpcLinkerTest extends AbstractLoggable {
             builder.setTaskId(1)
                     .setSyncType(SyncType.SYNC_ALL)
                     .setTargetDir(target)
-                    .addAllFile(syncFiles)
-                    .setTargetInfo(SyncTarget.newBuilder().setIp("localhost").setPort(80).build());
+                    .addAllFiles(syncFiles)
+                    .setTargetInfo(SyncTarget.newBuilder()
+                            .setIp("localhost").setTransferPort(80).setGrpcPort(30).build());
             logger.debug("Start add a task.");
             ExecResult result = linker.add(builder.build());
             logger.debug("Task finish");
             Objects.requireNonNull(result);
         } catch (Throwable throwable) {
-            System.out.println("I got you");
+            throwable.printStackTrace();
+            logger.error("I got you" + throwable);
         }
     }
 
@@ -67,14 +77,5 @@ public class InitCopyGrpcLinkerTest extends AbstractLoggable {
 
     @Test
     public void modify() {
-    }
-
-    public static void main(String[] args) throws Exception {
-        args = new String[2];
-        args[0] = "G:/test";
-        args[1] = "G";
-        InitCopyGrpcLinkerTest test = new InitCopyGrpcLinkerTest();
-        test.setUp();
-        test.add(args[0], args[1]);
     }
 }

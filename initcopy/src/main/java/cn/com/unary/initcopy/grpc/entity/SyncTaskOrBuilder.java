@@ -141,33 +141,33 @@ public interface SyncTaskOrBuilder extends
    *要同步的源文件
    * </pre>
    *
-   * <code>repeated string file = 9;</code>
+   * <code>repeated string files = 9;</code>
    */
   java.util.List<java.lang.String>
-      getFileList();
+      getFilesList();
   /**
    * <pre>
    *要同步的源文件
    * </pre>
    *
-   * <code>repeated string file = 9;</code>
+   * <code>repeated string files = 9;</code>
    */
-  int getFileCount();
+  int getFilesCount();
   /**
    * <pre>
    *要同步的源文件
    * </pre>
    *
-   * <code>repeated string file = 9;</code>
+   * <code>repeated string files = 9;</code>
    */
-  java.lang.String getFile(int index);
+  java.lang.String getFiles(int index);
   /**
    * <pre>
    *要同步的源文件
    * </pre>
    *
-   * <code>repeated string file = 9;</code>
+   * <code>repeated string files = 9;</code>
    */
   com.google.protobuf.ByteString
-      getFileBytes(int index);
+      getFilesBytes(int index);
 }

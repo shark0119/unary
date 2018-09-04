@@ -590,7 +590,7 @@ public  final class ExecResult extends
     public Builder setMsg(
         java.lang.String value) {
       if (value == null) {
-    throw new NullPointerException();
+        return this;
   }
   
       msg_ = value;

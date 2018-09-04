@@ -13,10 +13,12 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * 采用 rsync 算法实现的文件差异复制打包与解析
@@ -40,11 +42,12 @@ public class RsyncPacker implements SyncDiffPacker {
     private boolean ready = false;
 
     @Override
-    public void start(List<String> fileIds) throws InfoPersistenceException {
-        ValidateUtils.requireNotEmpty(fileIds);
+    public void start(Integer taskId, UnaryTClient transfer) throws InfoPersistenceException {
+        Objects.requireNonNull(transfer);
         if (ready) {
-            for (FileInfoDO fi : fm.query(fileIds.toArray(new String[fileIds.size()]))) {
-                fiMap.put(fi.getId(), fi);
+            this.unaryTClient = transfer;
+            for (FileInfoDO fi : fm.queryByTaskId(taskId)) {
+                fiMap.put(fi.getFileId(), fi);
             }
             if (fiMap.keySet().size() != dfiMap.keySet().size()) {
                 throw new IllegalStateException("Insufficient Info for doing Rsync with "
@@ -52,11 +55,6 @@ public class RsyncPacker implements SyncDiffPacker {
                         + " files but " + dfiMap.keySet().size() + " diff file infos");
             }
         }
-    }
-
-    @Override
-    public void restore(int taskId) throws Exception {
-
     }
 
     @Override
@@ -70,28 +68,12 @@ public class RsyncPacker implements SyncDiffPacker {
     }
 
     @Override
-    public SyncDiffPacker setTaskId(int taskId) {
-        return null;
-    }
-
-    @Override
     public PackerType getPackType() {
         return PackerType.RSYNC_JAVA;
     }
 
     @Override
-    public void pause() {
-
-    }
-
-    @Override
-    public SyncDiffPacker setTransfer(UnaryTClient unaryTClient) {
-        this.unaryTClient = unaryTClient;
-        return this;
-    }
-
-    @Override
-    public void close() throws Exception {
+    public void close() throws IOException {
         if (afi != null) {
             afi.close();
         }

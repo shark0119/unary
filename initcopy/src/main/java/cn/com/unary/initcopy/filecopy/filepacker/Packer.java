@@ -4,8 +4,8 @@ import api.UnaryTClient;
 import cn.com.unary.initcopy.entity.Constants.PackerType;
 import cn.com.unary.initcopy.exception.InfoPersistenceException;
 
+import java.io.Closeable;
 import java.io.IOException;
-import java.util.List;
 
 /**
  * 全复制文件打包
@@ -31,22 +31,19 @@ import java.util.List;
  *
  * @author shark
  */
-public interface Packer extends AutoCloseable {
+public interface Packer extends Closeable {
     /**
      * 开始文件读取打包，并向目标端发送数据包
+     * 会读取任务的进度继续开始。粒度目前在文件级。
+     * 未传完的文件会重新传输
      *
-     * @param fileIds 文件的UUID
-     * @throws IOException IO 异常
+     * @param taskId   任务Id
+     * @param transfer 传输模块客户端
+     * @throws IOException              IO 异常
+     * @throws InfoPersistenceException 相关信息在持久化层发生异常
      */
-    void start(List<String> fileIds) throws IOException, InfoPersistenceException;
+    void start(Integer taskId, UnaryTClient transfer) throws IOException, InfoPersistenceException;
 
-    /**
-     * 将某个暂停的任务恢复过来，继续同步
-     *
-     * @param taskId 任务Id
-     * @throws Exception 无法从暂停状态中将其恢复
-     */
-    void restore (int taskId) throws Exception;
     /**
      * 返回打包种类
      *
@@ -55,23 +52,11 @@ public interface Packer extends AutoCloseable {
     PackerType getPackType();
 
     /**
-     * 暂停当前打包进程
-     */
-    void pause();
-
-    /**
-     * 设置传输模块
+     * 不会立刻关闭当前任务。此方法只会将关闭标志位置为 {@code true}
+     * 待打包进程觉得合适时，保存当前打包进度，并停止打包。
      *
-     * @param unaryTClient 传输模块客户端
-     * @return 当前对象
+     * @throws IOException 关闭失败则抛出 IO 异常
      */
-    Packer setTransfer(UnaryTClient unaryTClient);
-
-    /**
-     * 设置任务 Id
-     *
-     * @param taskId 任务 Id
-     * @return 当前对象
-     */
-    Packer setTaskId(int taskId);
+    @Override
+    void close() throws IOException;
 }
