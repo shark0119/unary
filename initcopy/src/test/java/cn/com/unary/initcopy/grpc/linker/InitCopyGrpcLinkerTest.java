@@ -7,7 +7,6 @@ import cn.com.unary.initcopy.grpc.constant.SyncType;
 import cn.com.unary.initcopy.grpc.entity.ExecResult;
 import cn.com.unary.initcopy.grpc.entity.SyncTarget;
 import cn.com.unary.initcopy.grpc.entity.SyncTask;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -37,11 +36,6 @@ public class InitCopyGrpcLinkerTest extends AbstractLoggable {
         linker = ac.getBean(InitCopyGrpcLinker.class);
     }
 
-    @After
-    public void tearDown() {
-        //ac.close();
-    }
-
     @Test
     public void add(String source, String target) {
         try {
@@ -57,7 +51,6 @@ public class InitCopyGrpcLinkerTest extends AbstractLoggable {
                             .setIp("localhost").setTransferPort(80).setGrpcPort(30).build());
             logger.debug("Start add a task.");
             ExecResult result = linker.add(builder.build());
-            logger.debug("Task finish");
             Objects.requireNonNull(result);
         } catch (Throwable throwable) {
             throwable.printStackTrace();

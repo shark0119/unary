@@ -1,7 +1,7 @@
 package cn.com.unary.initcopy;
 
 import api.UnaryProcess;
-import api.UnaryTServer;
+import api.UnaryTransferServer;
 import cn.com.unary.initcopy.common.AbstractLoggable;
 import cn.com.unary.initcopy.common.ExecExceptionsHandler;
 import cn.com.unary.initcopy.grpc.GrpcServiceStarter;
@@ -52,7 +52,7 @@ public class InitCopyContext extends AbstractLoggable implements Closeable {
     private GrpcServiceStarter clientStarter;
     private GrpcServiceStarter serverStarter;
     @Autowired
-    private UnaryTServer uts;
+    private UnaryTransferServer uts;
     @Autowired
     private UnaryProcess process;
 

@@ -70,16 +70,16 @@ public class JavaNioFileOutput extends AbstractFileOutput {
         close();
         logger.debug("Change File to " + fileName);
         this.currentFileName = fileName;
+        // 递归创建目录
         File file = new File(fileName.substring(0, fileName.lastIndexOf("/")));
         if (!file.exists()) {
-            if (file.mkdirs()) {
-                file = new File(fileName);
-                if (!file.exists()) {
-                    if (!file.createNewFile()) {
-                        throw new IOException("create dir fail");
-                    }
-                }
-            } else {
+            if (!file.mkdirs()) {
+                throw new IOException("create dir fail");
+            }
+        }
+        file = new File(fileName);
+        if (!file.exists()) {
+            if (!file.createNewFile()) {
                 throw new IOException("create dir fail");
             }
         }

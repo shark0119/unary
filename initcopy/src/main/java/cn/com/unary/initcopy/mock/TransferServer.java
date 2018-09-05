@@ -1,10 +1,13 @@
 package cn.com.unary.initcopy.mock;
 
+import api.UnaryHandler;
 import api.UnaryProcess;
-import api.UnaryTServer;
+import api.UnaryTransferServer;
+import cn.com.unary.initcopy.filecopy.ServerFileCopy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import transmit.server.UnaryTServer;
 
 import java.io.IOException;
 
@@ -16,18 +19,30 @@ import java.io.IOException;
  */
 @Component("TransferServer")
 @Scope("singleton")
-public class TransferServer implements UnaryTServer {
-
+public class TransferServer implements UnaryTransferServer {
+    @Autowired
+    private ServerFileCopy fileCopy;
+    private UnaryTServer server;
     @Autowired
     private UnaryProcess process;
     @Override
     public void startServer(int port) throws IOException {
-
+        server = new UnaryTServer(port);
+        try {
+            server.setDataprocess(new UnaryHandlerImpl());
+            server.startServer();
+        } catch (Exception e) {
+            throw new IOException(e);
+        }
     }
 
     @Override
     public void stopServer() throws IOException {
-
+        try {
+            server.stopServer();
+        } catch (Exception e) {
+            throw new IOException(e);
+        }
     }
 
     @Override
@@ -40,4 +55,16 @@ public class TransferServer implements UnaryTServer {
         return this.process;
     }
 
+    private class UnaryHandlerImpl implements UnaryHandler {
+        @Override
+        public void handler(byte[] data) {
+            // TODO 调用解包程序，写入文件
+            /*try {
+                fileCopy.resolverPack(data);
+            } catch (TaskFailException e) {
+                e.printStackTrace();
+            }*/
+            System.out.println("we got data! " + new String(data));
+        }
+    }
 }

@@ -1,7 +1,6 @@
 package cn.com.unary.initcopy.filecopy.filepacker;
 
-import api.UnaryTClient;
-import cn.com.unary.initcopy.InitCopyContext;
+import api.UnaryTransferClient;
 import cn.com.unary.initcopy.common.AbstractLoggable;
 import cn.com.unary.initcopy.dao.FileManager;
 import cn.com.unary.initcopy.entity.Constants.PackerType;
@@ -16,13 +15,10 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.lang.reflect.ParameterizedType;
 import java.nio.ByteBuffer;
 import java.nio.channels.ClosedChannelException;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * 文件打包
@@ -82,7 +78,7 @@ public class SyncAllPacker extends AbstractLoggable implements Packer {
     /**
      * 每个包的大小
      */
-    public final static int PACK_SIZE = UnaryTClient.MAX_PACK_SIZE;
+    public final static int PACK_SIZE = UnaryTransferClient.MAX_PACK_SIZE;
     private final static int BUFFER_DIRECT_LIMIT = 16 * 1024 * 1024;
 
     /**
@@ -94,7 +90,7 @@ public class SyncAllPacker extends AbstractLoggable implements Packer {
     @Autowired
     @Qualifier("clientFM")
     private FileManager fm;
-    private UnaryTClient transfer;
+    private UnaryTransferClient transfer;
 
     /**
      * ----我是另外一只分界线，以下是自定义全局变量----
@@ -124,11 +120,12 @@ public class SyncAllPacker extends AbstractLoggable implements Packer {
      */
     private volatile boolean pause;
 
-    public SyncAllPacker (){
+    public SyncAllPacker() {
         pause = false;
     }
+
     @Override
-    public void start(Integer taskId, UnaryTClient transfer) throws IOException, InfoPersistenceException {
+    public void start(Integer taskId, UnaryTransferClient transfer) throws IOException, InfoPersistenceException {
         this.taskId = taskId;
         this.transfer = transfer;
         List<FileInfoDO> list = fm.queryUnSyncFileByTaskId(taskId);

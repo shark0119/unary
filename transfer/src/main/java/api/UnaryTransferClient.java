@@ -2,7 +2,7 @@ package api;
 
 import java.io.IOException;
 
-public abstract class UnaryTClient {
+public abstract class UnaryTransferClient {
     public static int MAX_PACK_SIZE = 8 * 1024 * 1024;
 
     public abstract void setSpeedLimit(int limit);
@@ -17,7 +17,7 @@ public abstract class UnaryTClient {
 
     public abstract int sendData(byte[] data);
 
-    public abstract void startClient() throws IOException;
+    public abstract void startClient(String serverIp, int port) throws IOException;
 
     public abstract void stopClient() throws IOException;
 }

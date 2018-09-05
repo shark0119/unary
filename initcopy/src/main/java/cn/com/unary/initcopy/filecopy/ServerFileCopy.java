@@ -30,13 +30,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * 目标端的文件复制模块
@@ -49,30 +47,34 @@ import java.util.concurrent.locks.ReentrantLock;
 @Scope("singleton")
 public class ServerFileCopy extends AbstractLoggable implements ApplicationContextAware, Closeable {
 
-    private ApplicationContext context;
-    private ExecutorService fileCopyExec;
-    private volatile boolean close = false;
-    private ReentrantLock lock = new ReentrantLock();
+    private final Object lock;
     @Autowired
     private ServerFileCopyInit init;
+    private volatile boolean close;
+    private ApplicationContext context;
+    private ThreadPoolExecutor fileCopyExec;
 
     /**
      * 已放入线程池中执行的任务
      */
-    private Map<Integer, CopyTask> execTaskMap = new HashMap <>(InitCopyContext.TASK_NUMBER);
+    private Map<Integer, CopyTask> execTaskMap;
     /**
      * 任务列表
      */
-    private Map<Integer, CopyTask> taskMap = new HashMap <>(InitCopyContext.TASK_NUMBER);
+    private Map<Integer, CopyTask> taskMap;
 
     public ServerFileCopy() {
+        close = false;
+        lock = new Object();
+        taskMap = new HashMap<>(InitCopyContext.TASK_NUMBER);
+        execTaskMap = new HashMap<>(InitCopyContext.TASK_NUMBER);
         ThreadFactory executorThreadFactory = new BasicThreadFactory.Builder()
                 .namingPattern("server-%d-task-")
                 .uncaughtExceptionHandler(new ExecExceptionsHandler(this))
                 .build();
-        fileCopyExec = new ThreadPoolExecutor(10,
-                200, 0L, TimeUnit.MILLISECONDS,
-                new LinkedBlockingQueue<Runnable>(1024),
+        fileCopyExec = new ThreadPoolExecutor(2,
+                30, 0L, TimeUnit.MILLISECONDS,
+                new LinkedBlockingQueue<Runnable>(200),
                 executorThreadFactory,
                 new ThreadPoolExecutor.AbortPolicy());
     }
@@ -85,24 +87,23 @@ public class ServerFileCopy extends AbstractLoggable implements ApplicationConte
      */
     public void resolverPack(byte[] data) throws TaskFailException {
         int taskId = CommonUtils.byteArrayToInt(data, 0);
-        lock.lock();
-        if (close) {
-            lock.unlock();
-            throw new TaskFailException("FileCopy already shutdown.");
-        }
-        if (execTaskMap.containsKey(taskId)) {
-            execTaskMap.get(taskId).addPack(data);
-        } else {
-            if (taskMap.containsKey(taskId)) {
-                final CopyTask copyTask = taskMap.get(taskId);
-                copyTask.addPack(data);
-                fileCopyExec.execute(copyTask);
-                execTaskMap.put(taskId, copyTask);
+        synchronized (lock) {
+            if (close) {
+                throw new TaskFailException("FileCopy already shutdown.");
+            }
+            if (execTaskMap.containsKey(taskId)) {
+                execTaskMap.get(taskId).addPack(data);
             } else {
-                logger.error("Task " + taskId + " not found;");
+                if (taskMap.containsKey(taskId)) {
+                    final CopyTask copyTask = taskMap.get(taskId);
+                    copyTask.addPack(data);
+                    fileCopyExec.execute(copyTask);
+                    execTaskMap.put(taskId, copyTask);
+                } else {
+                    logger.error("Task " + taskId + " not found;");
+                }
             }
         }
-        lock.unlock();
     }
 
     /**
@@ -114,38 +115,33 @@ public class ServerFileCopy extends AbstractLoggable implements ApplicationConte
      */
     public ServerInitRespDO startInit(ClientInitReqDO req) throws TaskFailException {
         CopyTask task = new CopyTask(req.getTaskId(), req.getTargetDir());
-        lock.lock();
-        if (close) {
-            lock.unlock();
-            throw new TaskFailException("FileCopy already shutdown.");
+        synchronized (lock) {
+            if (close) {
+                throw new TaskFailException("FileCopy already shutdown.");
+            }
+            taskMap.put(req.getTaskId(), task);
         }
-        taskMap.put(req.getTaskId(), task);
-        lock.unlock();
         try {
             return init.startInit(req);
         } catch (InfoPersistenceException e) {
-            throw new TaskFailException("init task failed.", e);
-        } finally {
-            if (lock.isLocked()) {
-                lock.unlock();
-            }
             // 初始化失败后，移除当前任务
-            lock.lock();
-            taskMap.remove(req.getTaskId());
-            lock.unlock();
+            synchronized (lock) {
+                taskMap.remove(req.getTaskId());
+            }
+            throw new TaskFailException("init task failed.", e);
         }
     }
 
     @PreDestroy
     @Override
     public void close() {
-        lock.lock();
-        fileCopyExec.shutdownNow();
-        for (Integer i : taskMap.keySet()) {
-            taskMap.get(i).close();
+        synchronized (lock) {
+            fileCopyExec.shutdownNow();
+            for (Integer i : taskMap.keySet()) {
+                taskMap.get(i).close();
+            }
+            close = true;
         }
-        close = true;
-        lock.unlock();
     }
 
     @Override
@@ -155,7 +151,7 @@ public class ServerFileCopy extends AbstractLoggable implements ApplicationConte
 
     protected class CopyTask implements Runnable, Closeable {
         private final List<byte[]> packs;
-        private final ReentrantLock lock;
+        private final Object lock;
         private Resolver syncAllResolver, syncDiffResolver;
         private int taskId;
         private boolean pause, shutdown;
@@ -170,7 +166,7 @@ public class ServerFileCopy extends AbstractLoggable implements ApplicationConte
             syncAllResolver.setBackupPath(targetDir).setTaskId(taskId);
             syncDiffResolver.setBackupPath(targetDir).setTaskId(taskId);
             packs = new ArrayList<>(30);
-            lock = new ReentrantLock();
+            lock = new Object();
             pause = false;
             shutdown = false;
         }
@@ -260,11 +256,11 @@ public class ServerFileCopy extends AbstractLoggable implements ApplicationConte
 
         private void addPack(byte[] pack) {
             Objects.requireNonNull(pack);
-            this.lock.lock();
-            if (shutdown) {
-                return;
+            synchronized (lock) {
+                if (shutdown) {
+                    return;
+                }
             }
-            lock.unlock();
             synchronized (packs) {
                 this.packs.add(pack);
                 if (pause) {
@@ -280,18 +276,21 @@ public class ServerFileCopy extends AbstractLoggable implements ApplicationConte
 
         @Override
         public void close() {
-            this.lock.lock();
-            if (shutdown) {
-                return;
+            synchronized (lock) {
+                if (shutdown) {
+                    return;
+                }
             }
-            this.lock.unlock();
-            ServerFileCopy.this.lock.lock();
-            ServerFileCopy.this.execTaskMap.remove(this.taskId);
-            ServerFileCopy.this.taskMap.remove(this.taskId);
-            ServerFileCopy.this.lock.unlock();
-            this.lock.lock();
-            shutdown = true;
-            this.lock.unlock();
+            synchronized (packs) {
+                packs.clear();
+            }
+            synchronized (ServerFileCopy.this.lock) {
+                ServerFileCopy.this.execTaskMap.remove(this.taskId);
+                ServerFileCopy.this.taskMap.remove(this.taskId);
+            }
+            synchronized (lock) {
+                shutdown = true;
+            }
             logger.info("Task resolver done. Use " + execTime + ".");
         }
     }

@@ -1,6 +1,6 @@
 package cn.com.unary.initcopy.filecopy.init;
 
-import api.UnaryTClient;
+import api.UnaryTransferClient;
 import cn.com.unary.initcopy.InitCopyContext;
 import cn.com.unary.initcopy.common.AbstractLoggable;
 import cn.com.unary.initcopy.common.BeanConverter;
@@ -63,7 +63,7 @@ public class ClientFileCopyInit extends AbstractLoggable {
      * @throws IOException      IO错误
      * @throws RuntimeException Grpc 服务调用错误。
      */
-    public List<String> startInit(UnaryTClient client,
+    public List<String> startInit(UnaryTransferClient client,
                                   final SyncTaskDO syncTask,
                                   final List<DiffFileInfo> diffFileInfos)
             throws IOException, InfoPersistenceException {

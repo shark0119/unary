@@ -1,6 +1,5 @@
 package cn.com.unary.initcopy.filecopy.filepacker;
 
-import api.UnaryTClient;
 import cn.com.unary.initcopy.grpc.entity.DiffFileInfo;
 
 import java.util.List;

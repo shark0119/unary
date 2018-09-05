@@ -1,6 +1,6 @@
 package cn.com.unary.initcopy.service;
 
-import api.UnaryTClient;
+import api.UnaryTransferClient;
 import cn.com.unary.initcopy.InitCopyContext;
 import cn.com.unary.initcopy.common.AbstractLoggable;
 import cn.com.unary.initcopy.dao.FileManager;
@@ -45,7 +45,7 @@ public class ClientTaskUpdater extends AbstractLoggable {
         Constants.UpdateType updateType;
         switch (task.getModifyType()) {
             case SPEED_LIMIT:
-                UnaryTClient client = fileCopy.getTransferMap().get(task.getTaskId());
+                UnaryTransferClient client = fileCopy.getTransferMap().get(task.getTaskId());
                 if (client == null) {
                     throw new TaskFailException("task doesn't exist");
                 }

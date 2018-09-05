@@ -71,6 +71,7 @@ public class BeanExactUtil {
         }
         FileOwnerAttributeView ownerView = Files.getFileAttributeView(
                 path, FileOwnerAttributeView.class);
+        fi.setState(FileInfoDO.STATE.WAIT);
         fi.setAttr(FileInfoDO.newFileAttr());
         fi.getAttr().setOwner(ownerView.getOwner().getName());
         fi.getAttr().setHidden(path.toFile().isHidden());
