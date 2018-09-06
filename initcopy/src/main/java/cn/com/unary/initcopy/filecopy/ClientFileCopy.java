@@ -14,7 +14,7 @@ import cn.com.unary.initcopy.filecopy.filepacker.Packer;
 import cn.com.unary.initcopy.filecopy.filepacker.SyncDiffPacker;
 import cn.com.unary.initcopy.filecopy.init.ClientFileCopyInit;
 import cn.com.unary.initcopy.grpc.entity.DiffFileInfo;
-import cn.com.unary.initcopy.utils.BeanExactUtil;
+import cn.com.unary.initcopy.common.utils.BeanExactUtil;
 import org.apache.commons.lang3.concurrent.BasicThreadFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -223,7 +223,7 @@ public class ClientFileCopy extends AbstractLoggable implements ApplicationConte
             Thread.currentThread().setName(Thread.currentThread().getName() + taskId);
             try {
                 packer.start(taskId, transfer);
-            } catch (IOException | InfoPersistenceException e) {
+            } catch (IOException | InfoPersistenceException | InterruptedException e) {
                 logger.error("Exception happened .", e);
                 throw new IllegalStateException(e);
             } finally {
@@ -241,7 +241,6 @@ public class ClientFileCopy extends AbstractLoggable implements ApplicationConte
                 execTaskMap.remove(taskId);
             }
             packer.close();
-            transfer.stopClient();
         }
     }
 }

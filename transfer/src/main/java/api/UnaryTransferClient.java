@@ -3,7 +3,7 @@ package api;
 import java.io.IOException;
 
 public abstract class UnaryTransferClient {
-    public static int MAX_PACK_SIZE = 8 * 1024 * 1024;
+    public static int MAX_PACK_SIZE = 32 * 1024;
 
     public abstract void setSpeedLimit(int limit);
 

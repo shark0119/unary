@@ -14,7 +14,7 @@ import cn.com.unary.initcopy.grpc.entity.QueryTask;
 import cn.com.unary.initcopy.grpc.entity.SyncTask;
 import cn.com.unary.initcopy.grpc.entity.TaskState;
 import cn.com.unary.initcopy.service.ClientTaskUpdater;
-import cn.com.unary.initcopy.utils.ValidateUtils;
+import cn.com.unary.initcopy.common.utils.ValidateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;

@@ -1,4 +1,4 @@
-package cn.com.unary.initcopy.utils;
+package cn.com.unary.initcopy.common.utils;
 
 import cn.com.unary.initcopy.entity.BaseFileInfoDO;
 import cn.com.unary.initcopy.entity.Constants;

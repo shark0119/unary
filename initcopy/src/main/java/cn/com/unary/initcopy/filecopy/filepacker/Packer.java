@@ -42,7 +42,7 @@ public interface Packer extends Closeable {
      * @throws IOException              IO 异常
      * @throws InfoPersistenceException 相关信息在持久化层发生异常
      */
-    void start(Integer taskId, UnaryTransferClient transfer) throws IOException, InfoPersistenceException;
+    void start(Integer taskId, UnaryTransferClient transfer) throws IOException, InfoPersistenceException, InterruptedException;
 
     /**
      * 返回打包种类

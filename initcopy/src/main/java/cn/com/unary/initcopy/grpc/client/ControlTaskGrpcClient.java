@@ -55,8 +55,9 @@ public class ControlTaskGrpcClient extends AbstractLoggable {
      * @return 初始化响应
      */
     public ServerInitResp invokeGrpcInit(ClientInitReq req) {
-        logger.debug("Send file data to the target to confirm.");
-        return linker.init(req);
+        /*logger.debug("Send file data to the target to confirm.");
+        return linker.init(req);*/
+        return blockingStub.init(req);
     }
 
     /**

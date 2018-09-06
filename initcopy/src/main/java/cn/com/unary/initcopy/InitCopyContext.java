@@ -70,9 +70,8 @@ public class InitCopyContext extends AbstractLoggable implements Closeable {
      * @param transPort     文件数据传输端口
      * @param grpcPort      服务监听的端口
      * @param innerGrpcPort 内部服务的监听端口
-     * @throws IOException 端口占用
      */
-    public void start(int transPort, int grpcPort, int innerGrpcPort) throws IOException {
+    public void start(int transPort, int grpcPort, int innerGrpcPort) {
         // 判断上下文是否已经启动
         if (!isActive) {
             synchronized (lock) {
@@ -128,10 +127,19 @@ public class InitCopyContext extends AbstractLoggable implements Closeable {
         return this;
     }
 
-    private InitCopyContext serverInit() throws IOException {
+    private InitCopyContext serverInit() {
         // 启动和初始化传输模块（目标端）
-        uts.startServer(getTransPort());
-        uts.setProcess(process);
+        exec.execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    uts.startServer(getTransPort());
+                    // uts.setProcess(process)
+                } catch (IOException e) {
+                    throw new IllegalStateException(e);
+                }
+            }
+        });
         serverStarter = new GrpcServiceStarter(
                 new ControlTaskGrpcImpl(new ControlTaskGrpcLinker()), innerGrpcPort);
         // 启动内部控制任务信息的 GRPC 服务（目标端）

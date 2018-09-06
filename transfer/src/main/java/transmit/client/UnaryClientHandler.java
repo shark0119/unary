@@ -26,10 +26,10 @@ public class UnaryClientHandler extends SimpleChannelInboundHandler<Message> {
     @Override
     public void channelActive(ChannelHandlerContext ctx) {
         ByteBuf c = Unpooled.buffer(Common.BUFSIZE);
-        Common.stringToByteBuf(client.getServerip(), c);
-        c.writeInt(client.getServerport());
-        Common.stringToByteBuf(client.getAgentip(), c);
-        Common.stringToByteBuf(client.getAgentmac(), c);
+        Common.stringToByteBuf(client.getServerIp(), c);
+        c.writeInt(client.getServerPort());
+        Common.stringToByteBuf(client.getAgentIp(), c);
+        Common.stringToByteBuf(client.getAgentMac(), c);
         MessageHead head = new MessageHead(Common.REGISTER,
                 c.writerIndex(),
                 Common.NOCOMPRESS,
@@ -93,8 +93,8 @@ public class UnaryClientHandler extends SimpleChannelInboundHandler<Message> {
                 case WRITER_IDLE:
                     ByteBuf c = Unpooled.buffer(Common.BUFSIZE);
                     c.writeInt(client.getId());
-                    Common.stringToByteBuf(client.getAgentip(), c);
-                    Common.stringToByteBuf(client.getAgentmac(), c);
+                    Common.stringToByteBuf(client.getAgentIp(), c);
+                    Common.stringToByteBuf(client.getAgentMac(), c);
                     c.writeInt(1);
                     Common.stringToByteBuf(new Date().toString(), c);
                     MessageHead head = new MessageHead(Common.PING,

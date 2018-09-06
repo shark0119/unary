@@ -27,7 +27,6 @@ public class SDataTest {
             if (server == null)
                 continue;
             server.sendMessage(data, ip);
-
         }
 
     }

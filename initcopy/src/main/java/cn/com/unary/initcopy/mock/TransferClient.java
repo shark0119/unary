@@ -9,6 +9,8 @@ import org.springframework.stereotype.Component;
 import transmit.client.UnaryTClient;
 
 import java.io.IOException;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 打桩使用的类
@@ -24,6 +26,10 @@ public class TransferClient extends UnaryTransferClient {
     @Autowired
     private UnaryChannel channel;
     private UnaryTClient client;
+    private CountDownLatch latch;
+    public TransferClient () {
+        latch = new CountDownLatch(1);
+    }
 
     @Override
     public void setSpeedLimit(int limit) {
@@ -58,14 +64,18 @@ public class TransferClient extends UnaryTransferClient {
 
     @Override
     public void startClient(String ip, int port) throws IOException {
-        client = new UnaryTClient(ip, port, "10.10.1.125", "1-1-1-1-1-1-1");
+        client = new UnaryTClient(ip, port, "10.10.1.125", "1-1-1-1-1-1-1", latch);
         try {
             client.startClient();
+            this.latch.await();
         } catch (Exception e) {
             throw new IOException(e);
         }
     }
 
+    public boolean isReady () {
+        return client.isReady();
+    }
     @Override
     public void stopClient() throws IOException {
         try {

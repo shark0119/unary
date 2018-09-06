@@ -16,34 +16,40 @@ import transmit.utils.MessageHead;
 import transmit.utils.Process;
 
 import java.net.InetSocketAddress;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 public class UnaryTClient {
-    private final String serverip;
-    private final int serverport;
-    private final String agentip;
-    private final String agentmac;
-    private Channel channel = null;
+    private final String serverIp;
+    private final int serverPort;
+    private final String agentIp;
+    private final String agentMac;
+    private Channel channel;
     private Bootstrap bootstrap;
-    private EventLoopGroup workgroup;
+    private EventLoopGroup workGroup;
     private int id;
     private Process process = null;
+    private CountDownLatch latch;
+    private boolean isReady;
 
-    public UnaryTClient(String serverip, int port, String agentip, String agentmac) {
-        this.serverip = serverip;
-        this.serverport = port;
-        this.agentip = agentip;
-        this.agentmac = agentmac;
-        this.id = 0;
+    public UnaryTClient(String serverIp, int port, String agentIp, String agentMac) {
+        this (serverIp, port, agentIp, agentMac, null);
     }
-
+    public UnaryTClient(String serverIp, int port, String agentIp, String agentMac, CountDownLatch latch) {
+        this.serverIp = serverIp;
+        this.serverPort = port;
+        this.agentIp = agentIp;
+        this.agentMac = agentMac;
+        this.id = 0;
+        this.latch = latch;
+    }
     public void startClient() throws Exception {
-        workgroup = new NioEventLoopGroup();
+        workGroup = new NioEventLoopGroup();
         try {
             bootstrap = new Bootstrap();
-            bootstrap.group(workgroup)
+            bootstrap.group(workGroup)
                     .channel(NioSocketChannel.class)
-                    .remoteAddress(new InetSocketAddress(serverip, serverport))
+                    .remoteAddress(new InetSocketAddress(serverIp, serverPort))
                     .handler(new UanryClientInitializer(this));
 
             bootstrap.option(ChannelOption.SO_KEEPALIVE, true);
@@ -55,10 +61,11 @@ public class UnaryTClient {
     }
 
     public void stopClient() throws Exception {
-        if (channel == null)
+        if (channel == null) {
             return;
+        }
         channel.close();
-        workgroup.shutdownGracefully().sync();
+        workGroup.shutdownGracefully().sync();
     }
 
     protected void doConnect() {
@@ -72,14 +79,11 @@ public class UnaryTClient {
             public void operationComplete(ChannelFuture futureListener) throws Exception {
                 if (futureListener.isSuccess()) {
                     channel = futureListener.channel();
+                    isReady = true;
                 } else {
-                    futureListener.channel().eventLoop().schedule(new Runnable() {
-                        @Override
-                        public void run() {
-                            doConnect();
-                        }
-                    }, 10, TimeUnit.SECONDS);
+                    isReady = false;
                 }
+                latch.countDown();
             }
         });
 
@@ -111,25 +115,25 @@ public class UnaryTClient {
         }
         final String host = args[0];
         final int port = Integer.parseInt(args[1]);
-        final String agentip = args[2];
-        final String agentmac = args[3];
-        new UnaryTClient(host, port, agentip, agentmac).startClient();
+        final String agentIp = args[2];
+        final String agentMac = args[3];
+        new UnaryTClient(host, port, agentIp, agentMac).startClient();
     }
 
-    public String getServerip() {
-        return serverip;
+    public String getServerIp() {
+        return serverIp;
     }
 
-    public int getServerport() {
-        return serverport;
+    public int getServerPort() {
+        return serverPort;
     }
 
-    public String getAgentip() {
-        return agentip;
+    public String getAgentIp() {
+        return agentIp;
     }
 
-    public String getAgentmac() {
-        return agentmac;
+    public String getAgentMac() {
+        return agentMac;
     }
 
     public int getId() {
@@ -148,4 +152,7 @@ public class UnaryTClient {
         this.process = process;
     }
 
+    public boolean isReady() {
+        return isReady;
+    }
 }

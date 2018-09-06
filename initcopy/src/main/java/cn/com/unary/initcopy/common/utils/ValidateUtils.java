@@ -1,4 +1,4 @@
-package cn.com.unary.initcopy.utils;
+package cn.com.unary.initcopy.common.utils;
 
 import java.util.Collection;
 import java.util.Map;

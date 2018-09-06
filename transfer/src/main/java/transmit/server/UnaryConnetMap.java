@@ -36,13 +36,13 @@ public class UnaryConnetMap {
     }
 
     public static UnaryConnect getClientConnection(ChannelHandlerContext ctx) {
-        int agentid = ctx.channel().attr(UnaryConnect.AGENTID).get();
+        int agentId = ctx.channel().attr(UnaryConnect.AGENTID).get();
 
-        UnaryConnect conn = allClientMap.get(agentid);
-        if (conn != null)
+        UnaryConnect conn = allClientMap.get(agentId);
+        if (conn != null) {
             return conn;
-        else {
-            logger.info("ClientConenction not found in allClientMap, agentid: " + agentid);
+        } else {
+            logger.info("ClientConnection not found in allClientMap, agentId: " + agentId);
         }
         return null;
     }

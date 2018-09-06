@@ -86,7 +86,7 @@ public class ClientFileCopyInit extends AbstractLoggable {
 
         // TODO change to grpc client and server
         ControlTaskGrpcClient controlTaskGrpcClient =
-                new ControlTaskGrpcClient();
+                new ControlTaskGrpcClient(syncTask.getTargetInfo().getIp(), syncTask.getTargetInfo().getGrpcPort());
 
         long totalSize = 0L;
         List<BaseFileInfo> bfis = new ArrayList<>(syncFiles.size());

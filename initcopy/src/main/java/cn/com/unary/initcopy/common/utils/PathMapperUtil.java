@@ -1,4 +1,4 @@
-package cn.com.unary.initcopy.utils;
+package cn.com.unary.initcopy.common.utils;
 
 /**
  * 差异复制时，源端和目标端路径转换

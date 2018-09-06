@@ -1,6 +1,6 @@
 package cn.com.unary.initcopy.common;
 
-import cn.com.unary.initcopy.utils.ValidateUtils;
+import cn.com.unary.initcopy.common.utils.ValidateUtils;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.MessageOrBuilder;
 import com.google.protobuf.ProtocolMessageEnum;

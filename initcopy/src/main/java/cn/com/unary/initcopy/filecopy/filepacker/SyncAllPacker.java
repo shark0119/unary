@@ -1,13 +1,16 @@
 package cn.com.unary.initcopy.filecopy.filepacker;
 
 import api.UnaryTransferClient;
+import cn.com.unary.initcopy.InitCopyContext;
 import cn.com.unary.initcopy.common.AbstractLoggable;
 import cn.com.unary.initcopy.dao.FileManager;
 import cn.com.unary.initcopy.entity.Constants.PackerType;
 import cn.com.unary.initcopy.entity.FileInfoDO;
+import cn.com.unary.initcopy.entity.SyncTaskDO;
 import cn.com.unary.initcopy.exception.InfoPersistenceException;
 import cn.com.unary.initcopy.filecopy.io.AbstractFileInput;
-import cn.com.unary.initcopy.utils.CommonUtils;
+import cn.com.unary.initcopy.mock.TransferClient;
+import cn.com.unary.initcopy.common.utils.CommonUtils;
 import com.alibaba.fastjson.JSON;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -91,7 +94,8 @@ public class SyncAllPacker extends AbstractLoggable implements Packer {
     @Qualifier("clientFM")
     private FileManager fm;
     private UnaryTransferClient transfer;
-
+    @Autowired
+    private InitCopyContext context;
     /**
      * ----我是另外一只分界线，以下是自定义全局变量----
      */
@@ -125,7 +129,8 @@ public class SyncAllPacker extends AbstractLoggable implements Packer {
     }
 
     @Override
-    public void start(Integer taskId, UnaryTransferClient transfer) throws IOException, InfoPersistenceException {
+    public void start(Integer taskId, UnaryTransferClient transfer)
+            throws IOException, InfoPersistenceException, InterruptedException {
         this.taskId = taskId;
         this.transfer = transfer;
         List<FileInfoDO> list = fm.queryUnSyncFileByTaskId(taskId);
@@ -137,7 +142,13 @@ public class SyncAllPacker extends AbstractLoggable implements Packer {
             logger.warn("packer stop because channel close.");
             return;
         }
-        while (packData.length > HEAD_LENGTH) {
+        SyncTaskDO taskDO = fm.queryTask(taskId);
+        transfer.startClient(taskDO.getTargetInfo().getIp(), taskDO.getTargetInfo().getTransferPort());
+        while (true) {
+            if (packData.length <= HEAD_LENGTH) {
+                logger.warn("pack " + packIndex + " ignore, cause it's empty, size:" + packData.length);
+                break;
+            }
             logger.debug("Pass " + packData.length + " bytes to Transfer.");
             this.transfer.sendData(packData);
             try {
@@ -278,6 +289,7 @@ public class SyncAllPacker extends AbstractLoggable implements Packer {
             logger.debug("Got next file : " + currentFileInfo.getFileId());
             return currentFileInfo;
         }
+        logger.info("we have no file anymore.");
         return null;
     }
 

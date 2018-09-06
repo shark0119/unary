@@ -31,7 +31,6 @@ public class CDataTest {
             try {
                 client.startClient();
             } catch (Exception e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
         }

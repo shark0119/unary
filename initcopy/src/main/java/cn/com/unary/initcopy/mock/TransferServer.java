@@ -3,6 +3,7 @@ package cn.com.unary.initcopy.mock;
 import api.UnaryHandler;
 import api.UnaryProcess;
 import api.UnaryTransferServer;
+import cn.com.unary.initcopy.exception.TaskFailException;
 import cn.com.unary.initcopy.filecopy.ServerFileCopy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -59,12 +60,11 @@ public class TransferServer implements UnaryTransferServer {
         @Override
         public void handler(byte[] data) {
             // TODO 调用解包程序，写入文件
-            /*try {
+            try {
                 fileCopy.resolverPack(data);
             } catch (TaskFailException e) {
                 e.printStackTrace();
-            }*/
-            System.out.println("we got data! " + new String(data));
+            }
         }
     }
 }

@@ -1,10 +1,9 @@
-package cn.com.unary.initcopy.utils;
+package cn.com.unary.initcopy.common.utils;
 
+import cn.com.unary.initcopy.common.utils.CommonUtils;
 import org.junit.Test;
 
 import java.nio.ByteBuffer;
-
-import static org.junit.Assert.*;
 
 public class CommonUtilsTest {
 

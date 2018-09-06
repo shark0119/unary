@@ -4,7 +4,7 @@ import cn.com.unary.initcopy.InitCopyContext;
 import cn.com.unary.initcopy.common.AbstractLoggable;
 import cn.com.unary.initcopy.entity.FileInfoDO;
 import cn.com.unary.initcopy.entity.SyncTaskDO;
-import cn.com.unary.initcopy.utils.ValidateUtils;
+import cn.com.unary.initcopy.common.utils.ValidateUtils;
 
 import java.util.ArrayList;
 import java.util.List;
