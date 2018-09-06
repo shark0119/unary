@@ -20,8 +20,8 @@ import java.nio.file.StandardOpenOption;
 @Scope("prototype")
 public class JavaNioFileInput extends AbstractFileInput {
 
-    protected FileChannel currentFileChannel;
-    protected String currentFileName;
+    private FileChannel currentFileChannel;
+    private String currentFileName;
 
     @Override
     public boolean read(ByteBuffer buffer) throws IOException {
@@ -37,7 +37,7 @@ public class JavaNioFileInput extends AbstractFileInput {
     }
 
     @Override
-    public AbstractFileInput openFile(String fileName) throws IOException {
+    public void openFile(String fileName) throws IOException {
         this.close();
         logger.debug("File change to " + fileName + ".");
         logger.debug("file size:" + new File(fileName).length());
@@ -46,7 +46,6 @@ public class JavaNioFileInput extends AbstractFileInput {
                 StandardOpenOption.READ);
         currentFileName = fileName;
         logger.debug("Open new file " + currentFileName);
-        return this;
     }
 
     @Override

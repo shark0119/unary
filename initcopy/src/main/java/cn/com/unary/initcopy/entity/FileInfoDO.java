@@ -96,7 +96,9 @@ public class FileInfoDO extends BaseFileInfoDO {
     @Override
     public String toString() {
         return "FileInfoDO{" +
-                "fileType=" + fileType +
+                super.toString() +
+                ", taskId=" + taskId +
+                ", fileType=" + fileType +
                 ", beginPackIndex=" + beginPackIndex +
                 ", finishPackIndex=" + finishPackIndex +
                 ", attr=" + attr +

@@ -223,7 +223,7 @@ public class ClientFileCopy extends AbstractLoggable implements ApplicationConte
             Thread.currentThread().setName(Thread.currentThread().getName() + taskId);
             try {
                 packer.start(taskId, transfer);
-            } catch (IOException | InfoPersistenceException | InterruptedException e) {
+            } catch (IOException | InfoPersistenceException e) {
                 logger.error("Exception happened .", e);
                 throw new IllegalStateException(e);
             } finally {

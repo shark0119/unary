@@ -16,14 +16,14 @@ public class ClientTest {
 
     private static AnnotationConfigApplicationContext ac;
     private static InitCopyGrpcLinker linker;
-    private static void setUp () throws IOException {
+    private static void setUp () {
         ac = new AnnotationConfigApplicationContext(BeanConfig.class);
         InitCopyContext context = ac.getBean(InitCopyContext.class);
         linker = ac.getBean(InitCopyGrpcLinker.class);
         context.start(50005, 50006, 50007);
     }
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
         setUp();
         String source = "G:/test";
         String targetDir = "G:/";

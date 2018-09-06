@@ -22,19 +22,19 @@ import java.util.*;
  */
 public class BeanConverter extends AbstractLoggable {
 
-    private static final String OR_BUILDER_LIST = "OrBuilderList";
-    private static final String BUILDER_LIST = "BuilderList";
-    private static final String NEW_BUILDER = "newBuilder";
     private static final String DOT = ".";
-    private static final Map<String, String> GRPC_EX_METHOD = new HashMap<>(20);
-    private static final List<String> GRPC_LIST_SUFFIXES = new ArrayList<>(3);
-    private static final String GRPC_MEMBER_GETTER_SUFFIX = "OrBuilder";
-    private static final String GRPC_LIST_SETTER_PREFIX = "addAll";
-    private static final String GRPC_CONSTANT_SUFFIX = "Value";
-    private static final String GRPC_STRING_SUFFIX = "Bytes";
-    private static final String GRPC_LIST_SUFFIX = "List";
     private static final String GET_PATTERN = "get";
     private static final String SET_PATTERN = "set";
+    private static final String GRPC_LIST_SUFFIX = "List";
+    private static final String NEW_BUILDER = "newBuilder";
+    private static final String BUILDER_LIST = "BuilderList";
+    private static final String GRPC_STRING_SUFFIX = "Bytes";
+    private static final String GRPC_CONSTANT_SUFFIX = "Value";
+    private static final String OR_BUILDER_LIST = "OrBuilderList";
+    private static final String GRPC_LIST_SETTER_PREFIX = "addAll";
+    private static final String GRPC_MEMBER_GETTER_SUFFIX = "OrBuilder";
+    private static final Map<String, String> GRPC_EX_METHOD = new HashMap<>(20);
+    private static final List<String> GRPC_LIST_SUFFIXES = new ArrayList<>(3);
 
     static {
         GRPC_EX_METHOD.put("getField", "");
@@ -54,9 +54,9 @@ public class BeanConverter extends AbstractLoggable {
         GRPC_EX_METHOD.put("getDefaultInstanceForType", "");
         GRPC_EX_METHOD.put("getInitializationErrorString", "");
 
+        GRPC_EX_METHOD.put("setField", "");
         GRPC_EX_METHOD.put("setUnknownFields", "");
         GRPC_EX_METHOD.put("setRepeatedField", "");
-        GRPC_EX_METHOD.put("setField", "");
 
         GRPC_LIST_SUFFIXES.add("Count");
         GRPC_LIST_SUFFIXES.add("BuilderList");

@@ -3,7 +3,7 @@ package cn.com.unary.initcopy.common;
 import org.apache.log4j.Logger;
 
 /**
- * 获取日志类
+ * 获取 Logger 类
  *
  * @author shark
  */

@@ -45,7 +45,7 @@ public class ClientFileCopyInit extends AbstractLoggable {
 
     @Autowired
     @Qualifier("clientFM")
-    protected FileManager fm;
+    private FileManager fm;
 
     @Autowired
     protected InitCopyContext context;
@@ -84,7 +84,6 @@ public class ClientFileCopyInit extends AbstractLoggable {
         logger.debug("We got " + syncFiles.size() + " files and " + syncFileIds.size()
                 + " file id from specified local directory in task " + syncTask.getTaskId());
 
-        // TODO change to grpc client and server
         ControlTaskGrpcClient controlTaskGrpcClient =
                 new ControlTaskGrpcClient(syncTask.getTargetInfo().getIp(), syncTask.getTargetInfo().getGrpcPort());
 
@@ -105,8 +104,8 @@ public class ClientFileCopyInit extends AbstractLoggable {
             case SYNC_DIFF:
                 syncFileIds = syncDiffInit(builder, controlTaskGrpcClient, diffFileInfos);
                 break;
-            // as default option
             case SYNC_ALL:
+                // sync all as default option
             default:
                 syncAllInit(builder, controlTaskGrpcClient);
                 break;
@@ -155,19 +154,16 @@ public class ClientFileCopyInit extends AbstractLoggable {
             path = Paths.get(fileName);
             Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
                 @Override
-                public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs)
-                        throws IOException {
-                    if (dir.toFile().list().length == -1) {
+                public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) {
+                    if (dir.toFile().list().length == 0) {
                         FileInfoDO fileInfo = new FileInfoDO(takeFromFile(dir.toFile()));
                         fileInfos.add(fileInfo);
                     }
-                    // TODO take dir in
                     return FileVisitResult.CONTINUE;
                 }
 
                 @Override
-                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs)
-                        throws IOException {
+                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
                     FileInfoDO fileInfo = new FileInfoDO(takeFromFile(file.toFile()));
                     fileInfos.add(fileInfo);
                     return FileVisitResult.CONTINUE;

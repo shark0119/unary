@@ -1,16 +1,15 @@
 package cn.com.unary.initcopy.filecopy.filepacker;
 
 import api.UnaryTransferClient;
-import cn.com.unary.initcopy.InitCopyContext;
 import cn.com.unary.initcopy.common.AbstractLoggable;
+import cn.com.unary.initcopy.common.utils.CommonUtils;
 import cn.com.unary.initcopy.dao.FileManager;
+import cn.com.unary.initcopy.entity.Constants;
 import cn.com.unary.initcopy.entity.Constants.PackerType;
 import cn.com.unary.initcopy.entity.FileInfoDO;
 import cn.com.unary.initcopy.entity.SyncTaskDO;
 import cn.com.unary.initcopy.exception.InfoPersistenceException;
 import cn.com.unary.initcopy.filecopy.io.AbstractFileInput;
-import cn.com.unary.initcopy.mock.TransferClient;
-import cn.com.unary.initcopy.common.utils.CommonUtils;
 import com.alibaba.fastjson.JSON;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -94,8 +93,6 @@ public class SyncAllPacker extends AbstractLoggable implements Packer {
     @Qualifier("clientFM")
     private FileManager fm;
     private UnaryTransferClient transfer;
-    @Autowired
-    private InitCopyContext context;
     /**
      * ----我是另外一只分界线，以下是自定义全局变量----
      */
@@ -130,33 +127,27 @@ public class SyncAllPacker extends AbstractLoggable implements Packer {
 
     @Override
     public void start(Integer taskId, UnaryTransferClient transfer)
-            throws IOException, InfoPersistenceException, InterruptedException {
+            throws IOException, InfoPersistenceException {
         this.taskId = taskId;
         this.transfer = transfer;
         List<FileInfoDO> list = fm.queryUnSyncFileByTaskId(taskId);
         fiIterator = list.iterator();
         byte[] packData;
-        try {
-            packData = CommonUtils.extractBytes(pack());
-        } catch (ClosedChannelException e) {
-            logger.warn("packer stop because channel close.");
-            return;
-        }
         SyncTaskDO taskDO = fm.queryTask(taskId);
         transfer.startClient(taskDO.getTargetInfo().getIp(), taskDO.getTargetInfo().getTransferPort());
         while (true) {
-            if (packData.length <= HEAD_LENGTH) {
-                logger.warn("pack " + packIndex + " ignore, cause it's empty, size:" + packData.length);
-                break;
-            }
-            logger.debug("Pass " + packData.length + " bytes to Transfer.");
-            this.transfer.sendData(packData);
             try {
                 packData = CommonUtils.extractBytes(pack());
             } catch (ClosedChannelException e) {
                 logger.warn("packer stop because channel close.");
                 return;
             }
+            if (packData.length <= HEAD_LENGTH) {
+                logger.warn("pack " + packIndex + " ignore, cause it's empty, size:" + packData.length);
+                break;
+            }
+            logger.debug("Pass " + packData.length + " bytes to Transfer.");
+            this.transfer.sendData(packData);
         }
     }
 
@@ -175,67 +166,74 @@ public class SyncAllPacker extends AbstractLoggable implements Packer {
         } else {
             buffer = ByteBuffer.allocateDirect(PACK_SIZE);
         }
-        // set task id, 4 bytes
+        // Set TaskId 4 bytes, PackIndex 4 bytes, PackType 1 byte.
         buffer.putInt(taskId);
-        // set pack index , 4 bytes
         buffer.putInt(++packIndex);
-        // set pack type
         buffer.put(this.getPackType().getValue());
 
-        FileInfoDO fi;
         // 第一次打包，需要先打开一个文件
         if (fileInfoBuffer == null) {
-            fi = nextFile();
-            if (null != fi) {
-                fileInfoBuffer = serializeFileInfo(fi);
-                packFileInfo(buffer);
-            } else {
-                // 若无未读文件，直接返回
-                logger.debug("Pack Done. PackIndex: " + packIndex + ", PackSize: " + buffer.position());
-                return buffer;
-            }
+            takeToNextFile(buffer);
         }
-        // 上次打包还有残留
         if (fileInfoBuffer.hasRemaining()) {
+            // 上次打包还有残留文件信息
             packFileInfo(buffer);
         }
-        boolean fileNotDone;
-        // 一直读取直到包满
-        while (buffer.hasRemaining()) {
-            // 包未满时，文件头信息应该已被读完
-            if (fileInfoBuffer.hasRemaining()) {
-                throw new IllegalStateException("Program error");
-            } else {
-                fileNotDone = input.read(buffer);
-                if (!fileNotDone) {
-                    // 如果读到文件尾，则打开一个新文件
-                    fi = nextFile();
-                    if (null != fi) {
-                        fileInfoBuffer = serializeFileInfo(fi);
-                        packFileInfo(buffer);
-                    } else {
-                        // 若无未读文件，直接返回
-                        break;
-                    }
-                } else {
-                    // 当文件未读到文件尾部时，包应该是满的
-                    if (buffer.hasRemaining()) {
-                        throw new IllegalStateException("Program error");
-                    }
-                }
+        // 一直读取直到包满，或者无文件
+        while (null != currentFileInfo && buffer.hasRemaining()) {
+            if (!(Constants.FileType.REGULAR_FILE.equals(currentFileInfo.getFileType()))
+                || !input.read(buffer)) {
+                // 如果读到文件尾，则打开一个新文件
+                takeToNextFile(buffer);
             }
         }
-
         logger.debug("Pack Done. PackIndex: " + packIndex + ", PackSize: " + buffer.position());
         return buffer;
     }
 
     /**
-     * 用于读取文件头数据，如有遗留，则读入 buffer 中。
+     * 当前文件无有效数据可读
      *
-     * @param buffer 一个可以接受文件头数据的容器
+     * @param buffer buffer 容器
+     * @throws IOException IO 异常
+     * @throws InfoPersistenceException 持久层异常
      */
+    private void takeToNextFile(ByteBuffer buffer) throws IOException, InfoPersistenceException {
+        if (currentFileInfo != null) {
+            currentFileInfo.setState(FileInfoDO.STATE.SYNCED);
+            fm.save(currentFileInfo);
+        }
+        if (fiIterator.hasNext()) {
+            currentFileInfo = fiIterator.next();
+            if (currentFileInfo.getFileType().equals(Constants.FileType.REGULAR_FILE))
+                input.openFile(currentFileInfo.getFullName());
+            currentFileInfo.setState(FileInfoDO.STATE.SYNCING);
+            fm.save(currentFileInfo);
+            logger.debug("Got next file:" + currentFileInfo.getFileId() + ". Ser to json.");
+            try {
+                byte[] fileInfoJsonBytes = JSON.toJSONBytes(currentFileInfo);
+                fileInfoBuffer = ByteBuffer.allocate(fileInfoJsonBytes.length + FILE_INFO_LENGTH);
+                // set file info size and file info
+                fileInfoBuffer.putInt(fileInfoJsonBytes.length);
+                fileInfoBuffer.put(fileInfoJsonBytes);
+                logger.debug("FileID: " + currentFileInfo.getFileId() +
+                        ", file info json bytes length: " + fileInfoBuffer.capacity() + ".");
+                fileInfoBuffer.flip();
+            } catch (Exception e) {
+                throw new IllegalStateException("ERROR 0x04 : Failed transfer FileInfo to Json", e);
+            }
+            packFileInfo(buffer);
+        } else {
+            currentFileInfo = null;
+            logger.info("we have no file anymore.");
+            fileInfoBuffer = ByteBuffer.allocate(0);
+        }
+    }
+
     private void packFileInfo(ByteBuffer buffer) {
+        if (currentFileInfo == null) {
+            return;
+        }
         int readSize;
         if (buffer.remaining() >= fileInfoBuffer.remaining()) {
             // 不需要截断
@@ -251,46 +249,6 @@ public class SyncAllPacker extends AbstractLoggable implements Packer {
         fileInfoBuffer.position(fileInfoBuffer.position() + readSize);
         logger.debug("Pack " + readSize + " bytes FileInfo, current position "
                 + fileInfoBuffer.position());
-    }
-
-    /**
-     * 序列化头部信息，将文件基础信息序列化成 JSON 字串并包装到 ByteBuffer
-     *
-     * @param fi 文件信息实体
-     * @return 包装了文件信息的实体
-     */
-    private ByteBuffer serializeFileInfo(FileInfoDO fi) {
-        logger.debug("Ser to json.File id:" + fi.getFileId());
-        try {
-            byte[] fileInfoJsonBytes = JSON.toJSONBytes(fi);
-            ByteBuffer buffer = ByteBuffer.allocate(fileInfoJsonBytes.length + FILE_INFO_LENGTH);
-            // set file info size
-            buffer.putInt(fileInfoJsonBytes.length);
-            // set file info
-            buffer.put(fileInfoJsonBytes);
-            logger.debug("FileID: " + fi.getFileId() + ", file info json bytes length: " + buffer.capacity() + ".");
-            buffer.flip();
-            return buffer;
-        } catch (Exception e) {
-            throw new IllegalStateException("ERROR 0x04 : Failed transfer FileInfo to Json", e);
-        }
-    }
-
-    private FileInfoDO nextFile() throws IOException, InfoPersistenceException {
-        if (currentFileInfo != null) {
-            currentFileInfo.setState(FileInfoDO.STATE.SYNCED);
-            fm.save(currentFileInfo);
-        }
-        if (fiIterator.hasNext()) {
-            currentFileInfo = fiIterator.next();
-            input.openFile(currentFileInfo.getFullName());
-            currentFileInfo.setState(FileInfoDO.STATE.SYNCING);
-            fm.save(currentFileInfo);
-            logger.debug("Got next file : " + currentFileInfo.getFileId());
-            return currentFileInfo;
-        }
-        logger.info("we have no file anymore.");
-        return null;
     }
 
     @Override

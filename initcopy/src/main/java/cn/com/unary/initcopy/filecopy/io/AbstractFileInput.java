@@ -19,10 +19,9 @@ public abstract class AbstractFileInput extends AbstractLoggable implements Clos
      * 打开文件，如果上个文件没有读完，关闭资源并做日志记录。
      *
      * @param fileName 要打开的文件名
-     * @return 当前对象
      * @throws IOException 发生IO错误
      */
-    public abstract AbstractFileInput openFile(String fileName) throws IOException;
+    public abstract void openFile(String fileName) throws IOException;
 
     /**
      * 从文件中读取数据
