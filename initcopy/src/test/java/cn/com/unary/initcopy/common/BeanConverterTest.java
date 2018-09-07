@@ -20,8 +20,8 @@ public class BeanConverterTest {
         System.out.println("************grpc2pojo******************");
         ExecResult.Builder builder = ExecResult.newBuilder();
         builder.setMsg("msg").setIsHealthy(true).setCode(3);
-        /*ExecResultDO resultDO = BeanConverter.convert(builder.build(), ExecResultDO.class);
-        System.out.println(resultDO);*/
+        ExecResultDO resultDO = BeanConverter.convert(builder.build(), ExecResultDO.class);
+        System.out.println(resultDO);
         TaskState.Builder builder1 = TaskState.newBuilder();
         builder1.setExecResult(builder).setTaskId(2);
 

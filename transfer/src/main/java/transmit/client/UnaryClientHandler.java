@@ -54,6 +54,7 @@ public class UnaryClientHandler extends SimpleChannelInboundHandler<Message> {
                     client.setId(agentid);
                     break;
                 case Common.DATA:
+                default:
                     if (client.getprocess() != null) {
                         if (content.hasArray()) {
                             client.getprocess().process(content.array());

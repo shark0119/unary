@@ -72,9 +72,9 @@ public class RamFileManager extends AbstractLoggable implements FileManager {
     @Override
     public List<FileInfoDO> queryByTaskId(int taskId) {
         List<FileInfoDO> fileInfos = new ArrayList<>();
-        for (String fileId : fiMap.keySet()) {
-            if (fiMap.get(fileId).getTaskId() == taskId) {
-                fileInfos.add(fiMap.get(fileId));
+        for (Map.Entry<String, FileInfoDO> entry: fiMap.entrySet()) {
+            if (fiMap.get(entry.getKey()).getTaskId() == taskId) {
+                fileInfos.add(entry.getValue());
             }
         }
         return fileInfos;
@@ -83,10 +83,10 @@ public class RamFileManager extends AbstractLoggable implements FileManager {
     @Override
     public List<FileInfoDO> queryUnSyncFileByTaskId(int taskId) {
         List<FileInfoDO> fileInfos = new ArrayList<>();
-        for (String fileId : fiMap.keySet()) {
-            if (fiMap.get(fileId).getTaskId() == taskId
-                && !fiMap.get(fileId).getStateEnum().equals(FileInfoDO.STATE.SYNCED)) {
-                fileInfos.add(fiMap.get(fileId));
+        for (Map.Entry<String, FileInfoDO> entry: fiMap.entrySet()) {
+            if (entry.getValue().getTaskId() == taskId
+                && !entry.getValue().getStateEnum().equals(FileInfoDO.STATE.SYNCED)) {
+                fileInfos.add(entry.getValue());
             }
         }
         return fileInfos;

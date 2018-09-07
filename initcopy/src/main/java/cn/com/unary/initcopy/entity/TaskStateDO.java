@@ -1,6 +1,9 @@
 package cn.com.unary.initcopy.entity;
 
 import cn.com.unary.initcopy.common.Entity;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * 任务状态实体
@@ -8,50 +11,11 @@ import cn.com.unary.initcopy.common.Entity;
  * @author Shark.Yin
  * @since 1.0
  */
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class TaskStateDO implements Entity {
     private int taskId;
     private ExecResultDO execResult;
     private ProgressInfoDO progressInfo;
-
-    public TaskStateDO() {
-    }
-
-    public TaskStateDO(Integer taskId, ExecResultDO execResult, ProgressInfoDO progressInfo) {
-        this.taskId = taskId;
-        this.execResult = execResult;
-        this.progressInfo = progressInfo;
-    }
-
-    @Override
-    public String toString() {
-        return "TaskStateDO{" +
-                "taskId=" + taskId +
-                ", execResult=" + execResult +
-                ", progressInfo=" + progressInfo +
-                '}';
-    }
-
-    public ExecResultDO getExecResult() {
-        return execResult;
-    }
-
-    public void setExecResult(ExecResultDO execResult) {
-        this.execResult = execResult;
-    }
-
-    public ProgressInfoDO getProgressInfo() {
-        return progressInfo;
-    }
-
-    public void setProgressInfo(ProgressInfoDO progressInfo) {
-        this.progressInfo = progressInfo;
-    }
-
-    public int getTaskId() {
-        return taskId;
-    }
-
-    public void setTaskId(int taskId) {
-        this.taskId = taskId;
-    }
 }

@@ -23,11 +23,11 @@ public class Md5FileUtil extends AbstractLoggable {
 	/**
 	 * 默认的密码字符串组合，用来将字节转换成 16 进制表示的字符,apache校 验下载的文件的正确性用的就是默认的这个组合
 	 */
-	protected static char[] hexDigits = {
+	protected final static char[] hexDigits = {
 			'0', '1', '2', '3', '4', '5', '6', '7', 
 			'8', '9', 'a', 'b', 'c', 'd', 'e', 'f' };
 
-	protected static MessageDigest messagedigest = null;
+	protected static MessageDigest messagedigest;
 	static {
 		try {
 			messagedigest = MessageDigest.getInstance("MD5");
@@ -134,7 +134,8 @@ public class Md5FileUtil extends AbstractLoggable {
 	public static void main(String[] args) throws IOException {
 		long begin = System.currentTimeMillis();
 
-		File big = new File("E:\\Shark_File\\Download\\CentOS-6.0-x86_64-bin-DVD1.iso");
+		String pathname = "E:\\Shark_File\\Download\\CentOS-6.0-x86_64-bin-DVD1.iso";
+		File big = new File(pathname);
 		String md5 = getFileMD5(big);
 
 		long end = System.currentTimeMillis();

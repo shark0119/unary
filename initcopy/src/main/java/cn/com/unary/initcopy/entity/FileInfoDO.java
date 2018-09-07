@@ -1,6 +1,8 @@
 package cn.com.unary.initcopy.entity;
 
 import cn.com.unary.initcopy.entity.Constants.FileType;
+import lombok.Data;
+import lombok.ToString;
 
 import java.beans.Transient;
 
@@ -10,6 +12,8 @@ import java.beans.Transient;
  * @author Shark.Yin
  * @since 1.0
  */
+@Data
+@ToString(callSuper = true)
 public class FileInfoDO extends BaseFileInfoDO {
     private static final long serialVersionUID = 7000233780395813428L;
     private int taskId;
@@ -29,50 +33,8 @@ public class FileInfoDO extends BaseFileInfoDO {
         this.setModifyTime(bfi.getModifyTime());
     }
 
-    public int getTaskId() {		return taskId;	}
-    public void setTaskId(int taskId) {		this.taskId = taskId;	}
     public static FileAttr newFileAttr() {
         return new FileAttr();
-    }
-
-    public FileAttr getAttr() {
-        return attr;
-    }
-
-    public void setAttr(FileAttr attr) {
-        this.attr = attr;
-    }
-
-    public FileType getFileType() {
-        return fileType;
-    }
-
-    public void setFileType(FileType fileType) {
-        this.fileType = fileType;
-    }
-
-    public int getBeginPackIndex() {
-        return beginPackIndex;
-    }
-
-    public void setBeginPackIndex(int beginPackIndex) {
-        this.beginPackIndex = beginPackIndex;
-    }
-
-    public int getFinishPackIndex() {
-        return finishPackIndex;
-    }
-
-    public void setFinishPackIndex(int finishPackIndex) {
-        this.finishPackIndex = finishPackIndex;
-    }
-
-    public String getState() {
-        return state == null ? "" : state.toString();
-    }
-
-    public void setState(String state) {
-        this.state = STATE.valueOf(state);
     }
 
     @Transient
@@ -91,19 +53,6 @@ public class FileInfoDO extends BaseFileInfoDO {
             return ((FileInfoDO) obj).getFileId().equals(this.getFileId());
         }
         return false;
-    }
-
-    @Override
-    public String toString() {
-        return "FileInfoDO{" +
-                super.toString() +
-                ", taskId=" + taskId +
-                ", fileType=" + fileType +
-                ", beginPackIndex=" + beginPackIndex +
-                ", finishPackIndex=" + finishPackIndex +
-                ", attr=" + attr +
-                ", state=" + state +
-                '}';
     }
 
     public enum STATE {

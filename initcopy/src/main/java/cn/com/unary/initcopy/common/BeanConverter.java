@@ -23,8 +23,8 @@ import java.util.*;
 public class BeanConverter extends AbstractLoggable {
 
     private static final String DOT = ".";
-    private static final String GET_PATTERN = "get";
-    private static final String SET_PATTERN = "set";
+    private static final String GET_PATTERN = "^(is|get)\\w+$";
+    private static final String SET_PATTERN = "^(get)\\w+$";
     private static final String GRPC_LIST_SUFFIX = "List";
     private static final String NEW_BUILDER = "newBuilder";
     private static final String BUILDER_LIST = "BuilderList";
@@ -73,6 +73,7 @@ public class BeanConverter extends AbstractLoggable {
      * 该 Builder 有相应的 Setter 方法且可以通过该 Builder 的 build() 方法来生成对应实体。
      * 该 GRPC 实体应有属性相对应的 Getter 方法。
      * 如果是实体间同名不同类型集合赋值，在使用时会出现 {@link ClassCastException}
+     * 注意：集合会被自动忽略，名称以 is 开头的 Boolean 成员会被忽略。
      *
      * @param source    实体
      * @param targetCls 容纳属性的容器
@@ -136,9 +137,10 @@ public class BeanConverter extends AbstractLoggable {
         }
         Map<String, Method> setters = getMethod(builder.getClass(), METHOD_TYPE.SETTER, "");
         Method method;
-        String memName;
+        String memName, fieldName;
         Object o;
-        for (String fieldName : setters.keySet()) {
+        for (Map.Entry<String, Method> entry : setters.entrySet()) {
+            fieldName = entry.getKey();
             if (fieldValueMap.containsKey(fieldName)) {
                 method = setters.get(fieldName);
                 if (fieldName.contains(DOT)) {
@@ -189,8 +191,8 @@ public class BeanConverter extends AbstractLoggable {
                     memName = fieldName.substring(0, fieldName.indexOf(DOT));
                     // 当成员是一个对象时
                     fieldValue = getFieldValue(getter.get(memName).invoke(obj), filterMap(getter, memName));
-                    for (String key : fieldValue.keySet()) {
-                        fieldValueMap.put(memName + DOT + key, fieldValue.get(key));
+                    for (Map.Entry<String, Object> entry : fieldValue.entrySet()) {
+                        fieldValueMap.put(memName + DOT + entry.getKey(), entry.getValue());
                     }
                     getter.remove(fieldName);
                 } else {
@@ -226,7 +228,7 @@ public class BeanConverter extends AbstractLoggable {
                     continue loopMethod;
                 }
             }
-            if (methodName.startsWith(pattern)) {
+            if (methodName.matches(pattern)) {
                 if (isGrpcEntity && GRPC_EX_METHOD.containsKey(methodName)) {
                     continue;
                 }
@@ -245,7 +247,11 @@ public class BeanConverter extends AbstractLoggable {
                     }
                     memType = method.getParameterTypes()[0];
                 }
-                fieldName = Character.toLowerCase(methodName.charAt(3)) + methodName.substring(4);
+                if (methodName.startsWith("is")) {
+                    fieldName = Character.toLowerCase(methodName.charAt(2)) + methodName.substring(3);
+                } else {
+                    fieldName = Character.toLowerCase(methodName.charAt(3)) + methodName.substring(4);
+                }
                 fullFieldName = prefix + fieldName;
                 if (MessageOrBuilder.class.isAssignableFrom(memType)) {
                     // GRPC 实体

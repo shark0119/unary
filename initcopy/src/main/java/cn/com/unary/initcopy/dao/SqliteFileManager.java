@@ -10,6 +10,7 @@ import com.alibaba.druid.pool.DruidDataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -27,7 +28,7 @@ public class SqliteFileManager extends AbstractLoggable implements FileManager {
 
 	@Autowired
 	private DruidDataSource dds;
-	
+    private static final String SQL = "SELECT MAX(?) FROM ?";
 	@Override
 	public List<FileInfoDO> queryByIds(String... fileIds) throws InfoPersistenceException {
 		ValidateUtils.requireNotEmpty(fileIds);
@@ -42,11 +43,12 @@ public class SqliteFileManager extends AbstractLoggable implements FileManager {
 		sb.delete(sb.length()-2, sb.length());
 		sb.append(")");
 		try (
-			Connection conn = dds.getConnection();
-			Statement stmt = conn.createStatement();
-			ResultSet rset = stmt.executeQuery(sb.toString())
+				Connection conn = dds.getConnection();
+				PreparedStatement stmt = conn.prepareStatement(SQL);
+				ResultSet rset = stmt.executeQuery();
 		){
-			return BeanExactUtil.deSerFromResult(rset);
+            stmt.setInt(1, 1);
+            return BeanExactUtil.deSerFromResult(rset);
 		} catch (SQLException e) {
 			throw new InfoPersistenceException("ERROR 0x02: QUERY Error", e);
 		}
@@ -57,7 +59,7 @@ public class SqliteFileManager extends AbstractLoggable implements FileManager {
 		Objects.requireNonNull(fi);
 		try (
 			Connection conn = dds.getConnection();
-			Statement stmt = conn.createStatement()
+			PreparedStatement stmt = conn.prepareStatement(null);
 		){
 			stmt.execute(BeanExactUtil.serToSql(fi));
 		} catch (SQLException e) {
@@ -83,8 +85,8 @@ public class SqliteFileManager extends AbstractLoggable implements FileManager {
 		sb.append(")");
 		try (
 			Connection conn = dds.getConnection();
-			Statement stmt = conn.createStatement();
-			ResultSet rset = stmt.executeQuery(sb.toString())
+			PreparedStatement stmt = conn.prepareStatement(sb.toString());
+			ResultSet rset = stmt.executeQuery();
 		){
 			stmt.execute(sb.toString());
 		} catch (SQLException e) {

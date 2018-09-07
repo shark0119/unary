@@ -34,9 +34,8 @@ public class ServerTaskUpdater extends AbstractLoggable {
      * @return 执行结果
      */
     public ExecResultDO delete(DeleteTaskDO task) throws TaskFailException {
-        ExecResultDO resultDO = new ExecResultDO();
+        ExecResultDO resultDO = new ExecResultDO(true, 0, "task success");
         fileCopy.updateTask(task.getTaskId(), Constants.UpdateType.DELETE);
-        resultDO.setIsHealthy(true).setMsg("task success");
         return resultDO;
     }
 
@@ -50,19 +49,20 @@ public class ServerTaskUpdater extends AbstractLoggable {
         Constants.UpdateType updateType;
         switch (task.getModifyType()) {
             case SPEED_LIMIT:
-                return new ExecResultDO().setMsg("unSupport operate").setIsHealthy(true);
+                return new ExecResultDO(true, 0, "unSupport operate");
             case START:
                 updateType = Constants.UpdateType.RESUME;
                 break;
             case PAUSE:
-                // treat as default option
             default:
                 updateType = Constants.UpdateType.PAUSE;
                 break;
         }
         ExecResultDO resultDO = new ExecResultDO();
+        resultDO.setHealthy(true);
+        resultDO.setCode(0);
+        resultDO.setMsg("task success");
         fileCopy.updateTask(task.getTaskId(), updateType);
-        resultDO.setIsHealthy(true).setMsg("task success");
         return resultDO;
     }
 }

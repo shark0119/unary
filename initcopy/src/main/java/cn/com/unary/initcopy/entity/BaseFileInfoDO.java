@@ -1,6 +1,9 @@
 package cn.com.unary.initcopy.entity;
 
 import cn.com.unary.initcopy.common.Entity;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * 在初始化时所需要的文件基础信息
@@ -8,6 +11,9 @@ import cn.com.unary.initcopy.common.Entity;
  * @author Shark.Yin
  * @since 1.0
  */
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class BaseFileInfoDO implements Entity {
 
 	private static final long serialVersionUID = 1852745479396286807L;
@@ -16,22 +22,4 @@ public class BaseFileInfoDO implements Entity {
 	private long fileSize;
 	private String fullName;
 
-	public String getFullName() {		return fullName;	}
-	public void setFullName(String fullName) {		this.fullName = fullName;	}
-	public long getModifyTime() {		return modifyTime; }
-	public void setModifyTime(long modifyTime) {		this.modifyTime = modifyTime;	}
-	public long getFileSize() {		return fileSize;	}
-	public void setFileSize(long fileSize) {		this.fileSize = fileSize;	}
-    public String getFileId() {        return fileId;    }
-    public void setFileId(String fileId) {        this.fileId = fileId;    }
-
-	@Override
-	public String toString() {
-		return "BaseFileInfoDO{" +
-				"fileId='" + fileId + '\'' +
-				", modifyTime=" + modifyTime +
-				", fileSize=" + fileSize +
-				", fullName='" + fullName + '\'' +
-				'}';
-	}
 }

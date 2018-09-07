@@ -31,8 +31,9 @@ public class ServerFileCopyInit {
 
     public ServerInitRespDO startInit(ClientInitReqDO req) throws InfoPersistenceException {
         ServerInitRespDO resp = new ServerInitRespDO();
-        resp.setReady(true).setMsg("success")
-                .setTaskId(req.getTaskId());
+        resp.setReady(true);
+        resp.setMsg("success");
+        resp.setTaskId(req.getTaskId());
         switch (req.getSyncType()) {
             case SYNC_DIFF:
                 resp.setDiffFileInfos(syncDiffInit(req.getBaseFileInfos()));

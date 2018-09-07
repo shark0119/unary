@@ -27,7 +27,7 @@ message SyncTask { //同步任务
 }
 
 message ExecResult {	// 任务执行结果
-	bool isHealthy = 1;	// 任务装态是否正常
+	bool healthy = 1;	// 任务装态是否正常
 	int32 code = 2;	// 执行状况代码
 	string msg = 3;	// 信息
 }

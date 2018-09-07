@@ -1,5 +1,7 @@
 package cn.com.unary.initcopy;
 
+import org.junit.Test;
+
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -14,6 +16,13 @@ public class TestTest {
         task.ready.signal();
         task.lock.unlock();
         System.out.println("main thread done");
+    }
+
+    @Test
+    public void test1() {
+        String pattern = "^(is|get)\\w+$";
+        String getMethod = "getTrue";
+        System.out.println(getMethod.matches(pattern));
     }
 
     private static class Task implements Runnable {

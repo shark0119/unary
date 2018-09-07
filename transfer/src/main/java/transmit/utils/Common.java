@@ -2,6 +2,9 @@ package transmit.utils;
 
 import io.netty.buffer.ByteBuf;
 
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+
 public final class Common {
 
     public static final int REGISTER = 1;
@@ -9,6 +12,7 @@ public final class Common {
     public static final int PING = 3;
     public static final int PONG = 4;
     public static final int DATA = 5;
+    public static final Charset CHAR_SET = StandardCharsets.UTF_8;
 
     public static final int NOCOMPRESS = 0;
 
@@ -21,11 +25,11 @@ public final class Common {
         int len = buffer.readInt();
         byte[] byteArray = new byte[len];
         buffer.readBytes(byteArray, 0, len);
-        return new String(byteArray);
+        return new String(byteArray, CHAR_SET);
     }
 
     public static void stringToByteBuf(String msg, ByteBuf buffer) {
         buffer.writeInt(msg.length());
-        buffer.writeBytes(msg.getBytes());
+        buffer.writeBytes(msg.getBytes(CHAR_SET));
     }
 }
