@@ -1,7 +1,15 @@
 package cn.com.unary.initcopy;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.junit.Test;
+import sun.reflect.generics.reflectiveObjects.ParameterizedTypeImpl;
 
+import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -23,6 +31,19 @@ public class TestTest {
         String pattern = "^(is|get)\\w+$";
         String getMethod = "getTrue";
         System.out.println(getMethod.matches(pattern));
+    }
+
+    @Setter @Getter
+    List<String> list = new ArrayList<>();
+
+    @Test
+    public void test2() throws NoSuchMethodException {
+        Method method = TestTest.class.getMethod("getList");
+        ParameterizedType type = (ParameterizedTypeImpl) method.getGenericReturnType();
+        System.out.println(type);
+        Type type1 = type.getActualTypeArguments()[0];
+        System.out.println(type1);
+        System.out.println(type1.getClass());
     }
 
     private static class Task implements Runnable {

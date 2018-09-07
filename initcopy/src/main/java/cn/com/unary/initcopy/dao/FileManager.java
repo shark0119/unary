@@ -79,7 +79,7 @@ public interface FileManager {
     SyncTaskDO queryTask(int taskId);
 
     /**
-     * 根据任务Id 删除该任务的相关配置信息
+     * 根据任务Id 删除该任务的相关配置信息，及
      *
      * @param taskId 任务Id
      */
@@ -89,6 +89,7 @@ public interface FileManager {
      * 保存同步任务的相关信息
      *
      * @param taskDO 同步任务的相关信息
+     * @return 返回持久化后的对象
      */
     SyncTaskDO saveTask(SyncTaskDO taskDO);
 }

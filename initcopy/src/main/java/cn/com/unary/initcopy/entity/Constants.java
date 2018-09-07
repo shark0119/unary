@@ -61,7 +61,6 @@ public final class Constants {
     }
 
     public enum UpdateType {
-        DELETE,
         PAUSE,
         RESUME,
     }

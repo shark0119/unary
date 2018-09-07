@@ -24,17 +24,6 @@ import io.grpc.ManagedChannelBuilder;
 public class ControlTaskGrpcClient extends AbstractLoggable {
 
     private ControlTaskGrpc.ControlTaskBlockingStub blockingStub;
-    /**
-     * 测试代码
-     */
-    private ControlTaskGrpcLinker linker;
-
-    /**
-     * 测试代码
-     */
-    public ControlTaskGrpcClient() {
-        this.linker = new ControlTaskGrpcLinker();
-    }
 
     /**
      * 配置 GRPC 服务的相关信息
@@ -45,7 +34,6 @@ public class ControlTaskGrpcClient extends AbstractLoggable {
     public ControlTaskGrpcClient(String host, int port) {
         ManagedChannel channel = ManagedChannelBuilder.forAddress(host, port).usePlaintext(true).build();
         blockingStub = ControlTaskGrpc.newBlockingStub(channel);
-        linker = new ControlTaskGrpcLinker();
     }
 
     /**
@@ -55,8 +43,6 @@ public class ControlTaskGrpcClient extends AbstractLoggable {
      * @return 初始化响应
      */
     public ServerInitResp invokeGrpcInit(ClientInitReq req) {
-        /*logger.debug("Send file data to the target to confirm.");
-        return linker.init(req);*/
         return blockingStub.init(req);
     }
 

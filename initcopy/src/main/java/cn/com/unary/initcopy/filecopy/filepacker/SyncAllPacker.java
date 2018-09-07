@@ -125,6 +125,15 @@ public class SyncAllPacker extends AbstractLoggable implements Packer {
         pause = false;
     }
 
+    /**
+     * 会读取当前任务同步进度，从断点处续传。
+     * 粒度目前在文件级。未传完的文件会从头传输
+     *
+     * @param taskId   任务Id
+     * @param transfer 传输模块客户端
+     * @throws IOException IO 异常
+     * @throws InfoPersistenceException 持久化层异常
+     */
     @Override
     public void start(Integer taskId, UnaryTransferClient transfer)
             throws IOException, InfoPersistenceException {

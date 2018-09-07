@@ -1,6 +1,8 @@
 package cn.com.unary.initcopy;
 
+import cn.com.unary.initcopy.common.BeanConverter;
 import cn.com.unary.initcopy.config.BeanConfig;
+import cn.com.unary.initcopy.entity.SyncTaskDO;
 import cn.com.unary.initcopy.grpc.constant.SyncType;
 import cn.com.unary.initcopy.grpc.entity.ExecResult;
 import cn.com.unary.initcopy.grpc.entity.SyncTarget;
@@ -9,6 +11,7 @@ import cn.com.unary.initcopy.grpc.linker.InitCopyGrpcLinker;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 

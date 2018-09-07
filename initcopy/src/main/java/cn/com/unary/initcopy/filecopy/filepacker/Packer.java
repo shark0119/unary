@@ -34,8 +34,7 @@ import java.io.IOException;
 public interface Packer extends Closeable {
     /**
      * 开始文件读取打包，并向目标端发送数据包
-     * 会读取任务的进度继续开始。粒度目前在文件级。
-     * 未传完的文件会重新传输
+     * 会读取任务的进度继续开始。
      *
      * @param taskId   任务Id
      * @param transfer 传输模块客户端

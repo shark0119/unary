@@ -8,11 +8,14 @@ import cn.com.unary.initcopy.entity.*;
 import cn.com.unary.initcopy.exception.TaskFailException;
 import cn.com.unary.initcopy.filecopy.ClientFileCopy;
 import cn.com.unary.initcopy.grpc.client.ControlTaskGrpcClient;
+import cn.com.unary.initcopy.grpc.constant.ModifyType;
+import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -35,20 +38,28 @@ public class ClientTaskUpdater extends AbstractLoggable {
     private InitCopyContext context;
 
     public ExecResultDO delete(DeleteTaskDO task) throws TaskFailException {
-        fileCopy.updateTask(task.getTaskId(), Constants.UpdateType.DELETE);
+        // 停止源端同步任务
+        try {
+            fileCopy.updateTask(task.getTaskId(), Constants.UpdateType.PAUSE);
+        } catch (IOException e) {
+            throw new TaskFailException(e);
+        }
+        // 通知目标端删除任务
         SyncTargetDO targetInfo = fm.queryTask(task.getTaskId()).getTargetInfo();
         ControlTaskGrpcClient client = new ControlTaskGrpcClient(targetInfo.getIp(), context.getInnerGrpcPort());
-        return client.invokeGrpcDelete(task);
+        final ExecResultDO execResultDO = client.invokeGrpcDelete(task);
+        // 删除源端任务相关信息
+        if (execResultDO.isHealthy()) {
+            fm.deleteTask(task.getTaskId());
+        }
+        return execResultDO;
     }
 
     public ExecResultDO modify(ModifyTaskDO task) throws TaskFailException {
         Constants.UpdateType updateType;
         switch (task.getModifyType()) {
             case SPEED_LIMIT:
-                UnaryTransferClient client = fileCopy.getTransferMap().get(task.getTaskId());
-                if (client == null) {
-                    throw new TaskFailException("task doesn't exist");
-                }
+                @NonNull UnaryTransferClient client = fileCopy.getTransferMap().get(task.getTaskId());
                 client.setSpeedLimit(task.getSpeedLimit());
                 return new ExecResultDO(true, 0, "");
             case START:
@@ -60,7 +71,11 @@ public class ClientTaskUpdater extends AbstractLoggable {
                 updateType = Constants.UpdateType.PAUSE;
                 break;
         }
-        fileCopy.updateTask(task.getTaskId(), updateType);
+        try {
+            fileCopy.updateTask(task.getTaskId(), updateType);
+        } catch (IOException e) {
+            throw new TaskFailException(e);
+        }
         SyncTargetDO targetInfo = fm.queryTask(task.getTaskId()).getTargetInfo();
         ControlTaskGrpcClient client = new ControlTaskGrpcClient(targetInfo.getIp(), context.getInnerGrpcPort());
         return client.invokeGrpcModify(task);
@@ -89,13 +104,13 @@ public class ClientTaskUpdater extends AbstractLoggable {
             }
         }
         ProgressInfoDO progress = new ProgressInfoDO();
-        progress.setStage((int) (fis.size() / syncedFileNum));
+        progress.setProgress(0);
+        progress.setTotalFileNum(fis.size());
         progress.setSyncedFileNum(syncedFileNum);
-        progress.setSyncingFileName(syncingFileName);
         progress.setSyncedFileSize(syncedFileSize);
-        progress.setTotalFileNum(fis.size());
+        progress.setSyncingFileName(syncingFileName);
         progress.setTotalFileSize(taskDO.getTotalSize());
-        progress.setTotalFileNum(fis.size());
+        progress.setStage((int) (fis.size() / syncedFileNum));
         ExecResultDO execResultDO = new ExecResultDO(true, 0, "");
         return new TaskStateDO(taskId, execResultDO, progress);
     }

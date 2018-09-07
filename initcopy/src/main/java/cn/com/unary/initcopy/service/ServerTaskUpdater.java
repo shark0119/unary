@@ -8,9 +8,12 @@ import cn.com.unary.initcopy.entity.ExecResultDO;
 import cn.com.unary.initcopy.entity.ModifyTaskDO;
 import cn.com.unary.initcopy.exception.TaskFailException;
 import cn.com.unary.initcopy.filecopy.ClientFileCopy;
+import cn.com.unary.initcopy.filecopy.ServerFileCopy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
+
+import java.io.IOException;
 
 /**
  * 目标端的任务修改器
@@ -25,7 +28,7 @@ public class ServerTaskUpdater extends AbstractLoggable {
     @Qualifier("serverFM")
     private FileManager fm;
     @Autowired
-    private ClientFileCopy fileCopy;
+    private ServerFileCopy fileCopy;
 
     /**
      * 删除任务
@@ -35,7 +38,14 @@ public class ServerTaskUpdater extends AbstractLoggable {
      */
     public ExecResultDO delete(DeleteTaskDO task) throws TaskFailException {
         ExecResultDO resultDO = new ExecResultDO(true, 0, "task success");
-        fileCopy.updateTask(task.getTaskId(), Constants.UpdateType.DELETE);
+        // 暂停当前任务
+        try {
+            fileCopy.deleteTask(task.getTaskId());
+        } catch (IOException e) {
+            throw new TaskFailException(e);
+        }
+        // 删除任务相关信息
+        fm.deleteTask(task.getTaskId());
         return resultDO;
     }
 
@@ -48,21 +58,25 @@ public class ServerTaskUpdater extends AbstractLoggable {
     public ExecResultDO modify(ModifyTaskDO task) throws TaskFailException {
         Constants.UpdateType updateType;
         switch (task.getModifyType()) {
-            case SPEED_LIMIT:
-                return new ExecResultDO(true, 0, "unSupport operate");
             case START:
                 updateType = Constants.UpdateType.RESUME;
                 break;
             case PAUSE:
-            default:
                 updateType = Constants.UpdateType.PAUSE;
                 break;
+            case SPEED_LIMIT:
+            default:
+                return new ExecResultDO(true, 0, "unSupport operate");
         }
         ExecResultDO resultDO = new ExecResultDO();
         resultDO.setHealthy(true);
         resultDO.setCode(0);
         resultDO.setMsg("task success");
-        fileCopy.updateTask(task.getTaskId(), updateType);
+        try {
+            fileCopy.updateTask(task.getTaskId(), updateType);
+        } catch (IOException e) {
+            throw new TaskFailException(e);
+        }
         return resultDO;
     }
 }

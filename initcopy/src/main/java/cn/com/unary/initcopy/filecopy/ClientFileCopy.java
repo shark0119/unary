@@ -15,6 +15,8 @@ import cn.com.unary.initcopy.filecopy.filepacker.SyncDiffPacker;
 import cn.com.unary.initcopy.filecopy.init.ClientFileCopyInit;
 import cn.com.unary.initcopy.grpc.entity.DiffFileInfo;
 import cn.com.unary.initcopy.common.utils.BeanExactUtil;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.lang3.concurrent.BasicThreadFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,11 +54,11 @@ public class ClientFileCopy extends AbstractLoggable implements ApplicationConte
     protected ClientFileCopyInit init;
     @Autowired
     @Qualifier("clientFM")
-    protected FileManager fm;
+    private FileManager fm;
     private boolean close;
     private ThreadPoolExecutor exec;
-    private ApplicationContext applicationContext;
-    private Map<Integer, UnaryTransferClient> transferMap;
+    @Setter private ApplicationContext applicationContext;
+    @Getter private Map<Integer, UnaryTransferClient> transferMap;
     private Map<Integer, PackTask> execTaskMap;
 
     public ClientFileCopy() {
@@ -76,13 +78,29 @@ public class ClientFileCopy extends AbstractLoggable implements ApplicationConte
     }
 
     /**
-     * 对任务进行删除、暂停、唤醒等操作
+     * 对任务进行 暂停、唤醒 操作
      *
      * @param taskId     任务Id
      * @param modifyType 更新操作
-     * @throws TaskFailException 任务异常
+     * @throws IOException 任务关闭异常
      */
-    public void updateTask(int taskId, Constants.UpdateType modifyType) throws TaskFailException {
+    public void updateTask(int taskId, Constants.UpdateType modifyType) throws IOException {
+        switch (modifyType) {
+            case PAUSE:
+                synchronized (lock) {
+                    execTaskMap.get(taskId).close();
+                }
+                break;
+            case RESUME:
+                default:
+                    SyncTaskDO task = fm.queryTask(taskId);
+                    UnaryTransferClient unaryTransferClient = applicationContext.getBean(UnaryTransferClient.class);
+                    unaryTransferClient.setCompressType(task.getCompressType());
+                    unaryTransferClient.setEncryptType(task.getEncryptType());
+                    unaryTransferClient.setSpeedLimit(task.getSpeedLimit());
+                    startAllSync(unaryTransferClient, taskId);
+                    break;
+        }
     }
 
     /**
@@ -111,7 +129,7 @@ public class ClientFileCopy extends AbstractLoggable implements ApplicationConte
             List<FileInfoDO> list1 = fm.queryByTaskId(taskDO.getTaskId());
             Map<String, String> map = new HashMap<>(100);
             for (String id : syncFileIds) {
-                map.put(id, id);
+                map.put(id, "");
             }
             FileInfoDO infoDO;
             for (FileInfoDO fi : list1) {
@@ -177,15 +195,6 @@ public class ClientFileCopy extends AbstractLoggable implements ApplicationConte
             execTaskMap.put(taskId, packTask);
         }
         exec.execute(packTask);
-    }
-
-    @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        this.applicationContext = applicationContext;
-    }
-
-    public Map<Integer, UnaryTransferClient> getTransferMap() {
-        return transferMap;
     }
 
     @PreDestroy

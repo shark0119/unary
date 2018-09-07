@@ -14,8 +14,8 @@ import cn.com.unary.initcopy.filecopy.fileresolver.RsyncResolver;
 import cn.com.unary.initcopy.filecopy.fileresolver.SyncAllResolver;
 import cn.com.unary.initcopy.filecopy.init.ServerFileCopyInit;
 import cn.com.unary.initcopy.common.utils.CommonUtils;
+import lombok.Setter;
 import org.apache.commons.lang3.concurrent.BasicThreadFactory;
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -30,6 +30,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -51,7 +52,7 @@ public class ServerFileCopy extends AbstractLoggable implements ApplicationConte
     @Autowired
     private ServerFileCopyInit init;
     private volatile boolean close;
-    private ApplicationContext context;
+    @Setter private ApplicationContext applicationContext;
     private ThreadPoolExecutor fileCopyExec;
 
     /**
@@ -144,9 +145,52 @@ public class ServerFileCopy extends AbstractLoggable implements ApplicationConte
         }
     }
 
-    @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        this.context = applicationContext;
+    /**
+     * 停止当前任务并从任务 map 中移除
+     * @param taskId 任务 Id
+     * @throws IOException
+     */
+    public void deleteTask (int taskId) throws IOException {
+        synchronized (lock) {
+            if (!taskMap.containsKey(taskId)) {
+                throw new IllegalStateException("Task not found with id:" + taskId);
+            }
+        }
+        this.updateTask(taskId, Constants.UpdateType.PAUSE);
+        synchronized (lock) {
+            taskMap.remove(taskId);
+        }
+    }
+    /**
+     * 暂停或者唤醒某个任务
+     *
+     * @param taskId 任务Id
+     * @param updateType 更新操作类型
+     * @throws IOException IO 异常
+     */
+    public void updateTask(int taskId, Constants.UpdateType updateType) throws IOException{
+        switch (updateType) {
+            case RESUME:
+                synchronized (lock) {
+                    if (execTaskMap.containsKey(taskId)) {
+                        return;
+                    }
+                    if (taskMap.containsKey(taskId)) {
+                        final CopyTask copyTask = taskMap.get(taskId);
+                        fileCopyExec.execute(copyTask);
+                        execTaskMap.put(taskId, copyTask);
+                    } else {
+                        throw new IOException("Task " + taskId + " not found;");
+                    }
+                }
+                break;
+            case PAUSE:
+                default:
+                    synchronized (lock) {
+                        execTaskMap.get(taskId).close();
+                    }
+                    break;
+        }
     }
 
     protected class CopyTask implements Runnable, Closeable {
@@ -154,15 +198,22 @@ public class ServerFileCopy extends AbstractLoggable implements ApplicationConte
         private final Object lock;
         private Resolver syncAllResolver, syncDiffResolver;
         private int taskId;
+        /**
+         * pause 表示当前拷贝任务处于挂起状态，等待源端传包
+         * shutdown 表示当前任务已被关闭
+         */
         private boolean pause, shutdown;
+        private long execTime, tempTime;
+        /**
+         * 调试代码
+         */
         private AtomicInteger wait = new AtomicInteger(0);
         private AtomicInteger notify = new AtomicInteger(0);
-        private long execTime, tempTime;
 
         private CopyTask(int taskId, String targetDir) {
             this.taskId = taskId;
-            this.syncAllResolver = context.getBean("SyncAllResolver", SyncAllResolver.class);
-            this.syncDiffResolver = context.getBean("RsyncResolver", RsyncResolver.class);
+            this.syncAllResolver = applicationContext.getBean("SyncAllResolver", SyncAllResolver.class);
+            this.syncDiffResolver = applicationContext.getBean("RsyncResolver", RsyncResolver.class);
             syncAllResolver.setBackupPath(targetDir).setTaskId(taskId);
             syncDiffResolver.setBackupPath(targetDir).setTaskId(taskId);
             packs = new ArrayList<>(30);
@@ -274,6 +325,9 @@ public class ServerFileCopy extends AbstractLoggable implements ApplicationConte
             }
         }
 
+        /**
+         * 会将尝试停止当前任务，并从任务执行 Map中移除该任务
+         */
         @Override
         public void close() {
             synchronized (lock) {
@@ -286,7 +340,6 @@ public class ServerFileCopy extends AbstractLoggable implements ApplicationConte
             }
             synchronized (ServerFileCopy.this.lock) {
                 ServerFileCopy.this.execTaskMap.remove(this.taskId);
-                ServerFileCopy.this.taskMap.remove(this.taskId);
             }
             synchronized (lock) {
                 shutdown = true;

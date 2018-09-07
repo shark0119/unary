@@ -2,6 +2,7 @@ package cn.com.unary.initcopy.grpc.linker;
 
 import cn.com.unary.initcopy.common.AbstractLoggable;
 import cn.com.unary.initcopy.common.BeanConverter;
+import cn.com.unary.initcopy.common.utils.ValidateUtils;
 import cn.com.unary.initcopy.entity.DeleteTaskDO;
 import cn.com.unary.initcopy.entity.ExecResultDO;
 import cn.com.unary.initcopy.entity.ModifyTaskDO;
@@ -14,7 +15,6 @@ import cn.com.unary.initcopy.grpc.entity.QueryTask;
 import cn.com.unary.initcopy.grpc.entity.SyncTask;
 import cn.com.unary.initcopy.grpc.entity.TaskState;
 import cn.com.unary.initcopy.service.ClientTaskUpdater;
-import cn.com.unary.initcopy.common.utils.ValidateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -50,14 +50,15 @@ public class InitCopyGrpcLinker extends AbstractLoggable {
     public void setTaskUpdater(ClientTaskUpdater updater) {
         InitCopyGrpcLinker.updater = updater;
     }
-	public ExecResult add (SyncTask task) {
+
+    public ExecResult add(SyncTask task) {
         Objects.requireNonNull(task);
         ValidateUtils.requireNotEmpty(task.getFilesList());
         Objects.requireNonNull(task.getTargetInfo());
         if (task.getTaskId() < 0) {
             throw new IllegalArgumentException("task id can't be negative.");
         }
-	    ExecResult.Builder builder = ExecResult.newBuilder();
+        ExecResult.Builder builder = ExecResult.newBuilder();
         try {
             fileCopy.addTask(BeanConverter.convert(task, SyncTaskDO.class));
             builder.setIsHealthy(true);
@@ -96,7 +97,7 @@ public class InitCopyGrpcLinker extends AbstractLoggable {
         } catch (Exception e) {
             return ExecResult.newBuilder().setIsHealthy(false).setMsg(e.getMessage()).build();
         }
-	}
+    }
 
     public ExecResult modify(ModifyTask task) {
         Objects.requireNonNull(task);
@@ -111,5 +112,5 @@ public class InitCopyGrpcLinker extends AbstractLoggable {
         } catch (Exception e) {
             return ExecResult.newBuilder().setIsHealthy(false).setMsg(e.getMessage()).build();
         }
-	}
+    }
 }

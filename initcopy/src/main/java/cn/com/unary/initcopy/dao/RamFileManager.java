@@ -5,8 +5,10 @@ import cn.com.unary.initcopy.common.AbstractLoggable;
 import cn.com.unary.initcopy.entity.FileInfoDO;
 import cn.com.unary.initcopy.entity.SyncTaskDO;
 import cn.com.unary.initcopy.common.utils.ValidateUtils;
+import lombok.val;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -28,23 +30,6 @@ public class RamFileManager extends AbstractLoggable implements FileManager {
     public RamFileManager (){
         fiMap = new ConcurrentHashMap<>(InitCopyContext.TASK_NUMBER);
         syncTaskMap = new ConcurrentHashMap<>(InitCopyContext.TASK_NUMBER);
-    }
-
-    @Override
-    public List<FileInfoDO> queryByIds(String... fileIds) {
-        if (fileIds.length == 0) {
-            return null;
-        }
-        List<FileInfoDO> fis = new ArrayList<>();
-        for (String id : fileIds) {
-            FileInfoDO fi = fiMap.get(id);
-            if (fi == null) {
-                logger.warn("No FileInfo With Id " + id);
-                continue;
-            }
-            fis.add(fi);
-        }
-        return fis;
     }
 
     @Override
@@ -91,16 +76,16 @@ public class RamFileManager extends AbstractLoggable implements FileManager {
         }
         return fileInfos;
     }
+
     @Override
     public boolean taskFinished(int taskId) {
         for(FileInfoDO fi : queryByTaskId(taskId)) {
-            if (!fi.getStateEnum().equals(FileInfoDO.STATE.SYNCED)) {
+            if (!FileInfoDO.STATE.SYNCED.equals(fi.getStateEnum())) {
                 return false;
             }
         }
         return true;
     }
-
     @Override
     public SyncTaskDO queryTask(int taskId) {
         return syncTaskMap.get(taskId);
@@ -109,10 +94,34 @@ public class RamFileManager extends AbstractLoggable implements FileManager {
     @Override
     public void deleteTask(int taskId) {
         syncTaskMap.remove(taskId);
+        Map.Entry<String, FileInfoDO> entry;
+        for (Iterator<Map.Entry <String, FileInfoDO>> iterator = fiMap.entrySet().iterator(); iterator.hasNext();) {
+           entry = iterator.next();
+           if (entry.getValue().getTaskId() == taskId) {
+               iterator.remove();
+           }
+        }
     }
 
     @Override
     public SyncTaskDO saveTask(SyncTaskDO taskDO) {
         return syncTaskMap.put(taskDO.getTaskId(), taskDO);
+    }
+
+    @Override
+    public List<FileInfoDO> queryByIds(String... fileIds) {
+        if (fileIds.length == 0) {
+            return null;
+        }
+        List<FileInfoDO> fis = new ArrayList<>();
+        for (String id : fileIds) {
+            FileInfoDO fi = fiMap.get(id);
+            if (fi == null) {
+                logger.warn("No FileInfo With Id " + id);
+                continue;
+            }
+            fis.add(fi);
+        }
+        return fis;
     }
 }

@@ -17,6 +17,7 @@ import cn.com.unary.initcopy.grpc.entity.ModifyTask;
 import cn.com.unary.initcopy.grpc.entity.ServerInitResp;
 import cn.com.unary.initcopy.service.ServerTaskUpdater;
 import cn.com.unary.initcopy.common.utils.ValidateUtils;
+import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -86,8 +87,7 @@ public class ControlTaskGrpcLinker extends AbstractLoggable {
      * @param task 删除任务的相关参数
      * @return 执行结果
      */
-    public ExecResult delete(DeleteTask task) {
-        Objects.requireNonNull(task);
+    public ExecResult delete(@NonNull DeleteTask task) {
         if (task.getTaskId() < 0) {
             throw new IllegalArgumentException("task id can't be negative.");
         }
