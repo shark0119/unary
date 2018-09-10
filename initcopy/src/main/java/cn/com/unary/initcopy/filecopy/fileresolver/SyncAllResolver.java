@@ -1,20 +1,23 @@
 package cn.com.unary.initcopy.filecopy.fileresolver;
 
 import cn.com.unary.initcopy.common.AbstractLoggable;
+import cn.com.unary.initcopy.common.utils.CommonUtils;
+import cn.com.unary.initcopy.common.utils.PathMapperUtil;
 import cn.com.unary.initcopy.dao.FileManager;
+import cn.com.unary.initcopy.entity.Constants;
 import cn.com.unary.initcopy.entity.Constants.PackerType;
 import cn.com.unary.initcopy.entity.FileInfoDO;
 import cn.com.unary.initcopy.exception.InfoPersistenceException;
 import cn.com.unary.initcopy.filecopy.filepacker.SyncAllPacker;
 import cn.com.unary.initcopy.filecopy.io.AbstractFileOutput;
-import cn.com.unary.initcopy.common.utils.CommonUtils;
-import cn.com.unary.initcopy.common.utils.PathMapperUtil;
+import cn.com.unary.initcopy.filecopy.io.FileAttrProcessor;
 import com.alibaba.fastjson.JSON;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
@@ -46,7 +49,8 @@ public class SyncAllResolver extends AbstractLoggable implements Resolver {
     private int beginPackIndex, endPackIndex, beginPackSize, endPackSize;
     @Autowired
     private AbstractFileOutput output;
-    private ReadProcess stage = ReadProcess.CONTENT_DONE;
+    private FileAttrProcessor faProcessor;
+    private ReadProcess stage = ReadProcess.FILE_DONE;
     private ByteBuffer fileInfo;
     /**
      * 当前读取的包序号
@@ -65,6 +69,7 @@ public class SyncAllResolver extends AbstractLoggable implements Resolver {
     @Override
     public boolean process(byte[] data) throws IOException, InfoPersistenceException {
         packIndex = CommonUtils.byteArrayToInt(data, 4);
+        logger.info(String.format("we got pack with index: %d", packIndex));
         // get pack info
         if (!getPackType().equals(PackerType.valueOf(data[HEAD_LENGTH - 1]))) {
             throw new IllegalStateException("ERROR 0x05 : Bad data pack format. Wrong Resolver");
@@ -78,7 +83,7 @@ public class SyncAllResolver extends AbstractLoggable implements Resolver {
                 // 同下，从文件头读取
             case FILE_INFO:
                 // 同下，从文件头读取
-            case CONTENT_DONE:
+            case FILE_DONE:
                 // 从文件头读取
                 // 单个包中有多个文件
                 while (currentPos < data.length) {
@@ -129,7 +134,7 @@ public class SyncAllResolver extends AbstractLoggable implements Resolver {
         int packRemaining = data.length - currentPos;
         // 文件数据读完或者是文件信息长度未读完，都应该从这里执行
         if (ReadProcess.FILE_INFO_LENGTH.equals(stage)
-                || ReadProcess.CONTENT_DONE.equals(stage)) {
+                || ReadProcess.FILE_DONE.equals(stage)) {
             int fileInfoLenRemaining = fileInfoLenBuf.remaining();
             // 可读入文件信息长度数组的字节数
             int readableLen;
@@ -179,7 +184,6 @@ public class SyncAllResolver extends AbstractLoggable implements Resolver {
             int readSize = fileInfo.remaining();
             fileInfo.put(data, currentPos, readSize);
             currentPos += readSize;
-
             // 文件信息读取完毕，序列化文件信息。准备文件写入数据
             initCopyFile(data.length - currentPos);
             return currentPos;
@@ -211,7 +215,18 @@ public class SyncAllResolver extends AbstractLoggable implements Resolver {
         } catch (Exception e) {
             throw new IllegalStateException("ERROR 0x04 : Failed extract FileInfo from Json", e);
         }
-        output.openFile(PathMapperUtil.sourcePathMapper(backupPath, currentFile.getFullName()));
+        final String fileName = PathMapperUtil.sourcePathMapper(backupPath, currentFile.getFullName());
+        if (currentFile.getFileType().equals(Constants.FileType.REGULAR_FILE)) {
+            output.openFile(fileName);
+            logger.info(String.format("Task %d File id %s, bps:%d in bpi:%d, eps:%d in epi:%d", taskId
+                    , currentFile.getFileId(), beginPackSize, beginPackIndex, endPackSize, endPackIndex));
+        } else {
+            File file = new File(fileName);
+            file.deleteOnExit();
+            file.mkdirs();
+            logger.info("Got a directory.");
+        }
+        faProcessor.storeFileAttr(backupPath, currentFile);
     }
 
     /**
@@ -222,6 +237,10 @@ public class SyncAllResolver extends AbstractLoggable implements Resolver {
      * @return 读取完毕后的位置
      */
     private int readFileData(byte[] data, int currentPos) throws IOException, InfoPersistenceException {
+        if (!currentFile.getFileType().equals(Constants.FileType.REGULAR_FILE)) {
+            stage = ReadProcess.FILE_DONE;
+            return currentPos;
+        }
         logger.debug("currentPos when read file data:" + currentPos);
         if (currentPos >= data.length) {
             return currentPos;
@@ -252,7 +271,7 @@ public class SyncAllResolver extends AbstractLoggable implements Resolver {
             beginPackIndex = endPackIndex = beginPackSize = endPackSize = 0;
             currentFile.setState(FileInfoDO.STATE.SYNCED);
             fm.save(currentFile);
-            stage = ReadProcess.CONTENT_DONE;
+            stage = ReadProcess.FILE_DONE;
         } else {
             stage = ReadProcess.CONTENT;
             if (currentPos < data.length) {
@@ -294,6 +313,6 @@ public class SyncAllResolver extends AbstractLoggable implements Resolver {
         // 文件数据未读完
         CONTENT,
         // 文件数据已读完
-        CONTENT_DONE,
+        FILE_DONE,
     }
 }

@@ -1,8 +1,6 @@
 package cn.com.unary.initcopy;
 
-import cn.com.unary.initcopy.common.BeanConverter;
 import cn.com.unary.initcopy.config.BeanConfig;
-import cn.com.unary.initcopy.entity.SyncTaskDO;
 import cn.com.unary.initcopy.grpc.constant.SyncType;
 import cn.com.unary.initcopy.grpc.entity.ExecResult;
 import cn.com.unary.initcopy.grpc.entity.SyncTarget;
@@ -10,8 +8,6 @@ import cn.com.unary.initcopy.grpc.entity.SyncTask;
 import cn.com.unary.initcopy.grpc.linker.InitCopyGrpcLinker;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
-import java.io.IOException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,7 +15,8 @@ public class ClientTest {
 
     private static AnnotationConfigApplicationContext ac;
     private static InitCopyGrpcLinker linker;
-    private static void setUp () {
+
+    private static void setUp() {
         ac = new AnnotationConfigApplicationContext(BeanConfig.class);
         InitCopyContext context = ac.getBean(InitCopyContext.class);
         linker = ac.getBean(InitCopyGrpcLinker.class);
@@ -28,7 +25,7 @@ public class ClientTest {
 
     public static void main(String[] args) {
         setUp();
-        String source = "G:/test";
+        String source = "E:\\Shark_File\\Download\\ubuntu-18.04.1-desktop-amd64.iso";
         String targetDir = "G:/";
         // 客户端添加任务。
         SyncTask.Builder builder = SyncTask.newBuilder();

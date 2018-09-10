@@ -171,7 +171,11 @@ public class SyncAllPacker extends AbstractLoggable implements Packer {
         }
         ByteBuffer buffer;
         if (PACK_SIZE < BUFFER_DIRECT_LIMIT) {
-            buffer = ByteBuffer.allocate(PACK_SIZE);
+            try {
+                buffer = ByteBuffer.allocate(PACK_SIZE);
+            } catch (Throwable e) {
+                throw e;
+            }
         } else {
             buffer = ByteBuffer.allocateDirect(PACK_SIZE);
         }
@@ -189,14 +193,14 @@ public class SyncAllPacker extends AbstractLoggable implements Packer {
             packFileInfo(buffer);
         }
         // 一直读取直到包满，或者无文件
-        while (null != currentFileInfo && buffer.hasRemaining()) {
+        while (buffer.hasRemaining() && null != currentFileInfo) {
             if (!(Constants.FileType.REGULAR_FILE.equals(currentFileInfo.getFileType()))
                 || !input.read(buffer)) {
-                // 如果读到文件尾，则打开一个新文件
+                // 如果读到文件尾或者是个非常规文件，则打开一个新文件
                 takeToNextFile(buffer);
             }
         }
-        logger.debug("Pack Done. PackIndex: " + packIndex + ", PackSize: " + buffer.position());
+        logger.info("Pack Done. PackIndex: " + packIndex + ", PackSize: " + buffer.position());
         return buffer;
     }
 
@@ -214,14 +218,19 @@ public class SyncAllPacker extends AbstractLoggable implements Packer {
         }
         if (fiIterator.hasNext()) {
             currentFileInfo = fiIterator.next();
-            if (currentFileInfo.getFileType().equals(Constants.FileType.REGULAR_FILE))
+            if (currentFileInfo.getFileType().equals(Constants.FileType.REGULAR_FILE)) {
                 input.openFile(currentFileInfo.getFullName());
+            }
             currentFileInfo.setState(FileInfoDO.STATE.SYNCING);
             fm.save(currentFileInfo);
             logger.debug("Got next file:" + currentFileInfo.getFileId() + ". Ser to json.");
             try {
                 byte[] fileInfoJsonBytes = JSON.toJSONBytes(currentFileInfo);
-                fileInfoBuffer = ByteBuffer.allocate(fileInfoJsonBytes.length + FILE_INFO_LENGTH);
+                try {
+                    fileInfoBuffer = ByteBuffer.allocate(fileInfoJsonBytes.length + FILE_INFO_LENGTH);
+                } catch (Exception e) {
+                    throw e;
+                }
                 // set file info size and file info
                 fileInfoBuffer.putInt(fileInfoJsonBytes.length);
                 fileInfoBuffer.put(fileInfoJsonBytes);
@@ -240,7 +249,7 @@ public class SyncAllPacker extends AbstractLoggable implements Packer {
     }
 
     private void packFileInfo(ByteBuffer buffer) {
-        if (currentFileInfo == null) {
+        if (currentFileInfo == null || !buffer.hasRemaining()) {
             return;
         }
         int readSize;

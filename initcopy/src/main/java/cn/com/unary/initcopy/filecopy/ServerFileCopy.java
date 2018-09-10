@@ -3,6 +3,7 @@ package cn.com.unary.initcopy.filecopy;
 import cn.com.unary.initcopy.InitCopyContext;
 import cn.com.unary.initcopy.common.AbstractLoggable;
 import cn.com.unary.initcopy.common.ExecExceptionsHandler;
+import cn.com.unary.initcopy.common.utils.CommonUtils;
 import cn.com.unary.initcopy.entity.ClientInitReqDO;
 import cn.com.unary.initcopy.entity.Constants;
 import cn.com.unary.initcopy.entity.ServerInitRespDO;
@@ -13,7 +14,6 @@ import cn.com.unary.initcopy.filecopy.fileresolver.Resolver;
 import cn.com.unary.initcopy.filecopy.fileresolver.RsyncResolver;
 import cn.com.unary.initcopy.filecopy.fileresolver.SyncAllResolver;
 import cn.com.unary.initcopy.filecopy.init.ServerFileCopyInit;
-import cn.com.unary.initcopy.common.utils.CommonUtils;
 import lombok.Setter;
 import org.apache.commons.lang3.concurrent.BasicThreadFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +30,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -52,7 +51,8 @@ public class ServerFileCopy extends AbstractLoggable implements ApplicationConte
     @Autowired
     private ServerFileCopyInit init;
     private volatile boolean close;
-    @Setter private ApplicationContext applicationContext;
+    @Setter
+    private ApplicationContext applicationContext;
     private ThreadPoolExecutor fileCopyExec;
 
     /**
@@ -147,10 +147,11 @@ public class ServerFileCopy extends AbstractLoggable implements ApplicationConte
 
     /**
      * 停止当前任务并从任务 map 中移除
+     *
      * @param taskId 任务 Id
      * @throws IOException
      */
-    public void deleteTask (int taskId) throws IOException {
+    public void deleteTask(int taskId) throws IOException {
         synchronized (lock) {
             if (!taskMap.containsKey(taskId)) {
                 throw new IllegalStateException("Task not found with id:" + taskId);
@@ -161,14 +162,15 @@ public class ServerFileCopy extends AbstractLoggable implements ApplicationConte
             taskMap.remove(taskId);
         }
     }
+
     /**
      * 暂停或者唤醒某个任务
      *
-     * @param taskId 任务Id
+     * @param taskId     任务Id
      * @param updateType 更新操作类型
      * @throws IOException IO 异常
      */
-    public void updateTask(int taskId, Constants.UpdateType updateType) throws IOException{
+    public void updateTask(int taskId, Constants.UpdateType updateType) throws IOException {
         switch (updateType) {
             case RESUME:
                 synchronized (lock) {
@@ -185,11 +187,11 @@ public class ServerFileCopy extends AbstractLoggable implements ApplicationConte
                 }
                 break;
             case PAUSE:
-                default:
-                    synchronized (lock) {
-                        execTaskMap.get(taskId).close();
-                    }
-                    break;
+            default:
+                synchronized (lock) {
+                    execTaskMap.get(taskId).close();
+                }
+                break;
         }
     }
 
@@ -229,63 +231,40 @@ public class ServerFileCopy extends AbstractLoggable implements ApplicationConte
         public void run() {
             Thread.currentThread().setName(Thread.currentThread().getName() + taskId);
             tempTime = System.nanoTime();
-            byte[] pack = null;
+            byte[] pack;
             while (true) {
-                synchronized (packs) {
+                synchronized (lock) {
                     if (!packs.isEmpty()) {
                         pack = packs.get(0);
                         packs.remove(0);
-                    }
-                }
-                if (pack == null) {
-                    try {
-                        if (!packs.isEmpty()) {
-                            throw new IllegalStateException("Program error."
-                                    + "Pack size: " + packs.size());
-                        }
-                        synchronized (lock) {
-                            if (!pause) {
-                                logger.info(wait.getAndIncrement() + "'s wait when pack null.");
-                                pause = true;
-                                execTime += (System.nanoTime() - tempTime);
+                    } else {
+                        if (!pause) {
+                            logger.info(wait.incrementAndGet() + "'s wait when pack null.");
+                            pause = true;
+                            execTime += (System.nanoTime() - tempTime);
+                            try {
                                 lock.wait();
-                            }
-                            if (shutdown) {
-                                break;
-                            } else {
-                                continue;
+                            } catch (InterruptedException e) {
+                                throw new IllegalStateException(e);
                             }
                         }
-                    } catch (InterruptedException e) {
-                        throw new IllegalStateException(e);
+                        if (shutdown) {
+                            break;
+                        } else {
+                            continue;
+                        }
+
                     }
                 }
                 // 当前任务已完成解析
                 if (resolve(pack)) {
-                    if (!packs.isEmpty()) {
-                        throw new IllegalStateException("Program error. Task Done but "
-                                + "Pack size: " + packs.size());
-                    }
-                    break;
-                } else {
-                    // 等待后续的包接收
-                    if (packs.isEmpty()) {
-                        try {
-                            synchronized (lock) {
-                                if (!pause) {
-                                    logger.info(wait.getAndIncrement() + "'s wait when packs' empty.");
-                                    pause = true;
-                                    execTime += (System.nanoTime() - tempTime);
-                                    lock.wait();
-                                    if (shutdown) {
-                                        break;
-                                    }
-                                }
-                            }
-                        } catch (InterruptedException e) {
-                            throw new IllegalStateException(e);
+                    synchronized (lock) {
+                        if (!packs.isEmpty()) {
+                            throw new IllegalStateException("Program error. Task Done but "
+                                    + "Pack size: " + packs.size());
                         }
                     }
+                    break;
                 }
             }
             this.close();
@@ -311,16 +290,12 @@ public class ServerFileCopy extends AbstractLoggable implements ApplicationConte
                 if (shutdown) {
                     return;
                 }
-            }
-            synchronized (packs) {
                 this.packs.add(pack);
                 if (pause) {
-                    synchronized (lock) {
-                        logger.info(notify.getAndIncrement() + "'s notify when pack arrive.");
-                        lock.notify();
-                        pause = false;
-                        tempTime = System.nanoTime();
-                    }
+                    logger.info(notify.incrementAndGet() + "'s notify when pack arrive.");
+                    lock.notify();
+                    pause = false;
+                    tempTime = System.nanoTime();
                 }
             }
         }
@@ -334,15 +309,11 @@ public class ServerFileCopy extends AbstractLoggable implements ApplicationConte
                 if (shutdown) {
                     return;
                 }
-            }
-            synchronized (packs) {
                 packs.clear();
+                shutdown = true;
             }
             synchronized (ServerFileCopy.this.lock) {
                 ServerFileCopy.this.execTaskMap.remove(this.taskId);
-            }
-            synchronized (lock) {
-                shutdown = true;
             }
             logger.info("Task resolver done. Use " + execTime + ".");
         }

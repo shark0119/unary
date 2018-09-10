@@ -155,7 +155,7 @@ public class ClientFileCopyInit extends AbstractLoggable {
             Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
                 @Override
                 public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) {
-                    if (dir.toFile().list().length == -1) {
+                    if (dir.toFile().list().length == 0) {
                         FileInfoDO fileInfo = new FileInfoDO(takeFromFile(dir.toFile()));
                         fileInfos.add(fileInfo);
                     }

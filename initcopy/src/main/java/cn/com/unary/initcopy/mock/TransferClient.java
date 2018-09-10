@@ -3,6 +3,8 @@ package cn.com.unary.initcopy.mock;
 import api.UnaryChannel;
 import api.UnaryProcess;
 import api.UnaryTransferClient;
+import cn.com.unary.initcopy.common.utils.CommonUtils;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -21,6 +23,8 @@ import java.util.concurrent.TimeUnit;
 @Component("TransferClient")
 @Scope("prototype")
 public class TransferClient extends UnaryTransferClient {
+
+    private static Logger logger = Logger.getLogger(TransferClient.class);
 
     private TransferServer server;
     @Autowired
@@ -50,10 +54,7 @@ public class TransferClient extends UnaryTransferClient {
 
     @Override
     public int sendData(byte[] data, int time) {
-        // process 会设置 channel 里的 handler
-/*        UnaryProcess process = server.getProcess();
-        process.process(channel);
-        channel.writeData(data);*/
+        logger.info(String.format("transfer client got pack %d.", CommonUtils.byteArrayToInt(data, 4)));
         return client.sendMessage(data);
     }
 

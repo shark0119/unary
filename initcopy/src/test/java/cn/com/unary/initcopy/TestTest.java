@@ -15,6 +15,10 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class TestTest {
 
+    @Setter
+    @Getter
+    List<String> list = new ArrayList<>();
+
     public static void main(String[] args) throws InterruptedException {
         Task task = new Task();
         new Thread(task).start();
@@ -33,9 +37,6 @@ public class TestTest {
         System.out.println(getMethod.matches(pattern));
     }
 
-    @Setter @Getter
-    List<String> list = new ArrayList<>();
-
     @Test
     public void test2() throws NoSuchMethodException {
         Method method = TestTest.class.getMethod("getList");
@@ -44,6 +45,12 @@ public class TestTest {
         Type type1 = type.getActualTypeArguments()[0];
         System.out.println(type1);
         System.out.println(type1.getClass());
+    }
+
+    @Test
+    public void test3() {
+        String str = String.format("i got digit %d and a string %s ", 1, "str");
+        System.out.println(str);
     }
 
     private static class Task implements Runnable {

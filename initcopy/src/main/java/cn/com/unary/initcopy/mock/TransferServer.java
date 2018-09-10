@@ -3,6 +3,8 @@ package cn.com.unary.initcopy.mock;
 import api.UnaryHandler;
 import api.UnaryProcess;
 import api.UnaryTransferServer;
+import cn.com.unary.initcopy.common.AbstractLoggable;
+import cn.com.unary.initcopy.common.utils.CommonUtils;
 import cn.com.unary.initcopy.exception.TaskFailException;
 import cn.com.unary.initcopy.filecopy.ServerFileCopy;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +22,7 @@ import java.io.IOException;
  */
 @Component("TransferServer")
 @Scope("singleton")
-public class TransferServer implements UnaryTransferServer {
+public class TransferServer extends AbstractLoggable implements UnaryTransferServer {
     @Autowired
     private ServerFileCopy fileCopy;
     private UnaryTServer server;
@@ -61,6 +63,7 @@ public class TransferServer implements UnaryTransferServer {
         public void handler(byte[] data) {
             // TODO 调用解包程序，写入文件
             try {
+                logger.info(String.format("transfer server got pack %d.", CommonUtils.byteArrayToInt(data, 4)));
                 fileCopy.resolverPack(data);
             } catch (TaskFailException e) {
                 e.printStackTrace();
