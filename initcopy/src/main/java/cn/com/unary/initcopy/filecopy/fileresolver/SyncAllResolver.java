@@ -11,7 +11,6 @@ import cn.com.unary.initcopy.exception.InfoPersistenceException;
 import cn.com.unary.initcopy.filecopy.filepacker.SyncAllPacker;
 import cn.com.unary.initcopy.filecopy.io.AbstractFileOutput;
 import cn.com.unary.initcopy.filecopy.io.FileAttrProcessor;
-import com.alibaba.fastjson.JSON;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
@@ -49,6 +48,7 @@ public class SyncAllResolver extends AbstractLoggable implements Resolver {
     private int beginPackIndex, endPackIndex, beginPackSize, endPackSize;
     @Autowired
     private AbstractFileOutput output;
+    @Autowired
     private FileAttrProcessor faProcessor;
     private ReadProcess stage = ReadProcess.FILE_DONE;
     private ByteBuffer fileInfo;
@@ -121,7 +121,7 @@ public class SyncAllResolver extends AbstractLoggable implements Resolver {
      * @param currentPos 偏移量
      * @return 读取完毕后的位置
      */
-    private int readFileInfo(byte[] data, int currentPos) throws IOException {
+    private int readFileInfo(byte[] data, int currentPos) throws IOException, InfoPersistenceException {
         logger.debug("CurrentPos when read file info:" + currentPos);
         if (currentPos >= data.length) {
             return currentPos;
@@ -180,12 +180,15 @@ public class SyncAllResolver extends AbstractLoggable implements Resolver {
             }
             return data.length;
         } else {
-            stage = ReadProcess.FILE_INFO_DONE;
             int readSize = fileInfo.remaining();
             fileInfo.put(data, currentPos, readSize);
             currentPos += readSize;
             // 文件信息读取完毕，序列化文件信息。准备文件写入数据
-            initCopyFile(data.length - currentPos);
+            if (initCopyFile(data.length - currentPos)) {
+                stage = ReadProcess.FILE_INFO_DONE;
+            } else {
+                stage = ReadProcess.FILE_DONE;
+            }
             return currentPos;
         }
     }
@@ -194,12 +197,16 @@ public class SyncAllResolver extends AbstractLoggable implements Resolver {
      * 初始化待拷贝文件，计算出文件内容在传输过程中的包分布情况，并持久化。
      *
      * @param remainingSize 当前包的可读取字节数
+     * @return 当前文件为 普通文件（二进制或文本文件）返回 true，否则返回 false
      */
-    private void initCopyFile(int remainingSize) throws IOException {
+    private boolean initCopyFile(int remainingSize) throws IOException, InfoPersistenceException {
         logger.debug("A file info json start transfer to FileInfo");
-        try {
-            currentFile = JSON.parseObject(fileInfo.array(), FileInfoDO.class);
-            beginPackIndex = endPackIndex = packIndex;
+        currentFile = CommonUtils.deSerFromJson(fileInfo.array(), FileInfoDO.class);
+        boolean isRegularFile;
+        final String fileName = PathMapperUtil.sourcePathMapper(backupPath, currentFile.getFullName());
+        beginPackIndex = endPackIndex = packIndex;
+        currentFile.setState(FileInfoDO.STATE.SYNCING);
+        if (currentFile.getFileType().equals(Constants.FileType.REGULAR_FILE)) {
             long fileSizeExCurPack = currentFile.getFileSize() - remainingSize;
             currentFile.setBeginPackIndex(packIndex);
             if (fileSizeExCurPack > 0) {
@@ -210,23 +217,21 @@ public class SyncAllResolver extends AbstractLoggable implements Resolver {
                 beginPackSize = endPackSize = (int) currentFile.getFileSize();
             }
             currentFile.setFinishPackIndex(endPackIndex);
-            currentFile.setState(FileInfoDO.STATE.SYNCING);
-            fm.save(currentFile);
-        } catch (Exception e) {
-            throw new IllegalStateException("ERROR 0x04 : Failed extract FileInfo from Json", e);
-        }
-        final String fileName = PathMapperUtil.sourcePathMapper(backupPath, currentFile.getFullName());
-        if (currentFile.getFileType().equals(Constants.FileType.REGULAR_FILE)) {
             output.openFile(fileName);
             logger.info(String.format("Task %d File id %s, bps:%d in bpi:%d, eps:%d in epi:%d", taskId
                     , currentFile.getFileId(), beginPackSize, beginPackIndex, endPackSize, endPackIndex));
-        } else {
+            isRegularFile = true;
+        } else if (currentFile.getFileType().equals(Constants.FileType.DIR)) {
             File file = new File(fileName);
-            file.deleteOnExit();
             file.mkdirs();
             logger.info("Got a directory.");
+            isRegularFile = false;
+        } else {
+            throw new IllegalStateException(String.format("UnSupport file type :%s.", currentFile.getFileType().toString()));
         }
+        fm.save(currentFile);
         faProcessor.storeFileAttr(backupPath, currentFile);
+        return isRegularFile;
     }
 
     /**

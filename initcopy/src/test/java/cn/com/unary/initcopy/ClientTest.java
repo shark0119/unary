@@ -25,7 +25,7 @@ public class ClientTest {
 
     public static void main(String[] args) {
         setUp();
-        String source = "E:\\Shark_File\\Download\\ubuntu-18.04.1-desktop-amd64.iso";
+        String source = "G:\\test";
         String targetDir = "G:/";
         // 客户端添加任务。
         SyncTask.Builder builder = SyncTask.newBuilder();

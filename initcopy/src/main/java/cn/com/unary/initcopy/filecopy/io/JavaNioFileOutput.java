@@ -80,7 +80,7 @@ public class JavaNioFileOutput extends AbstractFileOutput {
         file = new File(fileName);
         if (!file.exists()) {
             if (!file.createNewFile()) {
-                throw new IOException("create dir fail");
+                throw new IOException("create file fail");
             }
         }
         Path path = Paths.get(fileName);

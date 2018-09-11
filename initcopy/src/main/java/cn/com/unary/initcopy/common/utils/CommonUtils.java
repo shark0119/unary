@@ -1,5 +1,7 @@
 package cn.com.unary.initcopy.common.utils;
 
+import com.alibaba.fastjson.JSONObject;
+
 import java.nio.ByteBuffer;
 
 /**
@@ -35,5 +37,13 @@ public class CommonUtils {
         // TODO 可做的优化，修改传输模块代码，将其改为 ByteBuffer
         System.arraycopy(buffer.array(), 0, data, 0, buffer.position());
         return data;
+    }
+
+    public static byte[] serToJson(Object obj) {
+        return JSONObject.toJSONBytes(obj);
+    }
+
+    public static <T> T deSerFromJson(byte[] value, Class<T> clz) {
+        return JSONObject.parseObject(value, clz);
     }
 }
