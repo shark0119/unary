@@ -36,18 +36,17 @@ import java.util.Objects;
 @Component("InitCopyGrpcLinker")
 @Scope("singleton")
 public class InitCopyGrpcLinker extends AbstractLoggable {
-    @Autowired
+
     private static ClientFileCopy fileCopy;
-    @Autowired
     private static ClientTaskUpdater updater;
 
     @Autowired
-    public void setServerFileCopy(ClientFileCopy fileCopy) {
+    public void setFileCopy(ClientFileCopy fileCopy) {
         InitCopyGrpcLinker.fileCopy = fileCopy;
     }
 
     @Autowired
-    public void setTaskUpdater(ClientTaskUpdater updater) {
+    public void setUpdater(ClientTaskUpdater updater) {
         InitCopyGrpcLinker.updater = updater;
     }
 

@@ -84,8 +84,8 @@ public class InitCopyContext extends AbstractLoggable implements Closeable {
                             .namingPattern("init-copy-context-executor-%d")
                             .uncaughtExceptionHandler(new ExecExceptionsHandler(this))
                             .build();
-                    exec = new ThreadPoolExecutor(2,
-                            2, 1000L, TimeUnit.MILLISECONDS,
+                    exec = new ThreadPoolExecutor(3,
+                            3, 1000L, TimeUnit.MILLISECONDS,
                             new LinkedBlockingQueue<Runnable>(3),
                             executorThreadFactory);
                     this.serverInit().clientInit();

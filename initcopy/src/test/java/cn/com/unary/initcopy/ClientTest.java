@@ -1,11 +1,10 @@
 package cn.com.unary.initcopy;
 
-import cn.com.unary.initcopy.config.BeanConfig;
 import cn.com.unary.initcopy.grpc.constant.SyncType;
-import cn.com.unary.initcopy.grpc.entity.ExecResult;
 import cn.com.unary.initcopy.grpc.entity.SyncTarget;
 import cn.com.unary.initcopy.grpc.entity.SyncTask;
 import cn.com.unary.initcopy.grpc.linker.InitCopyGrpcLinker;
+import cn.com.unary.initcopy.mock.InitCopyGrpcClient;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import java.util.ArrayList;
@@ -17,10 +16,11 @@ public class ClientTest {
     private static InitCopyGrpcLinker linker;
 
     private static void setUp() {
-        ac = new AnnotationConfigApplicationContext(BeanConfig.class);
+        /*ac = new AnnotationConfigApplicationContext(BeanConfig.class);
         InitCopyContext context = ac.getBean(InitCopyContext.class);
         linker = ac.getBean(InitCopyGrpcLinker.class);
-        context.start(50005, 50006, 50007);
+        context.start(50005, 50006, 50007);*/
+
     }
 
     public static void main(String[] args) {
@@ -37,10 +37,11 @@ public class ClientTest {
                 .addAllFiles(syncFiles)
                 .setTargetInfo(SyncTarget.newBuilder()
                         .setIp("127.0.0.1")
-                        .setTransferPort(ServerTest.SERVER_TRANSFER_PORT)
-                        .setGrpcPort(ServerTest.SERVER_INNER_GRPC_PORT)
+                        .setTransferPort(10001)
+                        .setGrpcPort(10003)
                         .build());
-        ExecResult result = linker.add(builder.build());
-        System.out.println(result);
+        InitCopyGrpcClient client = new
+                InitCopyGrpcClient("127.0.0.1", 10002);
+        System.out.println(client.add(builder.build()));
     }
 }

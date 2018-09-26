@@ -2,10 +2,9 @@ package cn.com.unary.initcopy.dao;
 
 import cn.com.unary.initcopy.InitCopyContext;
 import cn.com.unary.initcopy.common.AbstractLoggable;
+import cn.com.unary.initcopy.common.utils.ValidateUtils;
 import cn.com.unary.initcopy.entity.FileInfoDO;
 import cn.com.unary.initcopy.entity.SyncTaskDO;
-import cn.com.unary.initcopy.common.utils.ValidateUtils;
-import lombok.val;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -62,6 +61,7 @@ public class RamFileManager extends AbstractLoggable implements FileManager {
                 fileInfos.add(entry.getValue());
             }
         }
+        logger.info(String.format("%d file in task:%d", fileInfos.size(), taskId));
         return fileInfos;
     }
 
@@ -79,8 +79,10 @@ public class RamFileManager extends AbstractLoggable implements FileManager {
 
     @Override
     public boolean taskFinished(int taskId) {
-        for(FileInfoDO fi : queryByTaskId(taskId)) {
+        List<FileInfoDO> fis = queryByTaskId(taskId);
+        for (FileInfoDO fi : fis) {
             if (!FileInfoDO.STATE.SYNCED.equals(fi.getStateEnum())) {
+                logger.info(String.format("fi:%s", fi.toString()));
                 return false;
             }
         }

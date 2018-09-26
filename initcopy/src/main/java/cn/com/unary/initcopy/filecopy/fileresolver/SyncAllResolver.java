@@ -108,6 +108,7 @@ public class SyncAllResolver extends AbstractLoggable implements Resolver {
             } catch (Exception e) {
                 logger.error("close resource error", e);
             }
+            logger.info(String.format("Task:%d done.", taskId));
             return true;
         } else {
             return false;
@@ -218,13 +219,14 @@ public class SyncAllResolver extends AbstractLoggable implements Resolver {
             }
             currentFile.setFinishPackIndex(endPackIndex);
             output.openFile(fileName);
-            logger.info(String.format("Task %d File id %s, bps:%d in bpi:%d, eps:%d in epi:%d", taskId
-                    , currentFile.getFileId(), beginPackSize, beginPackIndex, endPackSize, endPackIndex));
+            logger.info(String.format("Task:%d,file id:%s, beginPackSize:%d in beginPackIndex:%d, endPackSize:%d in endPackIndex:%d",
+                    taskId, currentFile.getFileId(), beginPackSize, beginPackIndex, endPackSize, endPackIndex));
             isRegularFile = true;
         } else if (currentFile.getFileType().equals(Constants.FileType.DIR)) {
             File file = new File(fileName);
             file.mkdirs();
             logger.info("Got a directory.");
+            currentFile.setState(FileInfoDO.STATE.SYNCED);
             isRegularFile = false;
         } else {
             throw new IllegalStateException(String.format("UnSupport file type :%s.", currentFile.getFileType().toString()));

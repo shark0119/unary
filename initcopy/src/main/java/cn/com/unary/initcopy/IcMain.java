@@ -1,5 +1,8 @@
 package cn.com.unary.initcopy;
 
+import cn.com.unary.initcopy.config.BeanConfig;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+
 /**
  * 程序入口
  *
@@ -9,72 +12,27 @@ package cn.com.unary.initcopy;
 public class IcMain {
 
     public static void main(String[] args) {
-        /*boolean isServer = false;
-        boolean isClient = false;
-        boolean nextIsPort = false;
-        String help = "--help", asServer = "-s", asClient = "-c", designatedPort = "-p";;
-        int maxPort = 65535;
-        int port = 0;
-        if (args.length == 0) {
-            System.out.println("Input filesync --help for help.");
+        final int paraAmounts = 6;
+        final String transPortPara = "-tp";
+        final String grpcPortPara = "-gp";
+        final String innerGrpcPortPara = "-igp";
+        if (args.length != paraAmounts
+                || !args[0].equals(transPortPara)
+                || !grpcPortPara.equals(args[2])
+                || !innerGrpcPortPara.equals(args[4])) {
+            System.out.println("-tp [transmitPort] -gp [grpcPort] -igp [innerGrpcPort]");
             return;
         }
-        if (args.length == 1 && help.equals(args[0].trim())) {
-            System.out.println("\"filesync -c\" to start a grpc server.");
-            System.out.println("\"filesync -s -p [port]\" to start a target server.");
+        try {
+            int transPort = Integer.parseInt(args[1]);
+            int grpcPort = Integer.parseInt(args[3]);
+            int innerGrpcPort = Integer.parseInt(args[5]);
+            AnnotationConfigApplicationContext ac = new AnnotationConfigApplicationContext(BeanConfig.class);
+            InitCopyContext context = ac.getBean(InitCopyContext.class);
+            context.start(transPort, grpcPort, innerGrpcPort);
+        } catch (Exception e) {
+            System.out.println("args 1,3,5 must be integer");
             return;
         }
-        for (String arg : args) {
-            if (nextIsPort) {
-                try {
-                    port = Integer.parseInt(arg);
-                } catch (Exception e) {
-                    System.out.println(arg + " is not a invalid port.");
-                }
-                nextIsPort = false;
-            } else if (arg.trim().equals(asServer)) {
-                if (isClient) {
-                    System.out.println("can't use both -c and -s at the same time");
-                    return;
-                }
-                isServer = true;
-            } else if (arg.trim().equals(asClient)) {
-                if (isServer) {
-                    System.out.println("can't use both -c and -s at the same time");
-                    return;
-                }
-                isClient = true;
-            } else {
-                if (arg.trim().equals(designatedPort)) {
-                    nextIsPort = true;
-                } else {
-                    System.out.println("invalid arg: " + arg);
-                    return;
-                }
-            }
-        }
-        if (port < 0 || port > maxPort) {
-            System.out.println("invalid port :" + port);
-            return;
-        } else if (port == 0) {
-            port = 50052;
-            System.out.println("warning. using default port " + port);
-        }
-
-        if (isServer) {
-            try {
-                InitCopyServer.start(1, 2);
-            } catch (Exception e) {
-                System.out.println("Copy Server Start Fail. " + e.getMessage());
-                return;
-            }
-        } else {
-            try {
-                new GrpcServiceStarter(new InitCopyGrpcImpl(new InitCopyGrpcLinker()), port);
-            } catch (Exception e) {
-                System.out.println("GRPC Server Start Fail. " + e.getMessage());
-                return;
-            }
-        }*/
     }
 }

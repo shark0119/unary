@@ -33,7 +33,7 @@ public class BeanConfig {
             @Value("#{AttrConfig.getDbUrl()}") String url,
             @Value("#{AttrConfig.getDbDriver()}") String driver) throws SQLException {
         DruidDataSource dds = new DruidDataSource();
-        dds.setUrl(url);
+        /*dds.setUrl(url);
         dds.setDriverClassName(driver);
         dds.setInitialSize(1);
         dds.setMinIdle(1);
@@ -46,7 +46,7 @@ public class BeanConfig {
         dds.setTestOnBorrow(false);
         dds.setTestOnReturn(false);
         dds.setFilters("stat");
-        dds.init();
+        dds.init();*/
         return dds;
     }
 

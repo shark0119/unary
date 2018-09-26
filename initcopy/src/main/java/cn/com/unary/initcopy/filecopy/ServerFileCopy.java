@@ -238,15 +238,13 @@ public class ServerFileCopy extends AbstractLoggable implements ApplicationConte
                         pack = packs.get(0);
                         packs.remove(0);
                     } else {
-                        if (!pause) {
-                            logger.info(wait.incrementAndGet() + "'s wait when pack null.");
-                            pause = true;
-                            execTime += (System.nanoTime() - tempTime);
-                            try {
-                                lock.wait();
-                            } catch (InterruptedException e) {
-                                throw new IllegalStateException(e);
-                            }
+                        execTime += (System.nanoTime() - tempTime);
+                        logger.info(wait.incrementAndGet() + "'s wait when pack null.");
+                        pause = true;
+                        try {
+                            lock.wait();
+                        } catch (InterruptedException e) {
+                            throw new IllegalStateException(e);
                         }
                         if (shutdown) {
                             break;
