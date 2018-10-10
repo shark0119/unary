@@ -4,7 +4,7 @@ import cn.com.unary.initcopy.InitCopyContext;
 import cn.com.unary.initcopy.common.AbstractLoggable;
 import cn.com.unary.initcopy.common.utils.ValidateUtils;
 import cn.com.unary.initcopy.entity.FileInfoDO;
-import cn.com.unary.initcopy.entity.SyncTaskDO;
+import cn.com.unary.initcopy.grpc.entity.SyncTask;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -24,9 +24,9 @@ public class RamFileManager extends AbstractLoggable implements FileManager {
      * key : fileId, field: 文件信息实体
      */
     private Map<String, FileInfoDO> fiMap;
-    private Map<Integer, SyncTaskDO> syncTaskMap;
+    private Map<Integer, SyncTask> syncTaskMap;
 
-    public RamFileManager (){
+    public RamFileManager() {
         fiMap = new ConcurrentHashMap<>(InitCopyContext.TASK_NUMBER);
         syncTaskMap = new ConcurrentHashMap<>(InitCopyContext.TASK_NUMBER);
     }
@@ -56,7 +56,7 @@ public class RamFileManager extends AbstractLoggable implements FileManager {
     @Override
     public List<FileInfoDO> queryByTaskId(int taskId) {
         List<FileInfoDO> fileInfos = new ArrayList<>();
-        for (Map.Entry<String, FileInfoDO> entry: fiMap.entrySet()) {
+        for (Map.Entry<String, FileInfoDO> entry : fiMap.entrySet()) {
             if (fiMap.get(entry.getKey()).getTaskId() == taskId) {
                 fileInfos.add(entry.getValue());
             }
@@ -68,9 +68,9 @@ public class RamFileManager extends AbstractLoggable implements FileManager {
     @Override
     public List<FileInfoDO> queryUnSyncFileByTaskId(int taskId) {
         List<FileInfoDO> fileInfos = new ArrayList<>();
-        for (Map.Entry<String, FileInfoDO> entry: fiMap.entrySet()) {
+        for (Map.Entry<String, FileInfoDO> entry : fiMap.entrySet()) {
             if (entry.getValue().getTaskId() == taskId
-                && !entry.getValue().getStateEnum().equals(FileInfoDO.STATE.SYNCED)) {
+                    && !entry.getValue().getStateEnum().equals(FileInfoDO.STATE.SYNCED)) {
                 fileInfos.add(entry.getValue());
             }
         }
@@ -88,8 +88,9 @@ public class RamFileManager extends AbstractLoggable implements FileManager {
         }
         return true;
     }
+
     @Override
-    public SyncTaskDO queryTask(int taskId) {
+    public SyncTask queryTask(int taskId) {
         return syncTaskMap.get(taskId);
     }
 
@@ -97,17 +98,17 @@ public class RamFileManager extends AbstractLoggable implements FileManager {
     public void deleteTask(int taskId) {
         syncTaskMap.remove(taskId);
         Map.Entry<String, FileInfoDO> entry;
-        for (Iterator<Map.Entry <String, FileInfoDO>> iterator = fiMap.entrySet().iterator(); iterator.hasNext();) {
-           entry = iterator.next();
-           if (entry.getValue().getTaskId() == taskId) {
-               iterator.remove();
-           }
+        for (Iterator<Map.Entry<String, FileInfoDO>> iterator = fiMap.entrySet().iterator(); iterator.hasNext(); ) {
+            entry = iterator.next();
+            if (entry.getValue().getTaskId() == taskId) {
+                iterator.remove();
+            }
         }
     }
 
     @Override
-    public SyncTaskDO saveTask(SyncTaskDO taskDO) {
-        return syncTaskMap.put(taskDO.getTaskId(), taskDO);
+    public SyncTask saveTask(SyncTask task) {
+        return syncTaskMap.put(task.getTaskId(), task);
     }
 
     @Override

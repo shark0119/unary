@@ -1,17 +1,12 @@
 package cn.com.unary.initcopy.grpc.client;
 
 import cn.com.unary.initcopy.common.AbstractLoggable;
-import cn.com.unary.initcopy.common.BeanConverter;
-import cn.com.unary.initcopy.entity.DeleteTaskDO;
-import cn.com.unary.initcopy.entity.ExecResultDO;
-import cn.com.unary.initcopy.entity.ModifyTaskDO;
 import cn.com.unary.initcopy.grpc.ControlTaskGrpc;
 import cn.com.unary.initcopy.grpc.entity.ClientInitReq;
 import cn.com.unary.initcopy.grpc.entity.DeleteTask;
 import cn.com.unary.initcopy.grpc.entity.ExecResult;
 import cn.com.unary.initcopy.grpc.entity.ModifyTask;
 import cn.com.unary.initcopy.grpc.entity.ServerInitResp;
-import cn.com.unary.initcopy.grpc.linker.ControlTaskGrpcLinker;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 
@@ -49,13 +44,12 @@ public class ControlTaskGrpcClient extends AbstractLoggable {
     /**
      * 调用 {@link cn.com.unary.initcopy.grpc.ControlTaskGrpc#METHODID_DELETE}
      *
-     * @param deleteTaskDO 删除任务的相关参数
+     * @param deleteTask 删除任务的相关参数
      * @return 执行结果
      */
-    public ExecResultDO invokeGrpcDelete(DeleteTaskDO deleteTaskDO) {
+    public ExecResult invokeGrpcDelete(DeleteTask deleteTask) {
         try {
-            ExecResult result = blockingStub.delete(BeanConverter.convert(deleteTaskDO, DeleteTask.class));
-            return BeanConverter.convert(result, ExecResultDO.class);
+            return blockingStub.delete(deleteTask);
         } catch (Exception e) {
             logger.error("Error.", e);
             throw new IllegalStateException(e);
@@ -65,13 +59,12 @@ public class ControlTaskGrpcClient extends AbstractLoggable {
     /**
      * 调用 {@link cn.com.unary.initcopy.grpc.ControlTaskGrpc#METHODID_MODIFY}
      *
-     * @param modifyTaskDO 修改任务的相关参数
+     * @param modifyTask 修改任务的相关参数
      * @return 执行结果
      */
-    public ExecResultDO invokeGrpcModify(ModifyTaskDO modifyTaskDO) {
+    public ExecResult invokeGrpcModify(ModifyTask modifyTask) {
         try {
-            ExecResult result = blockingStub.modify(BeanConverter.convert(modifyTaskDO, ModifyTask.class));
-            return BeanConverter.convert(result, ExecResultDO.class);
+            return blockingStub.modify(modifyTask);
         } catch (Exception e) {
             logger.error("Error.", e);
             throw new IllegalStateException(e);

@@ -7,9 +7,9 @@ import cn.com.unary.initcopy.dao.FileManager;
 import cn.com.unary.initcopy.entity.Constants;
 import cn.com.unary.initcopy.entity.Constants.PackerType;
 import cn.com.unary.initcopy.entity.FileInfoDO;
-import cn.com.unary.initcopy.entity.SyncTaskDO;
 import cn.com.unary.initcopy.exception.InfoPersistenceException;
 import cn.com.unary.initcopy.filecopy.io.AbstractFileInput;
+import cn.com.unary.initcopy.grpc.entity.SyncTask;
 import com.alibaba.fastjson.JSON;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -131,7 +131,7 @@ public class SyncAllPacker extends AbstractLoggable implements Packer {
      *
      * @param taskId   任务Id
      * @param transfer 传输模块客户端
-     * @throws IOException IO 异常
+     * @throws IOException              IO 异常
      * @throws InfoPersistenceException 持久化层异常
      */
     @Override
@@ -142,8 +142,8 @@ public class SyncAllPacker extends AbstractLoggable implements Packer {
         List<FileInfoDO> list = fm.queryUnSyncFileByTaskId(taskId);
         fiIterator = list.iterator();
         byte[] packData;
-        SyncTaskDO taskDO = fm.queryTask(taskId);
-        transfer.startClient(taskDO.getTargetInfo().getIp(), taskDO.getTargetInfo().getTransferPort());
+        SyncTask task = fm.queryTask(taskId);
+        transfer.startClient(task.getTargetInfo().getIp(), task.getTargetInfo().getTransferPort());
         while (true) {
             try {
                 packData = CommonUtils.extractBytes(pack());
@@ -195,7 +195,7 @@ public class SyncAllPacker extends AbstractLoggable implements Packer {
         // 一直读取直到包满，或者无文件
         while (buffer.hasRemaining() && null != currentFileInfo) {
             if (!(Constants.FileType.REGULAR_FILE.equals(currentFileInfo.getFileType()))
-                || !input.read(buffer)) {
+                    || !input.read(buffer)) {
                 // 如果读到文件尾或者是个非常规文件，则打开一个新文件
                 takeToNextFile(buffer);
             }
@@ -208,7 +208,7 @@ public class SyncAllPacker extends AbstractLoggable implements Packer {
      * 当前文件无有效数据可读
      *
      * @param buffer buffer 容器
-     * @throws IOException IO 异常
+     * @throws IOException              IO 异常
      * @throws InfoPersistenceException 持久层异常
      */
     private void takeToNextFile(ByteBuffer buffer) throws IOException, InfoPersistenceException {

@@ -30,25 +30,37 @@ public class InitCopyGrpcImpl extends InitCopyGrpc.InitCopyImplBase {
 
     @Override
     public void add(SyncTask request, StreamObserver<ExecResult> responseObserver) {
-        responseObserver.onNext(linker.add(request));
+        logger.info("task:" + request);
+        final ExecResult result = linker.add(request);
+        logger.info("result:" + result);
+        responseObserver.onNext(result);
         responseObserver.onCompleted();
     }
 
     @Override
     public void query(QueryTask request, StreamObserver<TaskState> responseObserver) {
-        responseObserver.onNext(linker.query(request));
+        logger.info("task:" + request);
+        final TaskState result = linker.query(request);
+        logger.info("result:" + result);
+        responseObserver.onNext(result);
         responseObserver.onCompleted();
     }
 
     @Override
     public void delete(DeleteTask request, StreamObserver<ExecResult> responseObserver) {
-        responseObserver.onNext(linker.delete(request));
+        logger.info("task:" + request);
+        ExecResult result = linker.delete(request);
+        logger.info("result:" + result);
+        responseObserver.onNext(result);
         responseObserver.onCompleted();
     }
 
     @Override
     public void modify(ModifyTask request, StreamObserver<ExecResult> responseObserver) {
-        responseObserver.onNext(linker.modify(request));
+        logger.info("task:" + request);
+        ExecResult result = linker.modify(request);
+        logger.info("result:" + result);
+        responseObserver.onNext(result);
         responseObserver.onCompleted();
     }
 }

@@ -4,9 +4,7 @@ import cn.com.unary.initcopy.InitCopyContext;
 import cn.com.unary.initcopy.common.AbstractLoggable;
 import cn.com.unary.initcopy.common.ExecExceptionsHandler;
 import cn.com.unary.initcopy.common.utils.CommonUtils;
-import cn.com.unary.initcopy.entity.ClientInitReqDO;
 import cn.com.unary.initcopy.entity.Constants;
-import cn.com.unary.initcopy.entity.ServerInitRespDO;
 import cn.com.unary.initcopy.exception.InfoPersistenceException;
 import cn.com.unary.initcopy.exception.TaskFailException;
 import cn.com.unary.initcopy.filecopy.filepacker.SyncAllPacker;
@@ -14,6 +12,8 @@ import cn.com.unary.initcopy.filecopy.fileresolver.Resolver;
 import cn.com.unary.initcopy.filecopy.fileresolver.RsyncResolver;
 import cn.com.unary.initcopy.filecopy.fileresolver.SyncAllResolver;
 import cn.com.unary.initcopy.filecopy.init.ServerFileCopyInit;
+import cn.com.unary.initcopy.grpc.entity.ClientInitReq;
+import cn.com.unary.initcopy.grpc.entity.ServerInitResp;
 import lombok.Setter;
 import org.apache.commons.lang3.concurrent.BasicThreadFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -114,7 +114,7 @@ public class ServerFileCopy extends AbstractLoggable implements ApplicationConte
      * @return 初始化响应
      * @throws TaskFailException 任务初始化失败异常
      */
-    public ServerInitRespDO startInit(ClientInitReqDO req) throws TaskFailException {
+    public ServerInitResp startInit(ClientInitReq req) throws TaskFailException {
         CopyTask task = new CopyTask(req.getTaskId(), req.getTargetDir());
         synchronized (lock) {
             if (close) {

@@ -3,11 +3,9 @@ package cn.com.unary.initcopy.filecopy.init;
 import api.UnaryTransferClient;
 import cn.com.unary.initcopy.InitCopyContext;
 import cn.com.unary.initcopy.common.AbstractLoggable;
-import cn.com.unary.initcopy.common.BeanConverter;
 import cn.com.unary.initcopy.dao.FileManager;
 import cn.com.unary.initcopy.entity.BaseFileInfoDO;
 import cn.com.unary.initcopy.entity.FileInfoDO;
-import cn.com.unary.initcopy.entity.SyncTaskDO;
 import cn.com.unary.initcopy.exception.InfoPersistenceException;
 import cn.com.unary.initcopy.grpc.client.ControlTaskGrpcClient;
 import cn.com.unary.initcopy.grpc.constant.SyncType;
@@ -15,6 +13,7 @@ import cn.com.unary.initcopy.grpc.entity.BaseFileInfo;
 import cn.com.unary.initcopy.grpc.entity.ClientInitReq;
 import cn.com.unary.initcopy.grpc.entity.DiffFileInfo;
 import cn.com.unary.initcopy.grpc.entity.ServerInitResp;
+import cn.com.unary.initcopy.grpc.entity.SyncTask;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
@@ -44,11 +43,10 @@ import java.util.UUID;
 public class ClientFileCopyInit extends AbstractLoggable {
 
     @Autowired
+    protected InitCopyContext context;
+    @Autowired
     @Qualifier("clientFM")
     private FileManager fm;
-
-    @Autowired
-    protected InitCopyContext context;
 
     /**
      * 文件复制前的初始化工作
@@ -57,50 +55,56 @@ public class ClientFileCopyInit extends AbstractLoggable {
      * 3.在差异复制时向目标端发送同步文件信息列表来核对待同步文件；
      * 差异复制时需要等待服务端确认核对后再返回
      *
-     * @param syncTask      同步任务的相关配置信息
+     * @param task          同步任务的相关配置信息
      * @param diffFileInfos 差异文件数据，由初始化模块接收到后，传入其中
      * @return 待同步的文件Id集合
      * @throws IOException      IO错误
      * @throws RuntimeException Grpc 服务调用错误。
      */
     public List<String> startInit(UnaryTransferClient client,
-                                  final SyncTaskDO syncTask,
+                                  final SyncTask task,
                                   final List<DiffFileInfo> diffFileInfos)
             throws IOException, InfoPersistenceException {
         logger.debug("Start init.");
-        client.setSpeedLimit(syncTask.getSpeedLimit());
-        client.setCompressType(syncTask.getCompressType());
-        client.setEncryptType(syncTask.getEncryptType());
+        client.setSpeedLimit(task.getSpeedLimit());
+        client.setCompressType(task.getCompressType());
+        client.setEncryptType(task.getEncryptType());
 
         logger.debug("Set transfer option done. Start to traversing files.");
-        List<FileInfoDO> syncFiles = traversingFiles(syncTask.getFiles());
+        List<FileInfoDO> syncFiles = traversingFiles(task.getFilesList());
         List<String> syncFileIds = new ArrayList<>();
-        int taskId = syncTask.getTaskId();
+        int taskId = task.getTaskId();
         for (FileInfoDO fi : syncFiles) {
             syncFileIds.add(fi.getFileId());
             fi.setTaskId(taskId);
             fm.save(fi);
         }
         logger.debug("We got " + syncFiles.size() + " files and " + syncFileIds.size()
-                + " file id from specified local directory in task " + syncTask.getTaskId());
+                + " file id from specified local directory in task " + task.getTaskId());
 
         ControlTaskGrpcClient controlTaskGrpcClient =
-                new ControlTaskGrpcClient(syncTask.getTargetInfo().getIp(), syncTask.getTargetInfo().getGrpcPort());
+                new ControlTaskGrpcClient(task.getTargetInfo().getIp(), task.getTargetInfo().getGrpcPort());
 
         long totalSize = 0L;
-        List<BaseFileInfo> bfis = new ArrayList<>(syncFiles.size());
-        for (BaseFileInfoDO bfi : syncFiles) {
-            totalSize += bfi.getFileSize();
-            bfis.add(BeanConverter.convert(bfi, BaseFileInfo.class));
+        List<BaseFileInfo> bfiList = new ArrayList<>(syncFiles.size());
+        BaseFileInfo.Builder bfiBuilder;
+        for (BaseFileInfoDO bfiDO : syncFiles) {
+            totalSize += bfiDO.getFileSize();
+            bfiBuilder = BaseFileInfo.newBuilder();
+            bfiBuilder.setModifyTime(bfiDO.getModifyTime())
+                    .setFileSize(bfiDO.getFileSize())
+                    .setFileId(bfiDO.getFileId())
+                    .setFullName(bfiDO.getFullName());
+            bfiList.add(bfiBuilder.build());
         }
         ClientInitReq.Builder builder = ClientInitReq.newBuilder()
-                .setTargetDir(syncTask.getTargetDir())
+                .setTargetDir(task.getTargetDir())
                 .setTaskId(taskId)
                 .setTotalSize(totalSize)
-                .addAllBaseFileInfos(bfis);
+                .addAllBaseFileInfos(bfiList);
 
         logger.debug("Try to init according sync type.");
-        switch (syncTask.getSyncType()) {
+        switch (task.getSyncType()) {
             case SYNC_DIFF:
                 syncFileIds = syncDiffInit(builder, controlTaskGrpcClient, diffFileInfos);
                 break;
@@ -110,7 +114,8 @@ public class ClientFileCopyInit extends AbstractLoggable {
                 syncAllInit(builder, controlTaskGrpcClient);
                 break;
         }
-        fm.saveTask(syncTask);
+
+        fm.saveTask(task);
         return syncFileIds;
     }
 

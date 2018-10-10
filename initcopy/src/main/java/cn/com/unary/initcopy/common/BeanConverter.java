@@ -83,7 +83,7 @@ public class BeanConverter extends AbstractLoggable {
      * @param <T>       实体
      * @return 已填充的实体
      */
-    public static <T> T convert(Object source, Class<T> targetCls, String... ignoreProperties) {
+    public static <T> T convert(Object source, Class<T> targetCls, boolean risk, String... ignoreProperties) {
         Objects.requireNonNull(targetCls);
         Objects.requireNonNull(source);
         boolean objNotGrpc = true, containerNotGrpc = true;

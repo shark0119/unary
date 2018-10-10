@@ -1,8 +1,8 @@
 package cn.com.unary.initcopy.dao;
 
 import cn.com.unary.initcopy.entity.FileInfoDO;
-import cn.com.unary.initcopy.entity.SyncTaskDO;
 import cn.com.unary.initcopy.exception.InfoPersistenceException;
+import cn.com.unary.initcopy.grpc.entity.SyncTask;
 
 import java.util.List;
 
@@ -25,6 +25,7 @@ public interface FileManager {
      * 保存文件实体信息
      *
      * @param fi 文件信息实体
+     * @return 文件信息实体
      * @throws InfoPersistenceException 持久层异常
      */
     FileInfoDO save(FileInfoDO fi) throws InfoPersistenceException;
@@ -76,7 +77,7 @@ public interface FileManager {
      * @param taskId 任务Id
      * @return 同步任务的相关信息
      */
-    SyncTaskDO queryTask(int taskId);
+    SyncTask queryTask(int taskId);
 
     /**
      * 根据任务Id 删除该任务的相关配置信息，及
@@ -88,8 +89,8 @@ public interface FileManager {
     /**
      * 保存同步任务的相关信息
      *
-     * @param taskDO 同步任务的相关信息
+     * @param task 同步任务的相关信息
      * @return 返回持久化后的对象
      */
-    SyncTaskDO saveTask(SyncTaskDO taskDO);
+    SyncTask saveTask(SyncTask task);
 }

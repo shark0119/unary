@@ -1,12 +1,7 @@
 package cn.com.unary.initcopy.grpc.linker;
 
 import cn.com.unary.initcopy.common.AbstractLoggable;
-import cn.com.unary.initcopy.common.BeanConverter;
 import cn.com.unary.initcopy.common.utils.ValidateUtils;
-import cn.com.unary.initcopy.entity.DeleteTaskDO;
-import cn.com.unary.initcopy.entity.ExecResultDO;
-import cn.com.unary.initcopy.entity.ModifyTaskDO;
-import cn.com.unary.initcopy.entity.SyncTaskDO;
 import cn.com.unary.initcopy.filecopy.ClientFileCopy;
 import cn.com.unary.initcopy.grpc.entity.DeleteTask;
 import cn.com.unary.initcopy.grpc.entity.ExecResult;
@@ -51,7 +46,6 @@ public class InitCopyGrpcLinker extends AbstractLoggable {
     }
 
     public ExecResult add(SyncTask task) {
-        Objects.requireNonNull(task);
         ValidateUtils.requireNotEmpty(task.getFilesList());
         Objects.requireNonNull(task.getTargetInfo());
         if (task.getTaskId() < 0) {
@@ -59,7 +53,7 @@ public class InitCopyGrpcLinker extends AbstractLoggable {
         }
         ExecResult.Builder builder = ExecResult.newBuilder();
         try {
-            fileCopy.addTask(BeanConverter.convert(task, SyncTaskDO.class));
+            fileCopy.addTask(task);
             builder.setIsHealthy(true);
         } catch (Exception e) {
             logger.error("task add fail", e);
@@ -75,8 +69,11 @@ public class InitCopyGrpcLinker extends AbstractLoggable {
             throw new IllegalArgumentException("task id can't be negative.");
         }
         try {
-            return BeanConverter.convert(updater.query(task.getTaskId()), TaskState.class);
+            TaskState state = updater.query(task.getTaskId());
+            logger.info("stateDo:" + state);
+            return state;
         } catch (Exception e) {
+            logger.error("exception", e);
             ExecResult.Builder builder = ExecResult.newBuilder();
             builder.setMsg(e.getMessage()).setIsHealthy(false);
             return TaskState.newBuilder().setExecResult(builder)
@@ -90,10 +87,9 @@ public class InitCopyGrpcLinker extends AbstractLoggable {
             throw new IllegalArgumentException("task id can't be negative.");
         }
         try {
-            DeleteTaskDO taskDO = BeanConverter.convert(task, DeleteTaskDO.class);
-            ExecResultDO resultDO = updater.delete(taskDO);
-            return BeanConverter.convert(resultDO, ExecResult.class);
+            return updater.delete(task);
         } catch (Exception e) {
+            logger.error("exception", e);
             return ExecResult.newBuilder().setIsHealthy(false).setMsg(e.getMessage()).build();
         }
     }
@@ -105,10 +101,9 @@ public class InitCopyGrpcLinker extends AbstractLoggable {
         }
         Objects.requireNonNull(task.getModifyType());
         try {
-            ModifyTaskDO taskDO = BeanConverter.convert(task, ModifyTaskDO.class);
-            ExecResultDO resultDO = updater.modify(taskDO);
-            return BeanConverter.convert(resultDO, ExecResult.class);
+            return updater.modify(task);
         } catch (Exception e) {
+            logger.error("exception", e);
             return ExecResult.newBuilder().setIsHealthy(false).setMsg(e.getMessage()).build();
         }
     }

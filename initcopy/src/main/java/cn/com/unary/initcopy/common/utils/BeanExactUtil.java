@@ -3,6 +3,7 @@ package cn.com.unary.initcopy.common.utils;
 import cn.com.unary.initcopy.entity.BaseFileInfoDO;
 import cn.com.unary.initcopy.entity.Constants;
 import cn.com.unary.initcopy.entity.FileInfoDO;
+import cn.com.unary.initcopy.grpc.entity.BaseFileInfo;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -76,5 +77,23 @@ public class BeanExactUtil {
         fi.getAttr().setOwner(ownerView.getOwner().getName());
         fi.getAttr().setHidden(path.toFile().isHidden());
         return fi;
+    }
+
+    public static List<BaseFileInfoDO> takeFromGrpc(List<BaseFileInfo> bfiList) {
+        List<BaseFileInfoDO> bfiDOList = new ArrayList<>(bfiList.size());
+        for (BaseFileInfo bfi : bfiList) {
+            bfiDOList.add(takeFromGrpc(bfi));
+        }
+        return bfiDOList;
+    }
+
+    public static BaseFileInfoDO takeFromGrpc(BaseFileInfo bfi) {
+        BaseFileInfoDO bfiDO = new BaseFileInfoDO();
+        bfiDO.setFileId(bfi.getFileId());
+        bfiDO.setFileSize(bfi.getFileSize());
+        bfiDO.setFullName(bfi.getFullName());
+        bfiDO.setModifyTime(bfi.getModifyTime());
+        bfiDO.setCheckSum(bfi.getCheckSum());
+        return bfiDO;
     }
 }

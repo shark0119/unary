@@ -21,5 +21,6 @@ public class BaseFileInfoDO implements Entity {
 	private long modifyTime;
 	private long fileSize;
 	private String fullName;
+	private String checkSum;
 
 }

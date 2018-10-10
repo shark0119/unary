@@ -1,28 +1,18 @@
 package cn.com.unary.initcopy.grpc.linker;
 
 import cn.com.unary.initcopy.common.AbstractLoggable;
-import cn.com.unary.initcopy.common.BeanConverter;
-import cn.com.unary.initcopy.entity.BaseFileInfoDO;
-import cn.com.unary.initcopy.entity.ClientInitReqDO;
-import cn.com.unary.initcopy.entity.DeleteTaskDO;
-import cn.com.unary.initcopy.entity.ExecResultDO;
-import cn.com.unary.initcopy.entity.ModifyTaskDO;
-import cn.com.unary.initcopy.entity.ServerInitRespDO;
 import cn.com.unary.initcopy.filecopy.ServerFileCopy;
-import cn.com.unary.initcopy.grpc.entity.BaseFileInfo;
 import cn.com.unary.initcopy.grpc.entity.ClientInitReq;
 import cn.com.unary.initcopy.grpc.entity.DeleteTask;
 import cn.com.unary.initcopy.grpc.entity.ExecResult;
 import cn.com.unary.initcopy.grpc.entity.ModifyTask;
 import cn.com.unary.initcopy.grpc.entity.ServerInitResp;
 import cn.com.unary.initcopy.service.ServerTaskUpdater;
-import cn.com.unary.initcopy.common.utils.ValidateUtils;
 import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
 import java.util.Objects;
 
 /**
@@ -40,6 +30,8 @@ import java.util.Objects;
 @Scope("singleton")
 public class ControlTaskGrpcLinker extends AbstractLoggable {
 
+    private static final String TASK_SUCCESS_MSG = "Task success!";
+
     private static ServerFileCopy fileCopy;
     private static ServerTaskUpdater taskUpdater;
 
@@ -47,10 +39,12 @@ public class ControlTaskGrpcLinker extends AbstractLoggable {
     public void setServerFileCopy(ServerFileCopy fileCopy) {
         ControlTaskGrpcLinker.fileCopy = fileCopy;
     }
+
     @Autowired
     public void setTaskUpdater(ServerTaskUpdater updater) {
         ControlTaskGrpcLinker.taskUpdater = updater;
     }
+
     /**
      * 调用 {@link cn.com.unary.initcopy.grpc.ControlTaskGrpc#METHODID_INIT}
      *
@@ -58,27 +52,20 @@ public class ControlTaskGrpcLinker extends AbstractLoggable {
      * @return 初始化响应
      */
     public ServerInitResp init(ClientInitReq req) {
-        Objects.requireNonNull(req);
-        ValidateUtils.requireNotEmpty(req.getBaseFileInfosList());
-        if (req.getTaskId() < 0) {
-            throw new IllegalArgumentException("task id can't be negative.");
-        } else if (req.getTotalSize() < 0) {
-            throw new IllegalArgumentException("total size can't be negative.");
-        }
-        try {
-            ClientInitReqDO reqDO = BeanConverter.convert(req, ClientInitReqDO.class);
-            reqDO.setBaseFileInfos(new ArrayList<BaseFileInfoDO>());
-            for (BaseFileInfo bfi : req.getBaseFileInfosList()) {
-                reqDO.getBaseFileInfos().add(BeanConverter.convert(bfi, BaseFileInfoDO.class));
+        ServerInitResp.Builder builder = ServerInitResp.newBuilder().setTaskId(req.getTaskId());
+        if (req.getBaseFileInfosCount() <= 0) {
+            builder.setMsg("Illegal request. No files.").setReady(false);
+        } else if (req.getTaskId() < 0) {
+            builder.setReady(false).setMsg("Illegal request. Task Id");
+        } else {
+            try {
+                return fileCopy.startInit(req);
+            } catch (Exception e) {
+                logger.error("init fail", e);
+                builder.setReady(false).setMsg(e.getMessage());
             }
-            ServerInitRespDO respDO = fileCopy.startInit(reqDO);
-            return BeanConverter.convert(respDO, ServerInitResp.class);
-        } catch (Exception e) {
-            logger.error("init fail", e);
-            ServerInitResp.Builder builder = ServerInitResp.newBuilder();
-            builder.setReady(false).setTaskId(req.getTaskId()).setMsg(e.getMessage());
-            return builder.build();
         }
+        return builder.build();
     }
 
     /**
@@ -91,16 +78,15 @@ public class ControlTaskGrpcLinker extends AbstractLoggable {
         if (task.getTaskId() < 0) {
             throw new IllegalArgumentException("task id can't be negative.");
         }
+        ExecResult.Builder builder = ExecResult.newBuilder();
         try {
-            DeleteTaskDO taskDO = BeanConverter.convert(task, DeleteTaskDO.class);
-            ExecResultDO respDO = taskUpdater.delete(taskDO);
-            return BeanConverter.convert(respDO, ExecResult.class);
+            taskUpdater.delete(task);
+            builder.setIsHealthy(true).setMsg(TASK_SUCCESS_MSG);
         } catch (Exception e) {
             logger.error("delete fail", e);
-            ExecResult.Builder builder = ExecResult.newBuilder();
             builder.setIsHealthy(false).setMsg(e.getMessage());
-            return builder.build();
         }
+        return builder.build();
     }
 
     /**
@@ -115,15 +101,14 @@ public class ControlTaskGrpcLinker extends AbstractLoggable {
             throw new IllegalArgumentException("task id can't be negative.");
         }
         Objects.requireNonNull(task.getModifyType());
+        ExecResult.Builder builder = ExecResult.newBuilder();
         try {
-            ModifyTaskDO taskDO = BeanConverter.convert(task, ModifyTaskDO.class);
-            ExecResultDO respDO = taskUpdater.modify(taskDO);
-            return BeanConverter.convert(respDO, ExecResult.class);
+            taskUpdater.modify(task);
+            builder.setIsHealthy(true).setMsg(TASK_SUCCESS_MSG);
         } catch (Exception e) {
             logger.error("modify fail", e);
-            ExecResult.Builder builder = ExecResult.newBuilder();
             builder.setIsHealthy(false).setMsg(e.getMessage());
-            return builder.build();
         }
+        return builder.build();
     }
 }

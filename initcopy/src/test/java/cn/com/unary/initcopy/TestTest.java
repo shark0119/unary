@@ -5,6 +5,7 @@ import lombok.Setter;
 import org.junit.Test;
 import sun.reflect.generics.reflectiveObjects.ParameterizedTypeImpl;
 
+import java.io.IOException;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -48,9 +49,8 @@ public class TestTest {
     }
 
     @Test
-    public void test3() {
-        String str = String.format("i got digit %d and a string %s ", 1, "str");
-        System.out.println(str);
+    public void test3() throws IOException {
+
     }
 
     private static class Task implements Runnable {

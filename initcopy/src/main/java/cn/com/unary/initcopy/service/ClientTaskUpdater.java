@@ -3,12 +3,14 @@ package cn.com.unary.initcopy.service;
 import api.UnaryTransferClient;
 import cn.com.unary.initcopy.InitCopyContext;
 import cn.com.unary.initcopy.common.AbstractLoggable;
+import cn.com.unary.initcopy.common.utils.ValidateUtils;
 import cn.com.unary.initcopy.dao.FileManager;
-import cn.com.unary.initcopy.entity.*;
+import cn.com.unary.initcopy.entity.Constants;
+import cn.com.unary.initcopy.entity.FileInfoDO;
 import cn.com.unary.initcopy.exception.TaskFailException;
 import cn.com.unary.initcopy.filecopy.ClientFileCopy;
 import cn.com.unary.initcopy.grpc.client.ControlTaskGrpcClient;
-import cn.com.unary.initcopy.grpc.constant.ModifyType;
+import cn.com.unary.initcopy.grpc.entity.*;
 import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -37,7 +39,7 @@ public class ClientTaskUpdater extends AbstractLoggable {
     @Autowired
     private InitCopyContext context;
 
-    public ExecResultDO delete(DeleteTaskDO task) throws TaskFailException {
+    public ExecResult delete(DeleteTask task) throws TaskFailException {
         // 停止源端同步任务
         try {
             fileCopy.updateTask(task.getTaskId(), Constants.UpdateType.PAUSE);
@@ -45,23 +47,23 @@ public class ClientTaskUpdater extends AbstractLoggable {
             throw new TaskFailException(e);
         }
         // 通知目标端删除任务
-        SyncTargetDO targetInfo = fm.queryTask(task.getTaskId()).getTargetInfo();
+        SyncTarget targetInfo = fm.queryTask(task.getTaskId()).getTargetInfo();
         ControlTaskGrpcClient client = new ControlTaskGrpcClient(targetInfo.getIp(), context.getInnerGrpcPort());
-        final ExecResultDO execResultDO = client.invokeGrpcDelete(task);
+        final ExecResult result = client.invokeGrpcDelete(task);
         // 删除源端任务相关信息
-        if (execResultDO.isHealthy()) {
+        if (result.getIsHealthy()) {
             fm.deleteTask(task.getTaskId());
         }
-        return execResultDO;
+        return result;
     }
 
-    public ExecResultDO modify(ModifyTaskDO task) throws TaskFailException {
+    public ExecResult modify(ModifyTask task) throws TaskFailException {
         Constants.UpdateType updateType;
         switch (task.getModifyType()) {
             case SPEED_LIMIT:
                 @NonNull UnaryTransferClient client = fileCopy.getTransferMap().get(task.getTaskId());
                 client.setSpeedLimit(task.getSpeedLimit());
-                return new ExecResultDO(true, 0, "");
+                return ExecResult.newBuilder().setIsHealthy(true).setCode(0).setMsg("").build();
             case START:
                 updateType = Constants.UpdateType.RESUME;
                 break;
@@ -76,16 +78,16 @@ public class ClientTaskUpdater extends AbstractLoggable {
         } catch (IOException e) {
             throw new TaskFailException(e);
         }
-        SyncTargetDO targetInfo = fm.queryTask(task.getTaskId()).getTargetInfo();
+        SyncTarget targetInfo = fm.queryTask(task.getTaskId()).getTargetInfo();
         ControlTaskGrpcClient client = new ControlTaskGrpcClient(targetInfo.getIp(), context.getInnerGrpcPort());
         return client.invokeGrpcModify(task);
     }
 
-    public TaskStateDO query(int taskId) throws TaskFailException {
+    public TaskState query(int taskId) throws TaskFailException {
         List<FileInfoDO> fis = fm.queryByTaskId(taskId);
-        SyncTaskDO taskDO = fm.queryTask(taskId);
+        SyncTask task = fm.queryTask(taskId);
         long syncedFileNum = 0L, syncedFileSize = 0L;
-        String syncingFileName = null;
+        String syncingFileName = "";
         for (FileInfoDO infoDO : fis) {
             switch (infoDO.getStateEnum()) {
                 case WAIT:
@@ -96,22 +98,35 @@ public class ClientTaskUpdater extends AbstractLoggable {
                     break;
                 case SYNCING:
                 default:
-                    if (syncingFileName != null) {
+                    if (!ValidateUtils.isEmpty(syncingFileName)) {
                         throw new TaskFailException("error state, more than one file in syncing state.");
                     }
                     syncingFileName = infoDO.getFullName();
                     break;
             }
         }
-        ProgressInfoDO progress = new ProgressInfoDO();
+        ProgressInfo.Builder progress = ProgressInfo.newBuilder();
         progress.setProgress(0);
         progress.setTotalFileNum(fis.size());
         progress.setSyncedFileNum(syncedFileNum);
         progress.setSyncedFileSize(syncedFileSize);
         progress.setSyncingFileName(syncingFileName);
-        progress.setTotalFileSize(taskDO.getTotalSize());
-        progress.setStage((int) (fis.size() / syncedFileNum));
-        ExecResultDO execResultDO = new ExecResultDO(true, 0, "");
-        return new TaskStateDO(taskId, execResultDO, progress);
+        progress.setTotalFileSize(0L);
+        if (syncedFileNum != 0) {
+            progress.setStage((int) (fis.size() / syncedFileNum));
+        } else {
+            progress.setStage(0);
+        }
+        ExecResult.Builder result = ExecResult.newBuilder();
+        result.setIsHealthy(true).setCode(0).setMsg("");
+        TaskState.Builder builder = TaskState.newBuilder();
+        // TODO
+        progress.setSyncedFileNum(fis.size());
+        progress.setSyncedFileSize(1000L);
+        progress.setTotalFileSize(1000L);
+        progress.setProgress(100);
+
+        builder.setExecResult(result).setProgressInfo(progress);
+        return builder.build();
     }
 }

@@ -1,6 +1,7 @@
 package cn.com.unary.initcopy;
 
 import cn.com.unary.initcopy.grpc.constant.SyncType;
+import cn.com.unary.initcopy.grpc.entity.QueryTask;
 import cn.com.unary.initcopy.grpc.entity.SyncTarget;
 import cn.com.unary.initcopy.grpc.entity.SyncTask;
 import cn.com.unary.initcopy.grpc.linker.InitCopyGrpcLinker;
@@ -43,5 +44,7 @@ public class ClientTest {
         InitCopyGrpcClient client = new
                 InitCopyGrpcClient("127.0.0.1", 10002);
         System.out.println(client.add(builder.build()));
+        System.out.println(client.query(QueryTask.newBuilder().setTaskId(1).build()));
+
     }
 }
