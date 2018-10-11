@@ -16,10 +16,10 @@ import java.beans.Transient;
 @ToString(callSuper = true)
 public class FileInfoDO extends BaseFileInfoDO {
     private static final long serialVersionUID = 7000233780395813428L;
-    private int taskId;
+    private String taskId;
     private FileType fileType;
-    private int beginPackIndex;
-    private int finishPackIndex;
+    private Integer beginPackIndex;
+    private Integer finishPackIndex;
     private FileAttr attr;
     private STATE state;
 
@@ -31,6 +31,7 @@ public class FileInfoDO extends BaseFileInfoDO {
         this.setFullName(bfi.getFullName());
         this.setFileId(bfi.getFileId());
         this.setModifyTime(bfi.getModifyTime());
+        this.setBackUpPath(bfi.getBackUpPath());
     }
 
     public static FileAttr newFileAttr() {

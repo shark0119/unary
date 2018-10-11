@@ -53,7 +53,7 @@ public interface FileManager {
      * @param taskId 任务 Id
      * @return 文件信息实体集合
      */
-    List<FileInfoDO> queryByTaskId(int taskId);
+    List<FileInfoDO> queryByTaskId(String taskId);
 
     /**
      * 查询某个任务中未同步的文件信息集合
@@ -61,7 +61,7 @@ public interface FileManager {
      * @param taskId 任务Id
      * @return 实体集合
      */
-    List<FileInfoDO> queryUnSyncFileByTaskId(int taskId);
+    List<FileInfoDO> queryUnSyncFileByTaskId(String taskId);
 
     /**
      * 如果完成返回 true
@@ -69,7 +69,7 @@ public interface FileManager {
      * @param taskId 任务Id
      * @return 完成返回 true，未完成返回 false
      */
-    boolean taskFinished(int taskId);
+    boolean taskFinished(String taskId);
 
     /**
      * 通过任务 Id 查询任务信息
@@ -77,14 +77,14 @@ public interface FileManager {
      * @param taskId 任务Id
      * @return 同步任务的相关信息
      */
-    SyncTask queryTask(int taskId);
+    SyncTask queryTask(String taskId);
 
     /**
      * 根据任务Id 删除该任务的相关配置信息，及
      *
      * @param taskId 任务Id
      */
-    void deleteTask(int taskId);
+    void deleteTask(String taskId);
 
     /**
      * 保存同步任务的相关信息

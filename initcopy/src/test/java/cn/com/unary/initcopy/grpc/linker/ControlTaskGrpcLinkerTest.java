@@ -1,20 +1,7 @@
 package cn.com.unary.initcopy.grpc.linker;
 
-import cn.com.unary.initcopy.config.BeanConfig;
-import cn.com.unary.initcopy.grpc.entity.ClientInitReq;
-import cn.com.unary.initcopy.grpc.entity.DeleteTask;
-import cn.com.unary.initcopy.grpc.entity.ExecResult;
-import cn.com.unary.initcopy.grpc.entity.ModifyTask;
-import cn.com.unary.initcopy.grpc.entity.ServerInitResp;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-
-import java.util.Objects;
-
 public class ControlTaskGrpcLinkerTest {
-
+/*
     AnnotationConfigApplicationContext ac;
     ControlTaskGrpcLinker linker;
 
@@ -47,5 +34,5 @@ public class ControlTaskGrpcLinkerTest {
         ModifyTask.Builder builder = ModifyTask.newBuilder();
         ExecResult result = linker.modify(builder.build());
         Objects.requireNonNull(result);
-    }
+    }*/
 }

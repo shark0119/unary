@@ -15,21 +15,22 @@ message SyncTarget { //目标端IP及端口信息
 }
 
 message SyncTask { //同步任务
-    int32 taskId = 1; //任务ID
+                   string taskId = 1; //任务ID
     SyncTarget targetInfo = 2; // 目标端IP及端口信息
-    cn.com.unary.initcopy.grpc.constant.SyncType syncType = 3;    //同步方式
+    cn.com.unary.initcopy.grpc.constant.SyncType syncType = 3; //同步方式
     cn.com.unary.initcopy.grpc.constant.CompressType compressType = 4; //压缩方式
     cn.com.unary.initcopy.grpc.constant.EncryptType encryptType = 5; //加密方式
-    cn.com.unary.initcopy.grpc.constant.PackType packType = 6;       //打包类型
-    int32 speedLimit = 7;  //限速 以M为单位  0为不限速
-    string TargetDir = 8;     //要同步的目标目录
+    cn.com.unary.initcopy.grpc.constant.PackType packType = 6; //打包类型
+    int32 speedLimit = 7; //限速 以M为单位  0为不限速
+                   repeated string targetDirs = 8; //要同步的目标目录
     repeated string files = 9; //要同步的源文件
 }
 
-message ExecResult {	// 任务执行结果
-	bool healthy = 1;	// 任务装态是否正常
-	int32 code = 2;	// 执行状况代码
-	string msg = 3;	// 信息
+message ExecResult { // 任务执行结果
+	bool healthy = 1; // 任务装态是否正常
+	int32 code = 2; // 执行状况代码
+	string msg = 3; // 信息
+                     string taskId = 4; // 任务 Id
 }
 
 message ProgressInfo { //进度信息
@@ -43,52 +44,21 @@ message ProgressInfo { //进度信息
 }
 
 message QueryTask {
-	int32 taskId = 1;
+    string taskId = 1;
 }
 
 message TaskState { // 任务状态
-    int32 taskId = 1;  //对应的任务id
 	ExecResult execResult = 2;
     ProgressInfo progressInfo = 3; //进度信息
 }
 
 message ModifyTask { // 修改任务 只支持修改限速
-    int32 taskId = 1; //对应的任务id
+                     string taskId = 1; //对应的任务id
     cn.com.unary.initcopy.grpc.constant.ModifyType modifyType = 2;
-    int32  speedLimit = 3;  //限速 以M为单位  0为不限速
+    int32  speedLimit = 3; //限速 以M为单位  0为不限速
 }
 
 message DeleteTask { //删除任务信息 
-    int32 taskId = 1;
-    bool deleteFile = 2;//目标端是否删除备份的文件
-}
-
-message BaseFileInfo {
-	string checkSum = 1;	// 校验码
-	sint64 modifyTime = 2;	// 修改时间
-	sint64 fileSize = 3;	// 文件大小
-	string fullName = 4;// 文件全路径名
-    string fileId = 5;
-}
-message ClientInitReq {
-	int32 taskId = 1;
-	sint64 totalSize = 2;	//总大小
-	string targetDir = 3; //目标路径
-	cn.com.unary.initcopy.grpc.constant.SyncType syncType = 4; // 同步方式
-	repeated BaseFileInfo baseFileInfos = 5; // 文件信息
-}
-message DiffFileChunk {
-	string strongCheckCode = 1;// 强校验码Md5
-	string weakCheckCode = 2;// 弱校验码 CRC
-	string chunkSeq = 3;// 块序号
-}
-message DiffFileInfo {
-	string fileId = 1;// 文件Id
-	repeated DiffFileChunk diffFileChunks = 2;
-}
-message ServerInitResp {
-	int32 taskId = 1;
-	bool ready = 2;
-	string msg = 3;
-	repeated DiffFileInfo diffFileInfos = 4;
+                     string taskId = 1;
+    bool deleteFile = 2; //目标端是否删除备份的文件
 }

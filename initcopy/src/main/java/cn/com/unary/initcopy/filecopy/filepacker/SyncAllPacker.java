@@ -1,6 +1,7 @@
 package cn.com.unary.initcopy.filecopy.filepacker;
 
 import api.UnaryTransferClient;
+import cn.com.unary.initcopy.InitCopyContext;
 import cn.com.unary.initcopy.common.AbstractLoggable;
 import cn.com.unary.initcopy.common.utils.CommonUtils;
 import cn.com.unary.initcopy.dao.FileManager;
@@ -43,24 +44,24 @@ import java.util.List;
  * **********************************
  * <p>
  * 包格式
- * **********************************
- * *	当前任务Id(4字节)			*
- * *	数据包序号(4字节)  			*
- * **********************************
- * *	解析器种类标识(一个字节)		*
- * **********************************
- * *	文件数据包		 			*
- * **********************************
- * *								*
- * *	文件数据包					*
- * *								*
- * **********************************
- * *								*
- * *								*
- * *	文件数据包					*
- * *								*
- * *								*
- * **********************************
+ * ***********************************
+ * *当前任务Id(36字节,根据编码格式而异)*
+ * *	数据包序号(4字节)  			 *
+ * ***********************************
+ * *	解析器种类标识(一个字节)		 *
+ * ***********************************
+ * *	文件数据包		 			 *
+ * ***********************************
+ * *								 *
+ * *	文件数据包					 *
+ * *								 *
+ * ***********************************
+ * *								 *
+ * *								 *
+ * *	文件数据包					 *
+ * *								 *
+ * *								 *
+ * ***********************************
  *
  * @author shark
  */
@@ -69,10 +70,10 @@ import java.util.List;
 public class SyncAllPacker extends AbstractLoggable implements Packer {
 
     /**
-     * 保留 9个字节来表示数据包头部长度。默认 9个字节，
-     * 4个字节存储了任务Id，4个字节存储了一个整型代表包序号,还有一个字节的解析器种类标识
+     * 保留 41个字节来表示数据包头部长度。默认 41个字节，
+     * 4个字节存储了一个整型代表包序号, 1字节的解析器种类标识,剩余的字节存储了任务Id.
      */
-    public final static int HEAD_LENGTH = 4 + 4 + 1;
+    public final static int HEAD_LENGTH = InitCopyContext.UUID_LEN + 4 + 1;
     /**
      * 文件信息长度。默认4个字节，存储了一个整型
      */
@@ -115,7 +116,7 @@ public class SyncAllPacker extends AbstractLoggable implements Packer {
     /**
      * 任务ID。
      */
-    private Integer taskId;
+    private byte[] taskId;
     /**
      * 当前打包进程是否暂停
      */
@@ -135,9 +136,9 @@ public class SyncAllPacker extends AbstractLoggable implements Packer {
      * @throws InfoPersistenceException 持久化层异常
      */
     @Override
-    public void start(Integer taskId, UnaryTransferClient transfer)
+    public void start(String taskId, UnaryTransferClient transfer)
             throws IOException, InfoPersistenceException {
-        this.taskId = taskId;
+        this.taskId = taskId.getBytes(InitCopyContext.CHARSET);
         this.transfer = transfer;
         List<FileInfoDO> list = fm.queryUnSyncFileByTaskId(taskId);
         fiIterator = list.iterator();
@@ -180,7 +181,7 @@ public class SyncAllPacker extends AbstractLoggable implements Packer {
             buffer = ByteBuffer.allocateDirect(PACK_SIZE);
         }
         // Set TaskId 4 bytes, PackIndex 4 bytes, PackType 1 byte.
-        buffer.putInt(taskId);
+        buffer.put(taskId);
         buffer.putInt(++packIndex);
         buffer.put(this.getPackType().getValue());
 

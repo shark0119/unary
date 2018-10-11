@@ -19,13 +19,13 @@ public  final class SyncTask extends
     super(builder);
   }
   private SyncTask() {
-    taskId_ = 0;
+    taskId_ = "";
     syncType_ = 0;
     compressType_ = 0;
     encryptType_ = 0;
     packType_ = 0;
     speedLimit_ = 0;
-    targetDir_ = "";
+    targetDirs_ = com.google.protobuf.LazyStringArrayList.EMPTY;
     files_ = com.google.protobuf.LazyStringArrayList.EMPTY;
   }
 
@@ -54,9 +54,10 @@ public  final class SyncTask extends
             }
             break;
           }
-          case 8: {
+          case 10: {
+            java.lang.String s = input.readStringRequireUtf8();
 
-            taskId_ = input.readInt32();
+            taskId_ = s;
             break;
           }
           case 18: {
@@ -103,8 +104,11 @@ public  final class SyncTask extends
           }
           case 66: {
             java.lang.String s = input.readStringRequireUtf8();
-
-            targetDir_ = s;
+            if (!((mutable_bitField0_ & 0x00000080) == 0x00000080)) {
+              targetDirs_ = new com.google.protobuf.LazyStringArrayList();
+              mutable_bitField0_ |= 0x00000080;
+            }
+            targetDirs_.add(s);
             break;
           }
           case 74: {
@@ -124,6 +128,9 @@ public  final class SyncTask extends
       throw new com.google.protobuf.InvalidProtocolBufferException(
           e).setUnfinishedMessage(this);
     } finally {
+      if (((mutable_bitField0_ & 0x00000080) == 0x00000080)) {
+        targetDirs_ = targetDirs_.getUnmodifiableView();
+      }
       if (((mutable_bitField0_ & 0x00000100) == 0x00000100)) {
         files_ = files_.getUnmodifiableView();
       }
@@ -144,16 +151,46 @@ public  final class SyncTask extends
 
   private int bitField0_;
   public static final int TASKID_FIELD_NUMBER = 1;
-  private int taskId_;
+  private volatile java.lang.Object taskId_;
+
+  /**
+   * <pre>
+   * 任务ID
+   * </pre>
+   *
+   * <code>optional string taskId = 1;</code>
+   */
+  public java.lang.String getTaskId() {
+    java.lang.Object ref = taskId_;
+    if (ref instanceof java.lang.String) {
+      return (java.lang.String) ref;
+    } else {
+      com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+      java.lang.String s = bs.toStringUtf8();
+      taskId_ = s;
+      return s;
+    }
+  }
   /**
    * <pre>
    *任务ID
    * </pre>
    *
-   * <code>optional int32 taskId = 1;</code>
+   * <code>optional string taskId = 1;</code>
    */
-  public int getTaskId() {
-    return taskId_;
+  public com.google.protobuf.ByteString
+  getTaskIdBytes() {
+    java.lang.Object ref = taskId_;
+    if (ref instanceof java.lang.String) {
+      com.google.protobuf.ByteString b =
+              com.google.protobuf.ByteString.copyFromUtf8(
+                      (java.lang.String) ref);
+      taskId_ = b;
+      return b;
+    } else {
+      return (com.google.protobuf.ByteString) ref;
+    }
   }
 
   public static final int TARGETINFO_FIELD_NUMBER = 2;
@@ -298,46 +335,51 @@ public  final class SyncTask extends
     return speedLimit_;
   }
 
-  public static final int TARGETDIR_FIELD_NUMBER = 8;
-  private volatile java.lang.Object targetDir_;
+  public static final int TARGETDIRS_FIELD_NUMBER = 8;
+  private com.google.protobuf.LazyStringList targetDirs_;
   /**
    * <pre>
    *要同步的目标目录
    * </pre>
    *
-   * <code>optional string TargetDir = 8;</code>
+   * <code>repeated string targetDirs = 8;</code>
    */
-  public java.lang.String getTargetDir() {
-    java.lang.Object ref = targetDir_;
-    if (ref instanceof java.lang.String) {
-      return (java.lang.String) ref;
-    } else {
-      com.google.protobuf.ByteString bs = 
-          (com.google.protobuf.ByteString) ref;
-      java.lang.String s = bs.toStringUtf8();
-      targetDir_ = s;
-      return s;
-    }
+  public com.google.protobuf.ProtocolStringList
+  getTargetDirsList() {
+    return targetDirs_;
+  }
+
+  /**
+   * <pre>
+   *要同步的目标目录
+   * </pre>
+   *
+   * <code>repeated string targetDirs = 8;</code>
+   */
+  public int getTargetDirsCount() {
+    return targetDirs_.size();
+  }
+
+  /**
+   * <pre>
+   * 要同步的目标目录
+   * </pre>
+   *
+   * <code>repeated string targetDirs = 8;</code>
+   */
+  public java.lang.String getTargetDirs(int index) {
+    return targetDirs_.get(index);
   }
   /**
    * <pre>
    *要同步的目标目录
    * </pre>
    *
-   * <code>optional string TargetDir = 8;</code>
+   * <code>repeated string targetDirs = 8;</code>
    */
   public com.google.protobuf.ByteString
-      getTargetDirBytes() {
-    java.lang.Object ref = targetDir_;
-    if (ref instanceof java.lang.String) {
-      com.google.protobuf.ByteString b = 
-          com.google.protobuf.ByteString.copyFromUtf8(
-              (java.lang.String) ref);
-      targetDir_ = b;
-      return b;
-    } else {
-      return (com.google.protobuf.ByteString) ref;
-    }
+  getTargetDirsBytes(int index) {
+    return targetDirs_.getByteString(index);
   }
 
   public static final int FILES_FIELD_NUMBER = 9;
@@ -397,8 +439,8 @@ public  final class SyncTask extends
 
   public void writeTo(com.google.protobuf.CodedOutputStream output)
                       throws java.io.IOException {
-    if (taskId_ != 0) {
-      output.writeInt32(1, taskId_);
+    if (!getTaskIdBytes().isEmpty()) {
+      com.google.protobuf.GeneratedMessageV3.writeString(output, 1, taskId_);
     }
     if (targetInfo_ != null) {
       output.writeMessage(2, getTargetInfo());
@@ -418,8 +460,8 @@ public  final class SyncTask extends
     if (speedLimit_ != 0) {
       output.writeInt32(7, speedLimit_);
     }
-    if (!getTargetDirBytes().isEmpty()) {
-      com.google.protobuf.GeneratedMessageV3.writeString(output, 8, targetDir_);
+    for (int i = 0; i < targetDirs_.size(); i++) {
+      com.google.protobuf.GeneratedMessageV3.writeString(output, 8, targetDirs_.getRaw(i));
     }
     for (int i = 0; i < files_.size(); i++) {
       com.google.protobuf.GeneratedMessageV3.writeString(output, 9, files_.getRaw(i));
@@ -431,9 +473,8 @@ public  final class SyncTask extends
     if (size != -1) return size;
 
     size = 0;
-    if (taskId_ != 0) {
-      size += com.google.protobuf.CodedOutputStream
-        .computeInt32Size(1, taskId_);
+    if (!getTaskIdBytes().isEmpty()) {
+      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, taskId_);
     }
     if (targetInfo_ != null) {
       size += com.google.protobuf.CodedOutputStream
@@ -459,8 +500,13 @@ public  final class SyncTask extends
       size += com.google.protobuf.CodedOutputStream
         .computeInt32Size(7, speedLimit_);
     }
-    if (!getTargetDirBytes().isEmpty()) {
-      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(8, targetDir_);
+    {
+      int dataSize = 0;
+      for (int i = 0; i < targetDirs_.size(); i++) {
+        dataSize += computeStringSizeNoTag(targetDirs_.getRaw(i));
+      }
+      size += dataSize;
+      size += 1 * getTargetDirsList().size();
     }
     {
       int dataSize = 0;
@@ -486,8 +532,8 @@ public  final class SyncTask extends
     cn.com.unary.initcopy.grpc.entity.SyncTask other = (cn.com.unary.initcopy.grpc.entity.SyncTask) obj;
 
     boolean result = true;
-    result = result && (getTaskId()
-        == other.getTaskId());
+    result = result && getTaskId()
+            .equals(other.getTaskId());
     result = result && (hasTargetInfo() == other.hasTargetInfo());
     if (hasTargetInfo()) {
       result = result && getTargetInfo()
@@ -499,8 +545,8 @@ public  final class SyncTask extends
     result = result && packType_ == other.packType_;
     result = result && (getSpeedLimit()
         == other.getSpeedLimit());
-    result = result && getTargetDir()
-        .equals(other.getTargetDir());
+    result = result && getTargetDirsList()
+            .equals(other.getTargetDirsList());
     result = result && getFilesList()
         .equals(other.getFilesList());
     return result;
@@ -514,7 +560,7 @@ public  final class SyncTask extends
     int hash = 41;
     hash = (19 * hash) + getDescriptorForType().hashCode();
     hash = (37 * hash) + TASKID_FIELD_NUMBER;
-    hash = (53 * hash) + getTaskId();
+    hash = (53 * hash) + getTaskId().hashCode();
     if (hasTargetInfo()) {
       hash = (37 * hash) + TARGETINFO_FIELD_NUMBER;
       hash = (53 * hash) + getTargetInfo().hashCode();
@@ -529,8 +575,10 @@ public  final class SyncTask extends
     hash = (53 * hash) + packType_;
     hash = (37 * hash) + SPEEDLIMIT_FIELD_NUMBER;
     hash = (53 * hash) + getSpeedLimit();
-    hash = (37 * hash) + TARGETDIR_FIELD_NUMBER;
-    hash = (53 * hash) + getTargetDir().hashCode();
+    if (getTargetDirsCount() > 0) {
+      hash = (37 * hash) + TARGETDIRS_FIELD_NUMBER;
+      hash = (53 * hash) + getTargetDirsList().hashCode();
+    }
     if (getFilesCount() > 0) {
       hash = (37 * hash) + FILES_FIELD_NUMBER;
       hash = (53 * hash) + getFilesList().hashCode();
@@ -657,7 +705,7 @@ public  final class SyncTask extends
     }
     public Builder clear() {
       super.clear();
-      taskId_ = 0;
+      taskId_ = "";
 
       if (targetInfoBuilder_ == null) {
         targetInfo_ = null;
@@ -675,8 +723,8 @@ public  final class SyncTask extends
 
       speedLimit_ = 0;
 
-      targetDir_ = "";
-
+      targetDirs_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      bitField0_ = (bitField0_ & ~0x00000080);
       files_ = com.google.protobuf.LazyStringArrayList.EMPTY;
       bitField0_ = (bitField0_ & ~0x00000100);
       return this;
@@ -714,7 +762,11 @@ public  final class SyncTask extends
       result.encryptType_ = encryptType_;
       result.packType_ = packType_;
       result.speedLimit_ = speedLimit_;
-      result.targetDir_ = targetDir_;
+      if (((bitField0_ & 0x00000080) == 0x00000080)) {
+        targetDirs_ = targetDirs_.getUnmodifiableView();
+        bitField0_ = (bitField0_ & ~0x00000080);
+      }
+      result.targetDirs_ = targetDirs_;
       if (((bitField0_ & 0x00000100) == 0x00000100)) {
         files_ = files_.getUnmodifiableView();
         bitField0_ = (bitField0_ & ~0x00000100);
@@ -762,8 +814,9 @@ public  final class SyncTask extends
 
     public Builder mergeFrom(cn.com.unary.initcopy.grpc.entity.SyncTask other) {
       if (other == cn.com.unary.initcopy.grpc.entity.SyncTask.getDefaultInstance()) return this;
-      if (other.getTaskId() != 0) {
-        setTaskId(other.getTaskId());
+      if (!other.getTaskId().isEmpty()) {
+        taskId_ = other.taskId_;
+        onChanged();
       }
       if (other.hasTargetInfo()) {
         mergeTargetInfo(other.getTargetInfo());
@@ -783,8 +836,14 @@ public  final class SyncTask extends
       if (other.getSpeedLimit() != 0) {
         setSpeedLimit(other.getSpeedLimit());
       }
-      if (!other.getTargetDir().isEmpty()) {
-        targetDir_ = other.targetDir_;
+      if (!other.targetDirs_.isEmpty()) {
+        if (targetDirs_.isEmpty()) {
+          targetDirs_ = other.targetDirs_;
+          bitField0_ = (bitField0_ & ~0x00000080);
+        } else {
+          ensureTargetDirsIsMutable();
+          targetDirs_.addAll(other.targetDirs_);
+        }
         onChanged();
       }
       if (!other.files_.isEmpty()) {
@@ -822,42 +881,97 @@ public  final class SyncTask extends
       }
       return this;
     }
+
     private int bitField0_;
 
-    private int taskId_ ;
+    private java.lang.Object taskId_ = "";
     /**
      * <pre>
      *任务ID
      * </pre>
      *
-     * <code>optional int32 taskId = 1;</code>
+     * <code>optional string taskId = 1;</code>
      */
-    public int getTaskId() {
-      return taskId_;
+    public java.lang.String getTaskId() {
+      java.lang.Object ref = taskId_;
+      if (!(ref instanceof java.lang.String)) {
+        com.google.protobuf.ByteString bs =
+                (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        taskId_ = s;
+        return s;
+      } else {
+        return (java.lang.String) ref;
+      }
     }
     /**
      * <pre>
      *任务ID
      * </pre>
      *
-     * <code>optional int32 taskId = 1;</code>
+     * <code>optional string taskId = 1;</code>
      */
-    public Builder setTaskId(int value) {
-      
+    public com.google.protobuf.ByteString
+    getTaskIdBytes() {
+      java.lang.Object ref = taskId_;
+      if (ref instanceof String) {
+        com.google.protobuf.ByteString b =
+                com.google.protobuf.ByteString.copyFromUtf8(
+                        (java.lang.String) ref);
+        taskId_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    /**
+     * <pre>
+     * 任务ID
+     * </pre>
+     *
+     * <code>optional string taskId = 1;</code>
+     */
+    public Builder setTaskId(
+            java.lang.String value) {
+      if (value == null) {
+        throw new NullPointerException();
+  }
+  
       taskId_ = value;
       onChanged();
       return this;
     }
+
     /**
      * <pre>
      *任务ID
      * </pre>
      *
-     * <code>optional int32 taskId = 1;</code>
+     * <code>optional string taskId = 1;</code>
      */
     public Builder clearTaskId() {
+
+      taskId_ = getDefaultInstance().getTaskId();
+      onChanged();
+      return this;
+    }
+
+    /**
+     * <pre>
+     * 任务ID
+     * </pre>
+     *
+     * <code>optional string taskId = 1;</code>
+     */
+    public Builder setTaskIdBytes(
+            com.google.protobuf.ByteString value) {
+      if (value == null) {
+        throw new NullPointerException();
+      }
+      checkByteStringIsUtf8(value);
       
-      taskId_ = 0;
+      taskId_ = value;
       onChanged();
       return this;
     }
@@ -1303,66 +1417,129 @@ public  final class SyncTask extends
      * <code>optional int32 speedLimit = 7;</code>
      */
     public Builder clearSpeedLimit() {
-      
+
       speedLimit_ = 0;
       onChanged();
       return this;
     }
 
-    private java.lang.Object targetDir_ = "";
-    /**
-     * <pre>
-     *要同步的目标目录
-     * </pre>
-     *
-     * <code>optional string TargetDir = 8;</code>
-     */
-    public java.lang.String getTargetDir() {
-      java.lang.Object ref = targetDir_;
-      if (!(ref instanceof java.lang.String)) {
-        com.google.protobuf.ByteString bs =
-            (com.google.protobuf.ByteString) ref;
-        java.lang.String s = bs.toStringUtf8();
-        targetDir_ = s;
-        return s;
-      } else {
-        return (java.lang.String) ref;
+    private com.google.protobuf.LazyStringList targetDirs_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+
+    private void ensureTargetDirsIsMutable() {
+      if (!((bitField0_ & 0x00000080) == 0x00000080)) {
+        targetDirs_ = new com.google.protobuf.LazyStringArrayList(targetDirs_);
+        bitField0_ |= 0x00000080;
       }
     }
+
+    /**
+     * <pre>
+     * 要同步的目标目录
+     * </pre>
+     *
+     * <code>repeated string targetDirs = 8;</code>
+     */
+    public com.google.protobuf.ProtocolStringList
+    getTargetDirsList() {
+      return targetDirs_.getUnmodifiableView();
+    }
+
     /**
      * <pre>
      *要同步的目标目录
      * </pre>
      *
-     * <code>optional string TargetDir = 8;</code>
+     * <code>repeated string targetDirs = 8;</code>
+     */
+    public int getTargetDirsCount() {
+      return targetDirs_.size();
+    }
+
+    /**
+     * <pre>
+     *要同步的目标目录
+     * </pre>
+     *
+     * <code>repeated string targetDirs = 8;</code>
+     */
+    public java.lang.String getTargetDirs(int index) {
+      return targetDirs_.get(index);
+    }
+
+    /**
+     * <pre>
+     *要同步的目标目录
+     * </pre>
+     *
+     * <code>repeated string targetDirs = 8;</code>
      */
     public com.google.protobuf.ByteString
-        getTargetDirBytes() {
-      java.lang.Object ref = targetDir_;
-      if (ref instanceof String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (java.lang.String) ref);
-        targetDir_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
+    getTargetDirsBytes(int index) {
+      return targetDirs_.getByteString(index);
     }
+
     /**
      * <pre>
-     *要同步的目标目录
+     * 要同步的目标目录
      * </pre>
      *
-     * <code>optional string TargetDir = 8;</code>
+     * <code>repeated string targetDirs = 8;</code>
      */
-    public Builder setTargetDir(
-        java.lang.String value) {
+    public Builder setTargetDirs(
+            int index, java.lang.String value) {
       if (value == null) {
-    throw new NullPointerException();
-  }
-  
-      targetDir_ = value;
+        throw new NullPointerException();
+      }
+      ensureTargetDirsIsMutable();
+      targetDirs_.set(index, value);
+      onChanged();
+      return this;
+    }
+
+    /**
+     * <pre>
+     *要同步的目标目录
+     * </pre>
+     *
+     * <code>repeated string targetDirs = 8;</code>
+     */
+    public Builder addTargetDirs(
+            java.lang.String value) {
+      if (value == null) {
+        throw new NullPointerException();
+      }
+      ensureTargetDirsIsMutable();
+      targetDirs_.add(value);
+      onChanged();
+      return this;
+    }
+
+    /**
+     * <pre>
+     * 要同步的目标目录
+     * </pre>
+     *
+     * <code>repeated string targetDirs = 8;</code>
+     */
+    public Builder addAllTargetDirs(
+            java.lang.Iterable<java.lang.String> values) {
+      ensureTargetDirsIsMutable();
+      com.google.protobuf.AbstractMessageLite.Builder.addAll(
+              values, targetDirs_);
+      onChanged();
+      return this;
+    }
+
+    /**
+     * <pre>
+     * 要同步的目标目录
+     * </pre>
+     *
+     * <code>repeated string targetDirs = 8;</code>
+     */
+    public Builder clearTargetDirs() {
+      targetDirs_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      bitField0_ = (bitField0_ & ~0x00000080);
       onChanged();
       return this;
     }
@@ -1371,29 +1548,16 @@ public  final class SyncTask extends
      *要同步的目标目录
      * </pre>
      *
-     * <code>optional string TargetDir = 8;</code>
+     * <code>repeated string targetDirs = 8;</code>
      */
-    public Builder clearTargetDir() {
-      
-      targetDir_ = getDefaultInstance().getTargetDir();
-      onChanged();
-      return this;
-    }
-    /**
-     * <pre>
-     *要同步的目标目录
-     * </pre>
-     *
-     * <code>optional string TargetDir = 8;</code>
-     */
-    public Builder setTargetDirBytes(
-        com.google.protobuf.ByteString value) {
+    public Builder addTargetDirsBytes(
+            com.google.protobuf.ByteString value) {
       if (value == null) {
     throw new NullPointerException();
   }
   checkByteStringIsUtf8(value);
-      
-      targetDir_ = value;
+      ensureTargetDirsIsMutable();
+      targetDirs_.add(value);
       onChanged();
       return this;
     }

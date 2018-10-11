@@ -12,9 +12,9 @@ public interface ExecResultOrBuilder extends
    * 任务装态是否正常
    * </pre>
    *
-   * <code>optional bool isHealthy = 1;</code>
+   * <code>optional bool healthy = 1;</code>
    */
-  boolean getIsHealthy();
+  boolean getHealthy();
 
   /**
    * <pre>
@@ -42,4 +42,23 @@ public interface ExecResultOrBuilder extends
    */
   com.google.protobuf.ByteString
       getMsgBytes();
+
+    /**
+     * <pre>
+     * 任务 Id
+     * </pre>
+     *
+     * <code>optional string taskId = 4;</code>
+     */
+    java.lang.String getTaskId();
+
+    /**
+     * <pre>
+     * 任务 Id
+     * </pre>
+     *
+     * <code>optional string taskId = 4;</code>
+     */
+    com.google.protobuf.ByteString
+    getTaskIdBytes();
 }

@@ -1,13 +1,13 @@
 package cn.com.unary.initcopy.filecopy.filepacker;
 
 import api.UnaryTransferClient;
+import cn.com.unary.initcopy.common.utils.ValidateUtils;
 import cn.com.unary.initcopy.dao.FileManager;
 import cn.com.unary.initcopy.entity.Constants.PackerType;
 import cn.com.unary.initcopy.entity.FileInfoDO;
 import cn.com.unary.initcopy.exception.InfoPersistenceException;
 import cn.com.unary.initcopy.filecopy.io.AbstractFileInput;
 import cn.com.unary.initcopy.grpc.entity.DiffFileInfo;
-import cn.com.unary.initcopy.common.utils.ValidateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
@@ -42,7 +42,7 @@ public class RsyncPacker implements SyncDiffPacker {
     private boolean ready = false;
 
     @Override
-    public void start(Integer taskId, UnaryTransferClient transfer) throws InfoPersistenceException {
+    public void start(String taskId, UnaryTransferClient transfer) throws InfoPersistenceException {
         Objects.requireNonNull(transfer);
         if (ready) {
             this.unaryTransferClient = transfer;

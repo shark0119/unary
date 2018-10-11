@@ -16,9 +16,7 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Objects;
 
-
 // TODO use AOP to log
-
 /**
  * 文件信息管理的基于 Sqlite 的实现
  *
@@ -96,28 +94,28 @@ public class SqliteFileManager extends AbstractLoggable implements FileManager {
     }
 
     @Override
-    public List<FileInfoDO> queryByTaskId(int taskId) {
+    public List<FileInfoDO> queryByTaskId(String taskId) {
         // TODO
         return null;
     }
 
     @Override
-    public List<FileInfoDO> queryUnSyncFileByTaskId(int taskId) {
+    public List<FileInfoDO> queryUnSyncFileByTaskId(String taskId) {
         return null;
     }
 
     @Override
-    public boolean taskFinished(int taskId) {
+    public boolean taskFinished(String taskId) {
         return false;
     }
 
     @Override
-    public SyncTask queryTask(int taskId) {
+    public SyncTask queryTask(String taskId) {
         return null;
     }
 
     @Override
-    public void deleteTask(int taskId) {
+    public void deleteTask(String taskId) {
 
     }
 

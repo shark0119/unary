@@ -3,7 +3,6 @@ package cn.com.unary.initcopy.filecopy;
 import cn.com.unary.initcopy.InitCopyContext;
 import cn.com.unary.initcopy.common.AbstractLoggable;
 import cn.com.unary.initcopy.common.ExecExceptionsHandler;
-import cn.com.unary.initcopy.common.utils.CommonUtils;
 import cn.com.unary.initcopy.entity.Constants;
 import cn.com.unary.initcopy.exception.InfoPersistenceException;
 import cn.com.unary.initcopy.exception.TaskFailException;
@@ -58,11 +57,11 @@ public class ServerFileCopy extends AbstractLoggable implements ApplicationConte
     /**
      * 已放入线程池中执行的任务
      */
-    private Map<Integer, CopyTask> execTaskMap;
+    private Map<String, CopyTask> execTaskMap;
     /**
      * 任务列表
      */
-    private Map<Integer, CopyTask> taskMap;
+    private Map<String, CopyTask> taskMap;
 
     public ServerFileCopy() {
         close = false;
@@ -87,7 +86,7 @@ public class ServerFileCopy extends AbstractLoggable implements ApplicationConte
      * @throws TaskFailException 当前任务停止时，抛出异常
      */
     public void resolverPack(byte[] data) throws TaskFailException {
-        int taskId = CommonUtils.byteArrayToInt(data, 0);
+        String taskId = takeTaskId(data);
         synchronized (lock) {
             if (close) {
                 throw new TaskFailException("FileCopy already shutdown.");
@@ -115,7 +114,7 @@ public class ServerFileCopy extends AbstractLoggable implements ApplicationConte
      * @throws TaskFailException 任务初始化失败异常
      */
     public ServerInitResp startInit(ClientInitReq req) throws TaskFailException {
-        CopyTask task = new CopyTask(req.getTaskId(), req.getTargetDir());
+        CopyTask task = new CopyTask(req.getTaskId(), req.getBackUpPath());
         synchronized (lock) {
             if (close) {
                 throw new TaskFailException("FileCopy already shutdown.");
@@ -138,7 +137,7 @@ public class ServerFileCopy extends AbstractLoggable implements ApplicationConte
     public void close() {
         synchronized (lock) {
             fileCopyExec.shutdownNow();
-            for (Integer i : taskMap.keySet()) {
+            for (String i : taskMap.keySet()) {
                 taskMap.get(i).close();
             }
             close = true;
@@ -151,7 +150,7 @@ public class ServerFileCopy extends AbstractLoggable implements ApplicationConte
      * @param taskId 任务 Id
      * @throws IOException
      */
-    public void deleteTask(int taskId) throws IOException {
+    public void deleteTask(String taskId) throws IOException {
         synchronized (lock) {
             if (!taskMap.containsKey(taskId)) {
                 throw new IllegalStateException("Task not found with id:" + taskId);
@@ -170,7 +169,7 @@ public class ServerFileCopy extends AbstractLoggable implements ApplicationConte
      * @param updateType 更新操作类型
      * @throws IOException IO 异常
      */
-    public void updateTask(int taskId, Constants.UpdateType updateType) throws IOException {
+    public void updateTask(String taskId, Constants.UpdateType updateType) throws IOException {
         switch (updateType) {
             case RESUME:
                 synchronized (lock) {
@@ -199,7 +198,7 @@ public class ServerFileCopy extends AbstractLoggable implements ApplicationConte
         private final List<byte[]> packs;
         private final Object lock;
         private Resolver syncAllResolver, syncDiffResolver;
-        private int taskId;
+        private String taskId;
         /**
          * pause 表示当前拷贝任务处于挂起状态，等待源端传包
          * shutdown 表示当前任务已被关闭
@@ -212,12 +211,17 @@ public class ServerFileCopy extends AbstractLoggable implements ApplicationConte
         private AtomicInteger wait = new AtomicInteger(0);
         private AtomicInteger notify = new AtomicInteger(0);
 
-        private CopyTask(int taskId, String targetDir) {
+        /**
+         * @param taskId     任务Id
+         * @param backUpPath 如果源目录与目标目录是多对一关系，则不为空，否则设为空
+         */
+        private CopyTask(String taskId, String backUpPath) {
             this.taskId = taskId;
             this.syncAllResolver = applicationContext.getBean("SyncAllResolver", SyncAllResolver.class);
             this.syncDiffResolver = applicationContext.getBean("RsyncResolver", RsyncResolver.class);
-            syncAllResolver.setBackupPath(targetDir).setTaskId(taskId);
-            syncDiffResolver.setBackupPath(targetDir).setTaskId(taskId);
+            // TODO
+            syncAllResolver.setTaskId(taskId).setBackUpPath(backUpPath);
+            syncDiffResolver.setTaskId(taskId).setBackUpPath(backUpPath);
             packs = new ArrayList<>(30);
             lock = new Object();
             pause = false;
@@ -315,5 +319,9 @@ public class ServerFileCopy extends AbstractLoggable implements ApplicationConte
             }
             logger.info("Task resolver done. Use " + execTime + ".");
         }
+    }
+
+    private String takeTaskId(byte[] data) {
+        return new String(data, 0, InitCopyContext.UUID_LEN, InitCopyContext.CHARSET);
     }
 }

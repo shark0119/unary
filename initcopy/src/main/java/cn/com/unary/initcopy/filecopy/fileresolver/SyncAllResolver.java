@@ -1,8 +1,10 @@
 package cn.com.unary.initcopy.filecopy.fileresolver;
 
+import cn.com.unary.initcopy.InitCopyContext;
 import cn.com.unary.initcopy.common.AbstractLoggable;
 import cn.com.unary.initcopy.common.utils.CommonUtils;
 import cn.com.unary.initcopy.common.utils.PathMapperUtil;
+import cn.com.unary.initcopy.common.utils.ValidateUtils;
 import cn.com.unary.initcopy.dao.FileManager;
 import cn.com.unary.initcopy.entity.Constants;
 import cn.com.unary.initcopy.entity.Constants.PackerType;
@@ -56,19 +58,13 @@ public class SyncAllResolver extends AbstractLoggable implements Resolver {
      * 当前读取的包序号
      */
     private int packIndex;
-    private String backupPath;
-    private int taskId;
+    private String taskId;
     private FileInfoDO currentFile;
-
-    @Override
-    public SyncAllResolver setBackupPath(String backupPath) {
-        this.backupPath = backupPath;
-        return this;
-    }
+    private String backUpPath;
 
     @Override
     public boolean process(byte[] data) throws IOException, InfoPersistenceException {
-        packIndex = CommonUtils.byteArrayToInt(data, 4);
+        packIndex = CommonUtils.byteArrayToInt(data, InitCopyContext.UUID_LEN);
         logger.info(String.format("we got pack with index: %d", packIndex));
         // get pack info
         if (!getPackType().equals(PackerType.valueOf(data[HEAD_LENGTH - 1]))) {
@@ -108,7 +104,7 @@ public class SyncAllResolver extends AbstractLoggable implements Resolver {
             } catch (Exception e) {
                 logger.error("close resource error", e);
             }
-            logger.info(String.format("Task:%d done.", taskId));
+            logger.info(String.format("Task:%s done.", taskId));
             return true;
         } else {
             return false;
@@ -203,8 +199,11 @@ public class SyncAllResolver extends AbstractLoggable implements Resolver {
     private boolean initCopyFile(int remainingSize) throws IOException, InfoPersistenceException {
         logger.debug("A file info json start transfer to FileInfo");
         currentFile = CommonUtils.deSerFromJson(fileInfo.array(), FileInfoDO.class);
+        if (ValidateUtils.isEmpty(backUpPath)) {
+            backUpPath = currentFile.getBackUpPath();
+        }
         boolean isRegularFile;
-        final String fileName = PathMapperUtil.sourcePathMapper(backupPath, currentFile.getFullName());
+        final String fileName = PathMapperUtil.sourcePathMapper(backUpPath, currentFile.getFullName());
         beginPackIndex = endPackIndex = packIndex;
         currentFile.setState(FileInfoDO.STATE.SYNCING);
         if (currentFile.getFileType().equals(Constants.FileType.REGULAR_FILE)) {
@@ -215,11 +214,11 @@ public class SyncAllResolver extends AbstractLoggable implements Resolver {
                 endPackSize = (int) (fileSizeExCurPack % (PACK_SIZE - HEAD_LENGTH));
                 beginPackSize = remainingSize;
             } else {
-                beginPackSize = endPackSize = (int) currentFile.getFileSize();
+                beginPackSize = endPackSize = (int) currentFile.getFileSize().longValue();
             }
             currentFile.setFinishPackIndex(endPackIndex);
             output.openFile(fileName);
-            logger.info(String.format("Task:%d,file id:%s, beginPackSize:%d in beginPackIndex:%d, endPackSize:%d in endPackIndex:%d",
+            logger.info(String.format("Task:%s,file id:%s, beginPackSize:%d in beginPackIndex:%d, endPackSize:%d in endPackIndex:%d",
                     taskId, currentFile.getFileId(), beginPackSize, beginPackIndex, endPackSize, endPackIndex));
             isRegularFile = true;
         } else if (currentFile.getFileType().equals(Constants.FileType.DIR)) {
@@ -232,7 +231,7 @@ public class SyncAllResolver extends AbstractLoggable implements Resolver {
             throw new IllegalStateException(String.format("UnSupport file type :%s.", currentFile.getFileType().toString()));
         }
         fm.save(currentFile);
-        faProcessor.storeFileAttr(backupPath, currentFile);
+        faProcessor.storeFileAttr(backUpPath, currentFile);
         return isRegularFile;
     }
 
@@ -296,8 +295,14 @@ public class SyncAllResolver extends AbstractLoggable implements Resolver {
     }
 
     @Override
-    public Resolver setTaskId(int taskId) {
+    public Resolver setTaskId(String taskId) {
         this.taskId = taskId;
+        return this;
+    }
+
+    @Override
+    public Resolver setBackUpPath(String backUpPath) {
+        this.backUpPath = backUpPath;
         return this;
     }
 
@@ -308,6 +313,9 @@ public class SyncAllResolver extends AbstractLoggable implements Resolver {
         }
     }
 
+    /**
+     * 上一个包读完时的进度
+     */
     private enum ReadProcess {
         // 文件信息长度
         FILE_INFO_LENGTH,

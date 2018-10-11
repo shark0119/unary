@@ -27,12 +27,13 @@ public class RsyncResolver implements Resolver{
 	}
 
 	@Override
-	public Resolver setTaskId(int taskId) {
+    public Resolver setTaskId(String taskId) {
 		return this;
 	}
 
 	@Override
-	public RsyncResolver setBackupPath(String backupPath) {
+    public Resolver setBackUpPath(String backUpPath) {
+
 		return this;
 	}
 

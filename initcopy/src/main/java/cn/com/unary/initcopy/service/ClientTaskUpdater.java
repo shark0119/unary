@@ -11,7 +11,6 @@ import cn.com.unary.initcopy.exception.TaskFailException;
 import cn.com.unary.initcopy.filecopy.ClientFileCopy;
 import cn.com.unary.initcopy.grpc.client.ControlTaskGrpcClient;
 import cn.com.unary.initcopy.grpc.entity.*;
-import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
@@ -39,7 +38,7 @@ public class ClientTaskUpdater extends AbstractLoggable {
     @Autowired
     private InitCopyContext context;
 
-    public ExecResult delete(DeleteTask task) throws TaskFailException {
+    public void delete(DeleteTask task) throws TaskFailException {
         // 停止源端同步任务
         try {
             fileCopy.updateTask(task.getTaskId(), Constants.UpdateType.PAUSE);
@@ -51,24 +50,24 @@ public class ClientTaskUpdater extends AbstractLoggable {
         ControlTaskGrpcClient client = new ControlTaskGrpcClient(targetInfo.getIp(), context.getInnerGrpcPort());
         final ExecResult result = client.invokeGrpcDelete(task);
         // 删除源端任务相关信息
-        if (result.getIsHealthy()) {
+        if (result.getHealthy()) {
             fm.deleteTask(task.getTaskId());
+        } else {
+            throw new TaskFailException(String.format("Server update task fail. %s", result.getMsg()));
         }
-        return result;
     }
 
-    public ExecResult modify(ModifyTask task) throws TaskFailException {
+    public void modify(ModifyTask task) throws TaskFailException {
         Constants.UpdateType updateType;
         switch (task.getModifyType()) {
             case SPEED_LIMIT:
-                @NonNull UnaryTransferClient client = fileCopy.getTransferMap().get(task.getTaskId());
+                UnaryTransferClient client = fileCopy.getTransferMap().get(task.getTaskId());
                 client.setSpeedLimit(task.getSpeedLimit());
-                return ExecResult.newBuilder().setIsHealthy(true).setCode(0).setMsg("").build();
+                return;
             case START:
                 updateType = Constants.UpdateType.RESUME;
                 break;
             case PAUSE:
-                // treat as default option
             default:
                 updateType = Constants.UpdateType.PAUSE;
                 break;
@@ -76,14 +75,17 @@ public class ClientTaskUpdater extends AbstractLoggable {
         try {
             fileCopy.updateTask(task.getTaskId(), updateType);
         } catch (IOException e) {
-            throw new TaskFailException(e);
+            throw new TaskFailException("Client update task fail.", e);
         }
         SyncTarget targetInfo = fm.queryTask(task.getTaskId()).getTargetInfo();
         ControlTaskGrpcClient client = new ControlTaskGrpcClient(targetInfo.getIp(), context.getInnerGrpcPort());
-        return client.invokeGrpcModify(task);
+        ExecResult result = client.invokeGrpcModify(task);
+        if (!result.getHealthy()) {
+            throw new TaskFailException(String.format("Server update task fail. %s", result.getMsg()));
+        }
     }
 
-    public TaskState query(int taskId) throws TaskFailException {
+    public TaskState query(String taskId) throws TaskFailException {
         List<FileInfoDO> fis = fm.queryByTaskId(taskId);
         SyncTask task = fm.queryTask(taskId);
         long syncedFileNum = 0L, syncedFileSize = 0L;
@@ -118,7 +120,7 @@ public class ClientTaskUpdater extends AbstractLoggable {
             progress.setStage(0);
         }
         ExecResult.Builder result = ExecResult.newBuilder();
-        result.setIsHealthy(true).setCode(0).setMsg("");
+        result.setHealthy(true).setCode(0).setMsg("");
         TaskState.Builder builder = TaskState.newBuilder();
         // TODO
         progress.setSyncedFileNum(fis.size());
@@ -129,4 +131,5 @@ public class ClientTaskUpdater extends AbstractLoggable {
         builder.setExecResult(result).setProgressInfo(progress);
         return builder.build();
     }
+
 }

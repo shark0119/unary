@@ -19,7 +19,6 @@ public  final class TaskState extends
     super(builder);
   }
   private TaskState() {
-    taskId_ = 0;
   }
 
   @java.lang.Override
@@ -45,11 +44,6 @@ public  final class TaskState extends
             if (!input.skipField(tag)) {
               done = true;
             }
-            break;
-          }
-          case 8: {
-
-            taskId_ = input.readInt32();
             break;
           }
           case 18: {
@@ -99,19 +93,6 @@ public  final class TaskState extends
     return cn.com.unary.initcopy.grpc.entity.IC_Entity.internal_static_cn_com_unary_initcopy_grpc_entity_TaskState_fieldAccessorTable
         .ensureFieldAccessorsInitialized(
             cn.com.unary.initcopy.grpc.entity.TaskState.class, cn.com.unary.initcopy.grpc.entity.TaskState.Builder.class);
-  }
-
-  public static final int TASKID_FIELD_NUMBER = 1;
-  private int taskId_;
-  /**
-   * <pre>
-   *对应的任务id
-   * </pre>
-   *
-   * <code>optional int32 taskId = 1;</code>
-   */
-  public int getTaskId() {
-    return taskId_;
   }
 
   public static final int EXECRESULT_FIELD_NUMBER = 2;
@@ -180,9 +161,6 @@ public  final class TaskState extends
 
   public void writeTo(com.google.protobuf.CodedOutputStream output)
                       throws java.io.IOException {
-    if (taskId_ != 0) {
-      output.writeInt32(1, taskId_);
-    }
     if (execResult_ != null) {
       output.writeMessage(2, getExecResult());
     }
@@ -196,10 +174,6 @@ public  final class TaskState extends
     if (size != -1) return size;
 
     size = 0;
-    if (taskId_ != 0) {
-      size += com.google.protobuf.CodedOutputStream
-        .computeInt32Size(1, taskId_);
-    }
     if (execResult_ != null) {
       size += com.google.protobuf.CodedOutputStream
         .computeMessageSize(2, getExecResult());
@@ -224,8 +198,6 @@ public  final class TaskState extends
     cn.com.unary.initcopy.grpc.entity.TaskState other = (cn.com.unary.initcopy.grpc.entity.TaskState) obj;
 
     boolean result = true;
-    result = result && (getTaskId()
-        == other.getTaskId());
     result = result && (hasExecResult() == other.hasExecResult());
     if (hasExecResult()) {
       result = result && getExecResult()
@@ -246,8 +218,6 @@ public  final class TaskState extends
     }
     int hash = 41;
     hash = (19 * hash) + getDescriptorForType().hashCode();
-    hash = (37 * hash) + TASKID_FIELD_NUMBER;
-    hash = (53 * hash) + getTaskId();
     if (hasExecResult()) {
       hash = (37 * hash) + EXECRESULT_FIELD_NUMBER;
       hash = (53 * hash) + getExecResult().hashCode();
@@ -378,8 +348,6 @@ public  final class TaskState extends
     }
     public Builder clear() {
       super.clear();
-      taskId_ = 0;
-
       if (execResultBuilder_ == null) {
         execResult_ = null;
       } else {
@@ -414,7 +382,6 @@ public  final class TaskState extends
 
     public cn.com.unary.initcopy.grpc.entity.TaskState buildPartial() {
       cn.com.unary.initcopy.grpc.entity.TaskState result = new cn.com.unary.initcopy.grpc.entity.TaskState(this);
-      result.taskId_ = taskId_;
       if (execResultBuilder_ == null) {
         result.execResult_ = execResult_;
       } else {
@@ -466,9 +433,6 @@ public  final class TaskState extends
 
     public Builder mergeFrom(cn.com.unary.initcopy.grpc.entity.TaskState other) {
       if (other == cn.com.unary.initcopy.grpc.entity.TaskState.getDefaultInstance()) return this;
-      if (other.getTaskId() != 0) {
-        setTaskId(other.getTaskId());
-      }
       if (other.hasExecResult()) {
         mergeExecResult(other.getExecResult());
       }
@@ -498,44 +462,6 @@ public  final class TaskState extends
           mergeFrom(parsedMessage);
         }
       }
-      return this;
-    }
-
-    private int taskId_ ;
-    /**
-     * <pre>
-     *对应的任务id
-     * </pre>
-     *
-     * <code>optional int32 taskId = 1;</code>
-     */
-    public int getTaskId() {
-      return taskId_;
-    }
-    /**
-     * <pre>
-     *对应的任务id
-     * </pre>
-     *
-     * <code>optional int32 taskId = 1;</code>
-     */
-    public Builder setTaskId(int value) {
-      
-      taskId_ = value;
-      onChanged();
-      return this;
-    }
-    /**
-     * <pre>
-     *对应的任务id
-     * </pre>
-     *
-     * <code>optional int32 taskId = 1;</code>
-     */
-    public Builder clearTaskId() {
-      
-      taskId_ = 0;
-      onChanged();
       return this;
     }
 

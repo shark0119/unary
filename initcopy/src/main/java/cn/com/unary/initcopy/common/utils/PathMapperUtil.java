@@ -9,7 +9,7 @@ package cn.com.unary.initcopy.common.utils;
 public class PathMapperUtil {
 
     private static final String SUFFIX = "/";
-    private static final String UNARY_WIN_PREFIX = "win_driver_unary_";
+    private static final String UNARY_WIN_PREFIX = "";
 
     public enum OS {
         /**

@@ -1,0 +1,41 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "cn.com.unary.initcopy.grpc.entity";
+option java_outer_classname = "TC_Entity";
+
+import "init_copy_constant.proto";
+
+package cn.com.unary.initcopy.grpc.entity;
+
+message BaseFileInfo {
+    string checkSum = 1; // 校验码
+    sint64 modifyTime = 2; // 修改时间
+    sint64 fileSize = 3; // 文件大小
+    string fullName = 4; // 文件全路径名
+    string fileId = 5;
+    string backUpPath = 6;
+}
+message ClientInitReq {
+    string taskId = 1;
+    string totalSize = 2; //总大小
+    // 如果源目录与目标目录是多对多关系，则设为 null
+    string backUpPath = 3; // 备份的目标端路径
+    cn.com.unary.initcopy.grpc.constant.SyncType syncType = 4; // 同步方式
+    repeated BaseFileInfo baseFileInfos = 5; // 文件信息
+}
+message DiffFileChunk {
+    string strongCheckCode = 1; // 强校验码Md5
+    string weakCheckCode = 2; // 弱校验码 CRC
+    string chunkSeq = 3; // 块序号
+}
+message DiffFileInfo {
+    string fileId = 1; // 文件Id
+    repeated DiffFileChunk diffFileChunks = 2;
+}
+message ServerInitResp {
+    string taskId = 1;
+    bool ready = 2;
+    string msg = 3;
+    repeated DiffFileInfo diffFileInfos = 4;
+}

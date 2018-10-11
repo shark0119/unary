@@ -59,8 +59,8 @@ public class ClientFileCopy extends AbstractLoggable implements ApplicationConte
     @Setter
     private ApplicationContext applicationContext;
     @Getter
-    private Map<Integer, UnaryTransferClient> transferMap;
-    private Map<Integer, PackTask> execTaskMap;
+    private Map<String, UnaryTransferClient> transferMap;
+    private Map<String, PackTask> execTaskMap;
 
     public ClientFileCopy() {
         ThreadFactory executorThreadFactory = new BasicThreadFactory.Builder()
@@ -85,7 +85,7 @@ public class ClientFileCopy extends AbstractLoggable implements ApplicationConte
      * @param modifyType 更新操作
      * @throws IOException 任务关闭异常
      */
-    public void updateTask(int taskId, Constants.UpdateType modifyType) throws IOException {
+    public void updateTask(String taskId, Constants.UpdateType modifyType) throws IOException {
         switch (modifyType) {
             case PAUSE:
                 synchronized (lock) {
@@ -111,7 +111,7 @@ public class ClientFileCopy extends AbstractLoggable implements ApplicationConte
      * @param task 同步任务相关配置信息
      * @throws TaskFailException 任务添加失败，可能是 IO异常，可能是初始化异常，也可能是打包异常
      */
-    public void addTask(cn.com.unary.initcopy.grpc.entity.SyncTask task) throws TaskFailException {
+    public void addTask(SyncTask task) throws TaskFailException {
         try {
             synchronized (lock) {
                 if (close) {
@@ -125,8 +125,8 @@ public class ClientFileCopy extends AbstractLoggable implements ApplicationConte
             }
             List<DiffFileInfo> diffFileInfos = new ArrayList<>();
             List<String> syncFileIds = init.startInit(unaryTransferClient, task, diffFileInfos);
-            logger.debug("Got " + diffFileInfos.size() + " diff file info and " + syncFileIds.size() + " file ids.");
-            logger.debug("Remove invalid file info. Complete file info from base file info.");
+            logger.debug(String.format("Got %d diff file info and %d file ids.",
+                    diffFileInfos.size(), syncFileIds.size()));
             List<FileInfoDO> list1 = fm.queryByTaskId(task.getTaskId());
             Map<String, String> map = new HashMap<>(100);
             for (String id : syncFileIds) {
@@ -170,7 +170,7 @@ public class ClientFileCopy extends AbstractLoggable implements ApplicationConte
      * @param taskId              任务Id作为当前线程名
      * @param diffFileInfos       差异文件数据集合
      */
-    private void startDiffSync(UnaryTransferClient unaryTransferClient, int taskId,
+    private void startDiffSync(UnaryTransferClient unaryTransferClient, String taskId,
                                final List<DiffFileInfo> diffFileInfos) {
         final SyncDiffPacker syncDiffPacker =
                 applicationContext.getBean("RsyncPacker", SyncDiffPacker.class);
@@ -188,7 +188,7 @@ public class ClientFileCopy extends AbstractLoggable implements ApplicationConte
      * @param unaryTransferClient 传输模块
      * @param taskId              任务Id作为当前线程名
      */
-    private void startAllSync(UnaryTransferClient unaryTransferClient, int taskId) {
+    private void startAllSync(UnaryTransferClient unaryTransferClient, String taskId) {
         final Packer syncAllPacker =
                 applicationContext.getBean("SyncAllPacker", Packer.class);
         final PackTask packTask = new PackTask(taskId, syncAllPacker, unaryTransferClient);
@@ -203,11 +203,11 @@ public class ClientFileCopy extends AbstractLoggable implements ApplicationConte
     public void close() throws IOException {
         synchronized (lock) {
             // 关闭已执行的任务
-            for (Integer key : execTaskMap.keySet()) {
+            for (String key : execTaskMap.keySet()) {
                 execTaskMap.get(key).close();
             }
             // 关闭相应的传输模块
-            for (Integer key : transferMap.keySet()) {
+            for (String key : transferMap.keySet()) {
                 transferMap.get(key).stopClient();
             }
             execTaskMap.clear();
@@ -218,11 +218,11 @@ public class ClientFileCopy extends AbstractLoggable implements ApplicationConte
 
     protected class PackTask implements Runnable, Closeable {
 
-        private int taskId;
+        private String taskId;
         private Packer packer;
         private UnaryTransferClient transfer;
 
-        private PackTask(int taskId, Packer packer, UnaryTransferClient transfer) {
+        private PackTask(String taskId, Packer packer, UnaryTransferClient transfer) {
             this.taskId = taskId;
             this.packer = packer;
             this.transfer = transfer;

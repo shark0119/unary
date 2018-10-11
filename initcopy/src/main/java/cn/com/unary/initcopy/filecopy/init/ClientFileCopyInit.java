@@ -3,6 +3,7 @@ package cn.com.unary.initcopy.filecopy.init;
 import api.UnaryTransferClient;
 import cn.com.unary.initcopy.InitCopyContext;
 import cn.com.unary.initcopy.common.AbstractLoggable;
+import cn.com.unary.initcopy.common.utils.BeanExactUtil;
 import cn.com.unary.initcopy.dao.FileManager;
 import cn.com.unary.initcopy.entity.BaseFileInfoDO;
 import cn.com.unary.initcopy.entity.FileInfoDO;
@@ -21,6 +22,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.IOException;
+import java.math.BigInteger;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -61,8 +63,7 @@ public class ClientFileCopyInit extends AbstractLoggable {
      * @throws IOException      IO错误
      * @throws RuntimeException Grpc 服务调用错误。
      */
-    public List<String> startInit(UnaryTransferClient client,
-                                  final SyncTask task,
+    public List<String> startInit(UnaryTransferClient client, final SyncTask task,
                                   final List<DiffFileInfo> diffFileInfos)
             throws IOException, InfoPersistenceException {
         logger.debug("Start init.");
@@ -71,9 +72,9 @@ public class ClientFileCopyInit extends AbstractLoggable {
         client.setEncryptType(task.getEncryptType());
 
         logger.debug("Set transfer option done. Start to traversing files.");
-        List<FileInfoDO> syncFiles = traversingFiles(task.getFilesList());
+        List<FileInfoDO> syncFiles = traversingFiles(task.getFilesList(), task.getTargetDirsList());
         List<String> syncFileIds = new ArrayList<>();
-        int taskId = task.getTaskId();
+        String taskId = task.getTaskId();
         for (FileInfoDO fi : syncFiles) {
             syncFileIds.add(fi.getFileId());
             fi.setTaskId(taskId);
@@ -85,23 +86,21 @@ public class ClientFileCopyInit extends AbstractLoggable {
         ControlTaskGrpcClient controlTaskGrpcClient =
                 new ControlTaskGrpcClient(task.getTargetInfo().getIp(), task.getTargetInfo().getGrpcPort());
 
-        long totalSize = 0L;
-        List<BaseFileInfo> bfiList = new ArrayList<>(syncFiles.size());
-        BaseFileInfo.Builder bfiBuilder;
+        List<BaseFileInfo> bfiList = BeanExactUtil.takeFromDO(syncFiles);
+        BigInteger totalSize = new BigInteger("0");
+
         for (BaseFileInfoDO bfiDO : syncFiles) {
-            totalSize += bfiDO.getFileSize();
-            bfiBuilder = BaseFileInfo.newBuilder();
-            bfiBuilder.setModifyTime(bfiDO.getModifyTime())
-                    .setFileSize(bfiDO.getFileSize())
-                    .setFileId(bfiDO.getFileId())
-                    .setFullName(bfiDO.getFullName());
-            bfiList.add(bfiBuilder.build());
+            totalSize = totalSize.add(new BigInteger(bfiDO.getFileSize().toString()));
         }
+
         ClientInitReq.Builder builder = ClientInitReq.newBuilder()
-                .setTargetDir(task.getTargetDir())
                 .setTaskId(taskId)
-                .setTotalSize(totalSize)
+                .setTotalSize(totalSize.toString())
                 .addAllBaseFileInfos(bfiList);
+
+        if (task.getTargetDirsCount() == 1) {
+            builder.setBackUpPath(task.getTargetDirs(0));
+        }
 
         logger.debug("Try to init according sync type.");
         switch (task.getSyncType()) {
@@ -152,16 +151,24 @@ public class ClientFileCopyInit extends AbstractLoggable {
         }
     }
 
-    private List<FileInfoDO> traversingFiles(List<String> files) throws IOException {
+    private List<FileInfoDO> traversingFiles(List<String> files, List<String> backUpPaths) throws IOException {
         Path path;
+        String backUpPath = "";
+        boolean isMultiMap = backUpPaths.size() > 1;
         final List<FileInfoDO> fileInfos = new ArrayList<>();
-        for (String fileName : files) {
-            path = Paths.get(fileName);
+
+        for (int i = 0; i < files.size(); i++) {
+            if (isMultiMap) {
+                backUpPath = backUpPaths.get(i);
+            }
+            final String tempBackUpPath = backUpPath;
+            path = Paths.get(files.get(i));
             Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
                 @Override
                 public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) {
                     if (dir.toFile().list().length == 0) {
                         FileInfoDO fileInfo = new FileInfoDO(takeFromFile(dir.toFile()));
+                        fileInfo.setBackUpPath(tempBackUpPath);
                         fileInfos.add(fileInfo);
                     }
                     return FileVisitResult.CONTINUE;
@@ -170,6 +177,7 @@ public class ClientFileCopyInit extends AbstractLoggable {
                 @Override
                 public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
                     FileInfoDO fileInfo = new FileInfoDO(takeFromFile(file.toFile()));
+                    fileInfo.setBackUpPath(tempBackUpPath);
                     fileInfos.add(fileInfo);
                     return FileVisitResult.CONTINUE;
                 }

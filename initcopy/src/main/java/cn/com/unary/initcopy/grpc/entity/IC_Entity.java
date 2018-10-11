@@ -54,31 +54,6 @@ public final class IC_Entity {
   static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_cn_com_unary_initcopy_grpc_entity_DeleteTask_fieldAccessorTable;
-  static final com.google.protobuf.Descriptors.Descriptor
-    internal_static_cn_com_unary_initcopy_grpc_entity_BaseFileInfo_descriptor;
-  static final 
-    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-      internal_static_cn_com_unary_initcopy_grpc_entity_BaseFileInfo_fieldAccessorTable;
-  static final com.google.protobuf.Descriptors.Descriptor
-    internal_static_cn_com_unary_initcopy_grpc_entity_ClientInitReq_descriptor;
-  static final 
-    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-      internal_static_cn_com_unary_initcopy_grpc_entity_ClientInitReq_fieldAccessorTable;
-  static final com.google.protobuf.Descriptors.Descriptor
-    internal_static_cn_com_unary_initcopy_grpc_entity_DiffFileChunk_descriptor;
-  static final 
-    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-      internal_static_cn_com_unary_initcopy_grpc_entity_DiffFileChunk_fieldAccessorTable;
-  static final com.google.protobuf.Descriptors.Descriptor
-    internal_static_cn_com_unary_initcopy_grpc_entity_DiffFileInfo_descriptor;
-  static final 
-    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-      internal_static_cn_com_unary_initcopy_grpc_entity_DiffFileInfo_fieldAccessorTable;
-  static final com.google.protobuf.Descriptors.Descriptor
-    internal_static_cn_com_unary_initcopy_grpc_entity_ServerInitResp_descriptor;
-  static final 
-    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-      internal_static_cn_com_unary_initcopy_grpc_entity_ServerInitResp_fieldAccessorTable;
 
   public static com.google.protobuf.Descriptors.FileDescriptor
       getDescriptor() {
@@ -91,8 +66,8 @@ public final class IC_Entity {
       "\n\026init_copy_entity.proto\022!cn.com.unary.i" +
       "nitcopy.grpc.entity\032\030init_copy_constant." +
       "proto\"@\n\nSyncTarget\022\n\n\002ip\030\001 \001(\t\022\024\n\014trans" +
-      "ferPort\030\002 \001(\005\022\020\n\010grpcPort\030\003 \001(\005\"\245\003\n\010Sync" +
-      "Task\022\016\n\006taskId\030\001 \001(\005\022A\n\ntargetInfo\030\002 \001(\013" +
+              "ferPort\030\002 \001(\005\022\020\n\010grpcPort\030\003 \001(\005\"\246\003\n\010Sync" +
+              "Task\022\016\n\006taskId\030\001 \001(\t\022A\n\ntargetInfo\030\002 \001(\013" +
       "2-.cn.com.unary.initcopy.grpc.entity.Syn" +
       "cTarget\022?\n\010syncType\030\003 \001(\0162-.cn.com.unary" +
       ".initcopy.grpc.constant.SyncType\022G\n\014comp" +
@@ -101,39 +76,23 @@ public final class IC_Entity {
       "\030\005 \001(\01620.cn.com.unary.initcopy.grpc.cons" +
       "tant.EncryptType\022?\n\010packType\030\006 \001(\0162-.cn." +
       "com.unary.initcopy.grpc.constant.PackTyp" +
-      "e\022\022\n\nspeedLimit\030\007 \001(\005\022\021\n\tTargetDir\030\010 \001(\t" +
-      "\022\r\n\005files\030\t \003(\t\":\n\nExecResult\022\021\n\tisHealt" +
-      "hy\030\001 \001(\010\022\014\n\004code\030\002 \001(\005\022\013\n\003msg\030\003 \001(\t\"\244\001\n\014" +
-      "ProgressInfo\022\r\n\005stage\030\001 \001(\005\022\020\n\010progress\030" +
-      "\002 \001(\005\022\024\n\014totalFileNum\030\003 \001(\022\022\025\n\rtotalFile" +
-      "Size\030\004 \001(\022\022\025\n\rsyncedFileNum\030\005 \001(\022\022\026\n\016syn" +
-      "cedFileSize\030\006 \001(\022\022\027\n\017syncingFileName\030\007 \001",
-      "(\t\"\033\n\tQueryTask\022\016\n\006taskId\030\001 \001(\005\"\245\001\n\tTask" +
-      "State\022\016\n\006taskId\030\001 \001(\005\022A\n\nexecResult\030\002 \001(" +
-      "\0132-.cn.com.unary.initcopy.grpc.entity.Ex" +
-      "ecResult\022E\n\014progressInfo\030\003 \001(\0132/.cn.com." +
-      "unary.initcopy.grpc.entity.ProgressInfo\"" +
-      "u\n\nModifyTask\022\016\n\006taskId\030\001 \001(\005\022C\n\nmodifyT" +
-      "ype\030\002 \001(\0162/.cn.com.unary.initcopy.grpc.c" +
-      "onstant.ModifyType\022\022\n\nspeedLimit\030\003 \001(\005\"0" +
-      "\n\nDeleteTask\022\016\n\006taskId\030\001 \001(\005\022\022\n\ndeleteFi" +
-      "le\030\002 \001(\010\"h\n\014BaseFileInfo\022\020\n\010checkSum\030\001 \001",
-      "(\t\022\022\n\nmodifyTime\030\002 \001(\022\022\020\n\010fileSize\030\003 \001(\022" +
-      "\022\020\n\010fullName\030\004 \001(\t\022\016\n\006fileId\030\005 \001(\t\"\316\001\n\rC" +
-      "lientInitReq\022\016\n\006taskId\030\001 \001(\005\022\021\n\ttotalSiz" +
-      "e\030\002 \001(\022\022\021\n\ttargetDir\030\003 \001(\t\022?\n\010syncType\030\004" +
-      " \001(\0162-.cn.com.unary.initcopy.grpc.consta" +
-      "nt.SyncType\022F\n\rbaseFileInfos\030\005 \003(\0132/.cn." +
-      "com.unary.initcopy.grpc.entity.BaseFileI" +
-      "nfo\"Q\n\rDiffFileChunk\022\027\n\017strongCheckCode\030" +
-      "\001 \001(\t\022\025\n\rweakCheckCode\030\002 \001(\t\022\020\n\010chunkSeq" +
-      "\030\003 \001(\t\"h\n\014DiffFileInfo\022\016\n\006fileId\030\001 \001(\t\022H",
-      "\n\016diffFileChunks\030\002 \003(\01320.cn.com.unary.in" +
-      "itcopy.grpc.entity.DiffFileChunk\"\204\001\n\016Ser" +
-      "verInitResp\022\016\n\006taskId\030\001 \001(\005\022\r\n\005ready\030\002 \001" +
-      "(\010\022\013\n\003msg\030\003 \001(\t\022F\n\rdiffFileInfos\030\004 \003(\0132/" +
-      ".cn.com.unary.initcopy.grpc.entity.DiffF" +
-      "ileInfoB0\n!cn.com.unary.initcopy.grpc.en" +
+              "e\022\022\n\nspeedLimit\030\007 \001(\005\022\022\n\ntargetDirs\030\010 \003(" +
+              "\t\022\r\n\005files\030\t \003(\t\"H\n\nExecResult\022\017\n\007health" +
+              "y\030\001 \001(\010\022\014\n\004code\030\002 \001(\005\022\013\n\003msg\030\003 \001(\t\022\016\n\006ta" +
+              "skId\030\004 \001(\t\"\244\001\n\014ProgressInfo\022\r\n\005stage\030\001 \001" +
+              "(\005\022\020\n\010progress\030\002 \001(\005\022\024\n\014totalFileNum\030\003 \001" +
+              "(\022\022\025\n\rtotalFileSize\030\004 \001(\022\022\025\n\rsyncedFileN" +
+              "um\030\005 \001(\022\022\026\n\016syncedFileSize\030\006 \001(\022\022\027\n\017sync",
+            "ingFileName\030\007 \001(\t\"\033\n\tQueryTask\022\016\n\006taskId" +
+                    "\030\001 \001(\t\"\225\001\n\tTaskState\022A\n\nexecResult\030\002 \001(\013" +
+                    "2-.cn.com.unary.initcopy.grpc.entity.Exe" +
+                    "cResult\022E\n\014progressInfo\030\003 \001(\0132/.cn.com.u" +
+                    "nary.initcopy.grpc.entity.ProgressInfo\"u" +
+                    "\n\nModifyTask\022\016\n\006taskId\030\001 \001(\t\022C\n\nmodifyTy" +
+                    "pe\030\002 \001(\0162/.cn.com.unary.initcopy.grpc.co" +
+                    "nstant.ModifyType\022\022\n\nspeedLimit\030\003 \001(\005\"0\n" +
+                    "\nDeleteTask\022\016\n\006taskId\030\001 \001(\t\022\022\n\ndeleteFil" +
+                    "e\030\002 \001(\010B0\n!cn.com.unary.initcopy.grpc.en",
       "tityB\tIC_EntityP\001b\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
@@ -160,13 +119,13 @@ public final class IC_Entity {
     internal_static_cn_com_unary_initcopy_grpc_entity_SyncTask_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_cn_com_unary_initcopy_grpc_entity_SyncTask_descriptor,
-        new java.lang.String[] { "TaskId", "TargetInfo", "SyncType", "CompressType", "EncryptType", "PackType", "SpeedLimit", "TargetDir", "Files", });
+            new java.lang.String[]{"TaskId", "TargetInfo", "SyncType", "CompressType", "EncryptType", "PackType", "SpeedLimit", "TargetDirs", "Files",});
     internal_static_cn_com_unary_initcopy_grpc_entity_ExecResult_descriptor =
       getDescriptor().getMessageTypes().get(2);
     internal_static_cn_com_unary_initcopy_grpc_entity_ExecResult_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_cn_com_unary_initcopy_grpc_entity_ExecResult_descriptor,
-        new java.lang.String[] { "IsHealthy", "Code", "Msg", });
+            new java.lang.String[]{"Healthy", "Code", "Msg", "TaskId",});
     internal_static_cn_com_unary_initcopy_grpc_entity_ProgressInfo_descriptor =
       getDescriptor().getMessageTypes().get(3);
     internal_static_cn_com_unary_initcopy_grpc_entity_ProgressInfo_fieldAccessorTable = new
@@ -184,7 +143,7 @@ public final class IC_Entity {
     internal_static_cn_com_unary_initcopy_grpc_entity_TaskState_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_cn_com_unary_initcopy_grpc_entity_TaskState_descriptor,
-        new java.lang.String[] { "TaskId", "ExecResult", "ProgressInfo", });
+            new java.lang.String[]{"ExecResult", "ProgressInfo",});
     internal_static_cn_com_unary_initcopy_grpc_entity_ModifyTask_descriptor =
       getDescriptor().getMessageTypes().get(6);
     internal_static_cn_com_unary_initcopy_grpc_entity_ModifyTask_fieldAccessorTable = new
@@ -197,36 +156,6 @@ public final class IC_Entity {
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_cn_com_unary_initcopy_grpc_entity_DeleteTask_descriptor,
         new java.lang.String[] { "TaskId", "DeleteFile", });
-    internal_static_cn_com_unary_initcopy_grpc_entity_BaseFileInfo_descriptor =
-      getDescriptor().getMessageTypes().get(8);
-    internal_static_cn_com_unary_initcopy_grpc_entity_BaseFileInfo_fieldAccessorTable = new
-      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
-        internal_static_cn_com_unary_initcopy_grpc_entity_BaseFileInfo_descriptor,
-        new java.lang.String[] { "CheckSum", "ModifyTime", "FileSize", "FullName", "FileId", });
-    internal_static_cn_com_unary_initcopy_grpc_entity_ClientInitReq_descriptor =
-      getDescriptor().getMessageTypes().get(9);
-    internal_static_cn_com_unary_initcopy_grpc_entity_ClientInitReq_fieldAccessorTable = new
-      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
-        internal_static_cn_com_unary_initcopy_grpc_entity_ClientInitReq_descriptor,
-        new java.lang.String[] { "TaskId", "TotalSize", "TargetDir", "SyncType", "BaseFileInfos", });
-    internal_static_cn_com_unary_initcopy_grpc_entity_DiffFileChunk_descriptor =
-      getDescriptor().getMessageTypes().get(10);
-    internal_static_cn_com_unary_initcopy_grpc_entity_DiffFileChunk_fieldAccessorTable = new
-      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
-        internal_static_cn_com_unary_initcopy_grpc_entity_DiffFileChunk_descriptor,
-        new java.lang.String[] { "StrongCheckCode", "WeakCheckCode", "ChunkSeq", });
-    internal_static_cn_com_unary_initcopy_grpc_entity_DiffFileInfo_descriptor =
-      getDescriptor().getMessageTypes().get(11);
-    internal_static_cn_com_unary_initcopy_grpc_entity_DiffFileInfo_fieldAccessorTable = new
-      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
-        internal_static_cn_com_unary_initcopy_grpc_entity_DiffFileInfo_descriptor,
-        new java.lang.String[] { "FileId", "DiffFileChunks", });
-    internal_static_cn_com_unary_initcopy_grpc_entity_ServerInitResp_descriptor =
-      getDescriptor().getMessageTypes().get(12);
-    internal_static_cn_com_unary_initcopy_grpc_entity_ServerInitResp_fieldAccessorTable = new
-      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
-        internal_static_cn_com_unary_initcopy_grpc_entity_ServerInitResp_descriptor,
-        new java.lang.String[] { "TaskId", "Ready", "Msg", "DiffFileInfos", });
     cn.com.unary.initcopy.grpc.constant.IC_Constant.getDescriptor();
   }
 

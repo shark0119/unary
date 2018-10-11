@@ -1,22 +1,22 @@
 package cn.com.unary.initcopy;
 
-import api.UnaryProcess;
 import api.UnaryTransferServer;
 import cn.com.unary.initcopy.common.AbstractLoggable;
 import cn.com.unary.initcopy.common.ExecExceptionsHandler;
 import cn.com.unary.initcopy.grpc.GrpcServiceStarter;
-import cn.com.unary.initcopy.grpc.linker.ControlTaskGrpcLinker;
-import cn.com.unary.initcopy.grpc.linker.InitCopyGrpcLinker;
-import cn.com.unary.initcopy.grpc.service.ControlTaskGrpcImpl;
-import cn.com.unary.initcopy.grpc.service.InitCopyGrpcImpl;
+import io.grpc.BindableService;
 import org.apache.commons.lang3.concurrent.BasicThreadFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PreDestroy;
 import java.io.Closeable;
 import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadFactory;
@@ -34,6 +34,12 @@ import java.util.concurrent.TimeUnit;
 @Scope("singleton")
 public class InitCopyContext extends AbstractLoggable implements Closeable {
     public static final int TASK_NUMBER = 10;
+    public static final Charset CHARSET = StandardCharsets.UTF_8;
+    public static int UUID_LEN;
+
+    static {
+        UUID_LEN = UUID.randomUUID().toString().getBytes(InitCopyContext.CHARSET).length;
+    }
     private final Object lock;
     /**
      * 面向外部 GRPC 服务监听的端口
@@ -54,7 +60,11 @@ public class InitCopyContext extends AbstractLoggable implements Closeable {
     @Autowired
     private UnaryTransferServer uts;
     @Autowired
-    private UnaryProcess process;
+    @Qualifier("InitCopyGrpcImpl")
+    private BindableService icGrpcService;
+    @Autowired
+    @Qualifier("ControlTaskGrpcImpl")
+    private BindableService ctGrpcService;
 
     public InitCopyContext() {
         lock = new Object();
@@ -111,8 +121,7 @@ public class InitCopyContext extends AbstractLoggable implements Closeable {
 
     private InitCopyContext clientInit() {
         // 启动向外部提供任务管理的 GRPC 服务（源端）
-        clientStarter = new GrpcServiceStarter(
-                new InitCopyGrpcImpl(new InitCopyGrpcLinker()), getGrpcPort());
+        clientStarter = new GrpcServiceStarter(icGrpcService, getGrpcPort());
         exec.execute(new Runnable() {
             @Override
             public void run() {
@@ -140,8 +149,7 @@ public class InitCopyContext extends AbstractLoggable implements Closeable {
                 }
             }
         });
-        serverStarter = new GrpcServiceStarter(
-                new ControlTaskGrpcImpl(new ControlTaskGrpcLinker()), innerGrpcPort);
+        serverStarter = new GrpcServiceStarter(ctGrpcService, innerGrpcPort);
         // 启动内部控制任务信息的 GRPC 服务（目标端）
         exec.execute(new Runnable() {
             @Override
@@ -167,4 +175,5 @@ public class InitCopyContext extends AbstractLoggable implements Closeable {
     public int getInnerGrpcPort() {
         return innerGrpcPort;
     }
+
 }

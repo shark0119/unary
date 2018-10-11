@@ -1,16 +1,19 @@
 package cn.com.unary.initcopy;
 
+import cn.com.unary.initcopy.grpc.entity.SyncTask;
 import lombok.Getter;
 import lombok.Setter;
 import org.junit.Test;
 import sun.reflect.generics.reflectiveObjects.ParameterizedTypeImpl;
 
-import java.io.IOException;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -49,8 +52,38 @@ public class TestTest {
     }
 
     @Test
-    public void test3() throws IOException {
+    public void test3() {
+        Charset charset = InitCopyContext.CHARSET;
+        String uuid = UUID.randomUUID().toString();
+        int size = uuid.getBytes(charset).length;
+        int tempSize;
+        String tempUuid;
+        System.out.println(String.format("%s len:%d", uuid, uuid.length()));
+        System.out.println(String.format("%s size:%d", charset.toString(), size));
+        charset = StandardCharsets.UTF_16;
+        size = uuid.getBytes(charset).length;
+        System.out.println(String.format("%s size:%d", charset.toString(), size));
+        charset = StandardCharsets.ISO_8859_1;
+        size = uuid.getBytes(charset).length;
+        System.out.println(String.format("%s size:%d", charset.toString(), size));
+        for (int i = 0; i < 1000; i++) {
+            tempUuid = UUID.randomUUID().toString();
+            tempSize = UUID.randomUUID().toString().getBytes(InitCopyContext.CHARSET).length;
+            if (tempSize != size) {
+                System.out.println(String.format("%s len:%d", uuid, size));
+                System.out.println(String.format("%s len:%d", tempUuid, tempSize));
+            }
+        }
+    }
 
+    @Test
+    public void test4() {
+        String text = "\nabc\nefg";
+        text = text.replaceAll("\\n", " ");
+        System.out.println(text);
+        SyncTask task = SyncTask.newBuilder().build();
+        task = task.toBuilder().setTaskId("12").build();
+        System.out.println(task);
     }
 
     private static class Task implements Runnable {

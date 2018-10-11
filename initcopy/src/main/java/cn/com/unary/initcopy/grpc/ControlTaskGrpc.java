@@ -1,25 +1,19 @@
 package cn.com.unary.initcopy.grpc;
 
-import static io.grpc.stub.ClientCalls.asyncUnaryCall;
-import static io.grpc.stub.ClientCalls.asyncServerStreamingCall;
-import static io.grpc.stub.ClientCalls.asyncClientStreamingCall;
-import static io.grpc.stub.ClientCalls.asyncBidiStreamingCall;
-import static io.grpc.stub.ClientCalls.blockingUnaryCall;
-import static io.grpc.stub.ClientCalls.blockingServerStreamingCall;
-import static io.grpc.stub.ClientCalls.futureUnaryCall;
+import cn.com.unary.initcopy.common.AbstractLoggable;
+
 import static io.grpc.MethodDescriptor.generateFullMethodName;
+import static io.grpc.stub.ClientCalls.asyncUnaryCall;
+import static io.grpc.stub.ClientCalls.blockingUnaryCall;
+import static io.grpc.stub.ClientCalls.futureUnaryCall;
 import static io.grpc.stub.ServerCalls.asyncUnaryCall;
-import static io.grpc.stub.ServerCalls.asyncServerStreamingCall;
-import static io.grpc.stub.ServerCalls.asyncClientStreamingCall;
-import static io.grpc.stub.ServerCalls.asyncBidiStreamingCall;
 import static io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall;
-import static io.grpc.stub.ServerCalls.asyncUnimplementedStreamingCall;
 
 /**
  */
 @javax.annotation.Generated(
     value = "by gRPC proto compiler (version 1.0.1)",
-    comments = "Source: init_copy.proto")
+        comments = "Source: task_control.proto")
 public class ControlTaskGrpc {
 
   private ControlTaskGrpc() {}
@@ -80,7 +74,7 @@ public class ControlTaskGrpc {
 
   /**
    */
-  public static abstract class ControlTaskImplBase implements io.grpc.BindableService {
+  public static abstract class ControlTaskImplBase extends AbstractLoggable implements io.grpc.BindableService {
 
     /**
      * <pre>

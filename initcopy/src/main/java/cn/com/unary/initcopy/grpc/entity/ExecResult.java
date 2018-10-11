@@ -19,9 +19,10 @@ public  final class ExecResult extends
     super(builder);
   }
   private ExecResult() {
-    isHealthy_ = false;
+    healthy_ = false;
     code_ = 0;
     msg_ = "";
+    taskId_ = "";
   }
 
   @java.lang.Override
@@ -51,7 +52,7 @@ public  final class ExecResult extends
           }
           case 8: {
 
-            isHealthy_ = input.readBool();
+            healthy_ = input.readBool();
             break;
           }
           case 16: {
@@ -63,6 +64,12 @@ public  final class ExecResult extends
             java.lang.String s = input.readStringRequireUtf8();
 
             msg_ = s;
+            break;
+          }
+          case 34: {
+            java.lang.String s = input.readStringRequireUtf8();
+
+            taskId_ = s;
             break;
           }
         }
@@ -88,17 +95,17 @@ public  final class ExecResult extends
             cn.com.unary.initcopy.grpc.entity.ExecResult.class, cn.com.unary.initcopy.grpc.entity.ExecResult.Builder.class);
   }
 
-  public static final int ISHEALTHY_FIELD_NUMBER = 1;
-  private boolean isHealthy_;
+  public static final int HEALTHY_FIELD_NUMBER = 1;
+  private boolean healthy_;
   /**
    * <pre>
    * 任务装态是否正常
    * </pre>
    *
-   * <code>optional bool isHealthy = 1;</code>
+   * <code>optional bool healthy = 1;</code>
    */
-  public boolean getIsHealthy() {
-    return isHealthy_;
+  public boolean getHealthy() {
+    return healthy_;
   }
 
   public static final int CODE_FIELD_NUMBER = 2;
@@ -156,6 +163,50 @@ public  final class ExecResult extends
     }
   }
 
+  public static final int TASKID_FIELD_NUMBER = 4;
+  private volatile java.lang.Object taskId_;
+
+  /**
+   * <pre>
+   * 任务 Id
+   * </pre>
+   *
+   * <code>optional string taskId = 4;</code>
+   */
+  public java.lang.String getTaskId() {
+    java.lang.Object ref = taskId_;
+    if (ref instanceof java.lang.String) {
+      return (java.lang.String) ref;
+    } else {
+      com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+      java.lang.String s = bs.toStringUtf8();
+      taskId_ = s;
+      return s;
+    }
+  }
+
+  /**
+   * <pre>
+   * 任务 Id
+   * </pre>
+   *
+   * <code>optional string taskId = 4;</code>
+   */
+  public com.google.protobuf.ByteString
+  getTaskIdBytes() {
+    java.lang.Object ref = taskId_;
+    if (ref instanceof java.lang.String) {
+      com.google.protobuf.ByteString b =
+              com.google.protobuf.ByteString.copyFromUtf8(
+                      (java.lang.String) ref);
+      taskId_ = b;
+      return b;
+    } else {
+      return (com.google.protobuf.ByteString) ref;
+    }
+  }
+
   private byte memoizedIsInitialized = -1;
   public final boolean isInitialized() {
     byte isInitialized = memoizedIsInitialized;
@@ -168,14 +219,17 @@ public  final class ExecResult extends
 
   public void writeTo(com.google.protobuf.CodedOutputStream output)
                       throws java.io.IOException {
-    if (isHealthy_ != false) {
-      output.writeBool(1, isHealthy_);
+    if (healthy_ != false) {
+      output.writeBool(1, healthy_);
     }
     if (code_ != 0) {
       output.writeInt32(2, code_);
     }
     if (!getMsgBytes().isEmpty()) {
       com.google.protobuf.GeneratedMessageV3.writeString(output, 3, msg_);
+    }
+    if (!getTaskIdBytes().isEmpty()) {
+      com.google.protobuf.GeneratedMessageV3.writeString(output, 4, taskId_);
     }
   }
 
@@ -184,9 +238,9 @@ public  final class ExecResult extends
     if (size != -1) return size;
 
     size = 0;
-    if (isHealthy_ != false) {
+    if (healthy_ != false) {
       size += com.google.protobuf.CodedOutputStream
-        .computeBoolSize(1, isHealthy_);
+              .computeBoolSize(1, healthy_);
     }
     if (code_ != 0) {
       size += com.google.protobuf.CodedOutputStream
@@ -194,6 +248,9 @@ public  final class ExecResult extends
     }
     if (!getMsgBytes().isEmpty()) {
       size += com.google.protobuf.GeneratedMessageV3.computeStringSize(3, msg_);
+    }
+    if (!getTaskIdBytes().isEmpty()) {
+      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(4, taskId_);
     }
     memoizedSize = size;
     return size;
@@ -211,12 +268,14 @@ public  final class ExecResult extends
     cn.com.unary.initcopy.grpc.entity.ExecResult other = (cn.com.unary.initcopy.grpc.entity.ExecResult) obj;
 
     boolean result = true;
-    result = result && (getIsHealthy()
-        == other.getIsHealthy());
+    result = result && (getHealthy()
+            == other.getHealthy());
     result = result && (getCode()
         == other.getCode());
     result = result && getMsg()
         .equals(other.getMsg());
+    result = result && getTaskId()
+            .equals(other.getTaskId());
     return result;
   }
 
@@ -227,13 +286,15 @@ public  final class ExecResult extends
     }
     int hash = 41;
     hash = (19 * hash) + getDescriptorForType().hashCode();
-    hash = (37 * hash) + ISHEALTHY_FIELD_NUMBER;
+    hash = (37 * hash) + HEALTHY_FIELD_NUMBER;
     hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
-        getIsHealthy());
+        getHealthy());
     hash = (37 * hash) + CODE_FIELD_NUMBER;
     hash = (53 * hash) + getCode();
     hash = (37 * hash) + MSG_FIELD_NUMBER;
     hash = (53 * hash) + getMsg().hashCode();
+    hash = (37 * hash) + TASKID_FIELD_NUMBER;
+    hash = (53 * hash) + getTaskId().hashCode();
     hash = (29 * hash) + unknownFields.hashCode();
     memoizedHashCode = hash;
     return hash;
@@ -356,11 +417,13 @@ public  final class ExecResult extends
     }
     public Builder clear() {
       super.clear();
-      isHealthy_ = false;
+      healthy_ = false;
 
       code_ = 0;
 
       msg_ = "";
+
+      taskId_ = "";
 
       return this;
     }
@@ -384,9 +447,10 @@ public  final class ExecResult extends
 
     public cn.com.unary.initcopy.grpc.entity.ExecResult buildPartial() {
       cn.com.unary.initcopy.grpc.entity.ExecResult result = new cn.com.unary.initcopy.grpc.entity.ExecResult(this);
-      result.isHealthy_ = isHealthy_;
+      result.healthy_ = healthy_;
       result.code_ = code_;
       result.msg_ = msg_;
+      result.taskId_ = taskId_;
       onBuilt();
       return result;
     }
@@ -428,14 +492,18 @@ public  final class ExecResult extends
 
     public Builder mergeFrom(cn.com.unary.initcopy.grpc.entity.ExecResult other) {
       if (other == cn.com.unary.initcopy.grpc.entity.ExecResult.getDefaultInstance()) return this;
-      if (other.getIsHealthy() != false) {
-        setIsHealthy(other.getIsHealthy());
+      if (other.getHealthy() != false) {
+        setHealthy(other.getHealthy());
       }
       if (other.getCode() != 0) {
         setCode(other.getCode());
       }
       if (!other.getMsg().isEmpty()) {
         msg_ = other.msg_;
+        onChanged();
+      }
+      if (!other.getTaskId().isEmpty()) {
+        taskId_ = other.taskId_;
         onChanged();
       }
       onChanged();
@@ -464,27 +532,27 @@ public  final class ExecResult extends
       return this;
     }
 
-    private boolean isHealthy_ ;
+    private boolean healthy_ ;
     /**
      * <pre>
      * 任务装态是否正常
      * </pre>
      *
-     * <code>optional bool isHealthy = 1;</code>
+     * <code>optional bool healthy = 1;</code>
      */
-    public boolean getIsHealthy() {
-      return isHealthy_;
+    public boolean getHealthy() {
+      return healthy_;
     }
     /**
      * <pre>
      * 任务装态是否正常
      * </pre>
      *
-     * <code>optional bool isHealthy = 1;</code>
+     * <code>optional bool healthy = 1;</code>
      */
-    public Builder setIsHealthy(boolean value) {
-      
-      isHealthy_ = value;
+    public Builder setHealthy(boolean value) {
+
+      healthy_ = value;
       onChanged();
       return this;
     }
@@ -493,11 +561,11 @@ public  final class ExecResult extends
      * 任务装态是否正常
      * </pre>
      *
-     * <code>optional bool isHealthy = 1;</code>
+     * <code>optional bool healthy = 1;</code>
      */
-    public Builder clearIsHealthy() {
-      
-      isHealthy_ = false;
+    public Builder clearHealthy() {
+
+      healthy_ = false;
       onChanged();
       return this;
     }
@@ -590,7 +658,7 @@ public  final class ExecResult extends
     public Builder setMsg(
         java.lang.String value) {
       if (value == null) {
-        return this;
+        throw new NullPointerException();
   }
   
       msg_ = value;
@@ -625,6 +693,100 @@ public  final class ExecResult extends
   checkByteStringIsUtf8(value);
       
       msg_ = value;
+      onChanged();
+      return this;
+    }
+
+    private java.lang.Object taskId_ = "";
+
+    /**
+     * <pre>
+     * 任务 Id
+     * </pre>
+     *
+     * <code>optional string taskId = 4;</code>
+     */
+    public java.lang.String getTaskId() {
+      java.lang.Object ref = taskId_;
+      if (!(ref instanceof java.lang.String)) {
+        com.google.protobuf.ByteString bs =
+                (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        taskId_ = s;
+        return s;
+      } else {
+        return (java.lang.String) ref;
+      }
+    }
+
+    /**
+     * <pre>
+     * 任务 Id
+     * </pre>
+     *
+     * <code>optional string taskId = 4;</code>
+     */
+    public com.google.protobuf.ByteString
+    getTaskIdBytes() {
+      java.lang.Object ref = taskId_;
+      if (ref instanceof String) {
+        com.google.protobuf.ByteString b =
+                com.google.protobuf.ByteString.copyFromUtf8(
+                        (java.lang.String) ref);
+        taskId_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    /**
+     * <pre>
+     * 任务 Id
+     * </pre>
+     *
+     * <code>optional string taskId = 4;</code>
+     */
+    public Builder setTaskId(
+            java.lang.String value) {
+      if (value == null) {
+        throw new NullPointerException();
+      }
+
+      taskId_ = value;
+      onChanged();
+      return this;
+    }
+
+    /**
+     * <pre>
+     * 任务 Id
+     * </pre>
+     *
+     * <code>optional string taskId = 4;</code>
+     */
+    public Builder clearTaskId() {
+
+      taskId_ = getDefaultInstance().getTaskId();
+      onChanged();
+      return this;
+    }
+
+    /**
+     * <pre>
+     * 任务 Id
+     * </pre>
+     *
+     * <code>optional string taskId = 4;</code>
+     */
+    public Builder setTaskIdBytes(
+            com.google.protobuf.ByteString value) {
+      if (value == null) {
+        throw new NullPointerException();
+      }
+      checkByteStringIsUtf8(value);
+
+      taskId_ = value;
       onChanged();
       return this;
     }

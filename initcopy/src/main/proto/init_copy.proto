@@ -14,12 +14,3 @@ service InitCopy {
     rpc Delete (cn.com.unary.initcopy.grpc.entity.DeleteTask) returns (cn.com.unary.initcopy.grpc.entity.ExecResult) {};
     rpc Modify (cn.com.unary.initcopy.grpc.entity.ModifyTask) returns (cn.com.unary.initcopy.grpc.entity.ExecResult) {};
 }
-
-service ControlTask {
-	// 任务初始化
-	rpc Init (cn.com.unary.initcopy.grpc.entity.ClientInitReq) returns (cn.com.unary.initcopy.grpc.entity.ServerInitResp) {};
-	// 删除任务
-    rpc Delete (cn.com.unary.initcopy.grpc.entity.DeleteTask) returns (cn.com.unary.initcopy.grpc.entity.ExecResult) {};
-    // 修改任务 
-    rpc Modify (cn.com.unary.initcopy.grpc.entity.ModifyTask) returns (cn.com.unary.initcopy.grpc.entity.ExecResult) {};
-}

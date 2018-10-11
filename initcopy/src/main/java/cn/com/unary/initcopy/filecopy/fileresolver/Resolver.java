@@ -35,13 +35,12 @@ public interface Resolver extends Closeable {
      * @param taskId 任务Id
      * @return 当前对象
      */
-    Resolver setTaskId(int taskId);
+    Resolver setTaskId(String taskId);
 
     /**
-     * 设置文件备份的路径
+     * 设置目标端备份的路径。当备份时有多个目标路径，则不用设置。
      *
-     * @param backupPath 文件备份的路径
-     * @return 当前对象
+     * @param backUpPath 备份路径
      */
-    Resolver setBackupPath(String backupPath);
+    Resolver setBackUpPath(String backUpPath);
 }

@@ -15,12 +15,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class BaseFileInfoDO implements Entity {
-
 	private static final long serialVersionUID = 1852745479396286807L;
 	private String fileId;
-	private long modifyTime;
-	private long fileSize;
+    private Long modifyTime;
+    private Long fileSize;
 	private String fullName;
 	private String checkSum;
-
+    private String backUpPath;
 }

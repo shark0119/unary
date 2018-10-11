@@ -1,6 +1,7 @@
 package cn.com.unary.initcopy.common.utils;
 
 import com.alibaba.fastjson.JSONObject;
+import com.google.protobuf.MessageOrBuilder;
 
 import java.nio.ByteBuffer;
 
@@ -45,5 +46,9 @@ public class CommonUtils {
 
     public static <T> T deSerFromJson(byte[] value, Class<T> clz) {
         return JSONObject.parseObject(value, clz);
+    }
+
+    public static String formatGrpcEntity(MessageOrBuilder builder) {
+        return builder.toString().replaceAll("\\n", " ");
     }
 }

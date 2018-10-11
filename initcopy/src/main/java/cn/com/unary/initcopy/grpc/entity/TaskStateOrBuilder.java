@@ -8,15 +8,6 @@ public interface TaskStateOrBuilder extends
     com.google.protobuf.MessageOrBuilder {
 
   /**
-   * <pre>
-   *对应的任务id
-   * </pre>
-   *
-   * <code>optional int32 taskId = 1;</code>
-   */
-  int getTaskId();
-
-  /**
    * <code>optional .cn.com.unary.initcopy.grpc.entity.ExecResult execResult = 2;</code>
    */
   boolean hasExecResult();

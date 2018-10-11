@@ -12,9 +12,19 @@ public interface SyncTaskOrBuilder extends
    *任务ID
    * </pre>
    *
-   * <code>optional int32 taskId = 1;</code>
+   * <code>optional string taskId = 1;</code>
    */
-  int getTaskId();
+  java.lang.String getTaskId();
+
+    /**
+     * <pre>
+     * 任务ID
+     * </pre>
+     *
+     * <code>optional string taskId = 1;</code>
+     */
+    com.google.protobuf.ByteString
+    getTaskIdBytes();
 
   /**
    * <pre>
@@ -123,18 +133,37 @@ public interface SyncTaskOrBuilder extends
    *要同步的目标目录
    * </pre>
    *
-   * <code>optional string TargetDir = 8;</code>
+   * <code>repeated string targetDirs = 8;</code>
    */
-  java.lang.String getTargetDir();
+  java.util.List<java.lang.String>
+  getTargetDirsList();
   /**
    * <pre>
    *要同步的目标目录
    * </pre>
    *
-   * <code>optional string TargetDir = 8;</code>
+   * <code>repeated string targetDirs = 8;</code>
+   */
+  int getTargetDirsCount();
+
+    /**
+     * <pre>
+     * 要同步的目标目录
+     * </pre>
+     *
+     * <code>repeated string targetDirs = 8;</code>
+     */
+    java.lang.String getTargetDirs(int index);
+
+    /**
+     * <pre>
+     *要同步的目标目录
+     * </pre>
+     *
+     * <code>repeated string targetDirs = 8;</code>
    */
   com.google.protobuf.ByteString
-      getTargetDirBytes();
+  getTargetDirsBytes(int index);
 
   /**
    * <pre>
