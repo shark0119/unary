@@ -15,9 +15,6 @@ public  final class ServerInitResp extends
     super(builder);
   }
   private ServerInitResp() {
-    taskId_ = "";
-    ready_ = false;
-    msg_ = "";
     diffFileInfos_ = java.util.Collections.emptyList();
   }
 
@@ -47,26 +44,22 @@ public  final class ServerInitResp extends
             break;
           }
           case 10: {
-            java.lang.String s = input.readStringRequireUtf8();
+              cn.com.unary.initcopy.grpc.entity.ExecResult.Builder subBuilder = null;
+              if (execResult_ != null) {
+                  subBuilder = execResult_.toBuilder();
+              }
+              execResult_ = input.readMessage(cn.com.unary.initcopy.grpc.entity.ExecResult.parser(), extensionRegistry);
+              if (subBuilder != null) {
+                  subBuilder.mergeFrom(execResult_);
+                  execResult_ = subBuilder.buildPartial();
+              }
 
-            taskId_ = s;
             break;
           }
-          case 16: {
-
-            ready_ = input.readBool();
-            break;
-          }
-          case 26: {
-            java.lang.String s = input.readStringRequireUtf8();
-
-            msg_ = s;
-            break;
-          }
-          case 34: {
-            if (!((mutable_bitField0_ & 0x00000008) == 0x00000008)) {
+            case 18: {
+                if (!((mutable_bitField0_ & 0x00000002) == 0x00000002)) {
               diffFileInfos_ = new java.util.ArrayList<cn.com.unary.initcopy.grpc.entity.DiffFileInfo>();
-              mutable_bitField0_ |= 0x00000008;
+                    mutable_bitField0_ |= 0x00000002;
             }
             diffFileInfos_.add(
                 input.readMessage(cn.com.unary.initcopy.grpc.entity.DiffFileInfo.parser(), extensionRegistry));
@@ -80,7 +73,7 @@ public  final class ServerInitResp extends
       throw new com.google.protobuf.InvalidProtocolBufferException(
           e).setUnfinishedMessage(this);
     } finally {
-      if (((mutable_bitField0_ & 0x00000008) == 0x00000008)) {
+        if (((mutable_bitField0_ & 0x00000002) == 0x00000002)) {
         diffFileInfos_ = java.util.Collections.unmodifiableList(diffFileInfos_);
       }
       makeExtensionsImmutable();
@@ -99,114 +92,56 @@ public  final class ServerInitResp extends
   }
 
   private int bitField0_;
-  public static final int TASKID_FIELD_NUMBER = 1;
-  private volatile java.lang.Object taskId_;
-
+    public static final int EXECRESULT_FIELD_NUMBER = 1;
+    private cn.com.unary.initcopy.grpc.entity.ExecResult execResult_;
   /**
-   * <code>optional string taskId = 1;</code>
+   * <code>optional .cn.com.unary.initcopy.grpc.entity.ExecResult execResult = 1;</code>
    */
-  public java.lang.String getTaskId() {
-    java.lang.Object ref = taskId_;
-    if (ref instanceof java.lang.String) {
-      return (java.lang.String) ref;
-    } else {
-      com.google.protobuf.ByteString bs =
-              (com.google.protobuf.ByteString) ref;
-      java.lang.String s = bs.toStringUtf8();
-      taskId_ = s;
-      return s;
-    }
-  }
-
-  /**
-   * <code>optional string taskId = 1;</code>
-   */
-  public com.google.protobuf.ByteString
-  getTaskIdBytes() {
-    java.lang.Object ref = taskId_;
-    if (ref instanceof java.lang.String) {
-      com.google.protobuf.ByteString b =
-              com.google.protobuf.ByteString.copyFromUtf8(
-                      (java.lang.String) ref);
-      taskId_ = b;
-      return b;
-    } else {
-      return (com.google.protobuf.ByteString) ref;
-    }
-  }
-
-  public static final int READY_FIELD_NUMBER = 2;
-  private boolean ready_;
-  /**
-   * <code>optional bool ready = 2;</code>
-   */
-  public boolean getReady() {
-    return ready_;
-  }
-
-  public static final int MSG_FIELD_NUMBER = 3;
-  private volatile java.lang.Object msg_;
-  /**
-   * <code>optional string msg = 3;</code>
-   */
-  public java.lang.String getMsg() {
-    java.lang.Object ref = msg_;
-    if (ref instanceof java.lang.String) {
-      return (java.lang.String) ref;
-    } else {
-      com.google.protobuf.ByteString bs = 
-          (com.google.protobuf.ByteString) ref;
-      java.lang.String s = bs.toStringUtf8();
-      msg_ = s;
-      return s;
-    }
+  public boolean hasExecResult() {
+      return execResult_ != null;
   }
   /**
-   * <code>optional string msg = 3;</code>
+   * <code>optional .cn.com.unary.initcopy.grpc.entity.ExecResult execResult = 1;</code>
    */
-  public com.google.protobuf.ByteString
-      getMsgBytes() {
-    java.lang.Object ref = msg_;
-    if (ref instanceof java.lang.String) {
-      com.google.protobuf.ByteString b = 
-          com.google.protobuf.ByteString.copyFromUtf8(
-              (java.lang.String) ref);
-      msg_ = b;
-      return b;
-    } else {
-      return (com.google.protobuf.ByteString) ref;
-    }
+  public cn.com.unary.initcopy.grpc.entity.ExecResult getExecResult() {
+      return execResult_ == null ? cn.com.unary.initcopy.grpc.entity.ExecResult.getDefaultInstance() : execResult_;
+  }
+  /**
+   * <code>optional .cn.com.unary.initcopy.grpc.entity.ExecResult execResult = 1;</code>
+   */
+  public cn.com.unary.initcopy.grpc.entity.ExecResultOrBuilder getExecResultOrBuilder() {
+      return getExecResult();
   }
 
-  public static final int DIFFFILEINFOS_FIELD_NUMBER = 4;
+    public static final int DIFFFILEINFOS_FIELD_NUMBER = 2;
   private java.util.List<cn.com.unary.initcopy.grpc.entity.DiffFileInfo> diffFileInfos_;
   /**
-   * <code>repeated .cn.com.unary.initcopy.grpc.entity.DiffFileInfo diffFileInfos = 4;</code>
+   * <code>repeated .cn.com.unary.initcopy.grpc.entity.DiffFileInfo diffFileInfos = 2;</code>
    */
   public java.util.List<cn.com.unary.initcopy.grpc.entity.DiffFileInfo> getDiffFileInfosList() {
     return diffFileInfos_;
   }
   /**
-   * <code>repeated .cn.com.unary.initcopy.grpc.entity.DiffFileInfo diffFileInfos = 4;</code>
+   * <code>repeated .cn.com.unary.initcopy.grpc.entity.DiffFileInfo diffFileInfos = 2;</code>
    */
   public java.util.List<? extends cn.com.unary.initcopy.grpc.entity.DiffFileInfoOrBuilder> 
       getDiffFileInfosOrBuilderList() {
     return diffFileInfos_;
   }
   /**
-   * <code>repeated .cn.com.unary.initcopy.grpc.entity.DiffFileInfo diffFileInfos = 4;</code>
+   * <code>repeated .cn.com.unary.initcopy.grpc.entity.DiffFileInfo diffFileInfos = 2;</code>
    */
   public int getDiffFileInfosCount() {
     return diffFileInfos_.size();
   }
   /**
-   * <code>repeated .cn.com.unary.initcopy.grpc.entity.DiffFileInfo diffFileInfos = 4;</code>
+   * <code>repeated .cn.com.unary.initcopy.grpc.entity.DiffFileInfo diffFileInfos = 2;</code>
    */
   public cn.com.unary.initcopy.grpc.entity.DiffFileInfo getDiffFileInfos(int index) {
     return diffFileInfos_.get(index);
   }
   /**
-   * <code>repeated .cn.com.unary.initcopy.grpc.entity.DiffFileInfo diffFileInfos = 4;</code>
+   * <code>repeated .cn.com.unary.initcopy.grpc.entity.DiffFileInfo diffFileInfos = 2;</code>
    */
   public cn.com.unary.initcopy.grpc.entity.DiffFileInfoOrBuilder getDiffFileInfosOrBuilder(
       int index) {
@@ -225,17 +160,11 @@ public  final class ServerInitResp extends
 
   public void writeTo(com.google.protobuf.CodedOutputStream output)
                       throws java.io.IOException {
-    if (!getTaskIdBytes().isEmpty()) {
-      com.google.protobuf.GeneratedMessageV3.writeString(output, 1, taskId_);
-    }
-    if (ready_ != false) {
-      output.writeBool(2, ready_);
-    }
-    if (!getMsgBytes().isEmpty()) {
-      com.google.protobuf.GeneratedMessageV3.writeString(output, 3, msg_);
+      if (execResult_ != null) {
+          output.writeMessage(1, getExecResult());
     }
     for (int i = 0; i < diffFileInfos_.size(); i++) {
-      output.writeMessage(4, diffFileInfos_.get(i));
+        output.writeMessage(2, diffFileInfos_.get(i));
     }
   }
 
@@ -244,19 +173,13 @@ public  final class ServerInitResp extends
     if (size != -1) return size;
 
     size = 0;
-    if (!getTaskIdBytes().isEmpty()) {
-      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, taskId_);
-    }
-    if (ready_ != false) {
+      if (execResult_ != null) {
       size += com.google.protobuf.CodedOutputStream
-        .computeBoolSize(2, ready_);
-    }
-    if (!getMsgBytes().isEmpty()) {
-      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(3, msg_);
+              .computeMessageSize(1, getExecResult());
     }
     for (int i = 0; i < diffFileInfos_.size(); i++) {
       size += com.google.protobuf.CodedOutputStream
-        .computeMessageSize(4, diffFileInfos_.get(i));
+              .computeMessageSize(2, diffFileInfos_.get(i));
     }
     memoizedSize = size;
     return size;
@@ -274,12 +197,11 @@ public  final class ServerInitResp extends
     cn.com.unary.initcopy.grpc.entity.ServerInitResp other = (cn.com.unary.initcopy.grpc.entity.ServerInitResp) obj;
 
     boolean result = true;
-    result = result && getTaskId()
-            .equals(other.getTaskId());
-    result = result && (getReady()
-        == other.getReady());
-    result = result && getMsg()
-        .equals(other.getMsg());
+      result = result && (hasExecResult() == other.hasExecResult());
+      if (hasExecResult()) {
+          result = result && getExecResult()
+                  .equals(other.getExecResult());
+      }
     result = result && getDiffFileInfosList()
         .equals(other.getDiffFileInfosList());
     return result;
@@ -292,13 +214,10 @@ public  final class ServerInitResp extends
     }
     int hash = 41;
     hash = (19 * hash) + getDescriptorForType().hashCode();
-    hash = (37 * hash) + TASKID_FIELD_NUMBER;
-    hash = (53 * hash) + getTaskId().hashCode();
-    hash = (37 * hash) + READY_FIELD_NUMBER;
-    hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
-        getReady());
-    hash = (37 * hash) + MSG_FIELD_NUMBER;
-    hash = (53 * hash) + getMsg().hashCode();
+      if (hasExecResult()) {
+          hash = (37 * hash) + EXECRESULT_FIELD_NUMBER;
+          hash = (53 * hash) + getExecResult().hashCode();
+      }
     if (getDiffFileInfosCount() > 0) {
       hash = (37 * hash) + DIFFFILEINFOS_FIELD_NUMBER;
       hash = (53 * hash) + getDiffFileInfosList().hashCode();
@@ -422,15 +341,15 @@ public  final class ServerInitResp extends
     }
     public Builder clear() {
       super.clear();
-      taskId_ = "";
-
-      ready_ = false;
-
-      msg_ = "";
-
+        if (execResultBuilder_ == null) {
+            execResult_ = null;
+        } else {
+            execResult_ = null;
+            execResultBuilder_ = null;
+        }
       if (diffFileInfosBuilder_ == null) {
         diffFileInfos_ = java.util.Collections.emptyList();
-        bitField0_ = (bitField0_ & ~0x00000008);
+          bitField0_ = (bitField0_ & ~0x00000002);
       } else {
         diffFileInfosBuilder_.clear();
       }
@@ -458,13 +377,15 @@ public  final class ServerInitResp extends
       cn.com.unary.initcopy.grpc.entity.ServerInitResp result = new cn.com.unary.initcopy.grpc.entity.ServerInitResp(this);
       int from_bitField0_ = bitField0_;
       int to_bitField0_ = 0;
-      result.taskId_ = taskId_;
-      result.ready_ = ready_;
-      result.msg_ = msg_;
+        if (execResultBuilder_ == null) {
+            result.execResult_ = execResult_;
+        } else {
+            result.execResult_ = execResultBuilder_.build();
+        }
       if (diffFileInfosBuilder_ == null) {
-        if (((bitField0_ & 0x00000008) == 0x00000008)) {
+          if (((bitField0_ & 0x00000002) == 0x00000002)) {
           diffFileInfos_ = java.util.Collections.unmodifiableList(diffFileInfos_);
-          bitField0_ = (bitField0_ & ~0x00000008);
+              bitField0_ = (bitField0_ & ~0x00000002);
         }
         result.diffFileInfos_ = diffFileInfos_;
       } else {
@@ -512,22 +433,14 @@ public  final class ServerInitResp extends
 
     public Builder mergeFrom(cn.com.unary.initcopy.grpc.entity.ServerInitResp other) {
       if (other == cn.com.unary.initcopy.grpc.entity.ServerInitResp.getDefaultInstance()) return this;
-      if (!other.getTaskId().isEmpty()) {
-        taskId_ = other.taskId_;
-        onChanged();
-      }
-      if (other.getReady() != false) {
-        setReady(other.getReady());
-      }
-      if (!other.getMsg().isEmpty()) {
-        msg_ = other.msg_;
-        onChanged();
+        if (other.hasExecResult()) {
+            mergeExecResult(other.getExecResult());
       }
       if (diffFileInfosBuilder_ == null) {
         if (!other.diffFileInfos_.isEmpty()) {
           if (diffFileInfos_.isEmpty()) {
             diffFileInfos_ = other.diffFileInfos_;
-            bitField0_ = (bitField0_ & ~0x00000008);
+              bitField0_ = (bitField0_ & ~0x00000002);
           } else {
             ensureDiffFileInfosIsMutable();
             diffFileInfos_.addAll(other.diffFileInfos_);
@@ -540,7 +453,7 @@ public  final class ServerInitResp extends
             diffFileInfosBuilder_.dispose();
             diffFileInfosBuilder_ = null;
             diffFileInfos_ = other.diffFileInfos_;
-            bitField0_ = (bitField0_ & ~0x00000008);
+              bitField0_ = (bitField0_ & ~0x00000002);
             diffFileInfosBuilder_ = 
               com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
                  getDiffFileInfosFieldBuilder() : null;
@@ -576,189 +489,139 @@ public  final class ServerInitResp extends
     }
     private int bitField0_;
 
-    private java.lang.Object taskId_ = "";
-
+      private cn.com.unary.initcopy.grpc.entity.ExecResult execResult_ = null;
+      private com.google.protobuf.SingleFieldBuilderV3<
+              cn.com.unary.initcopy.grpc.entity.ExecResult, cn.com.unary.initcopy.grpc.entity.ExecResult.Builder, cn.com.unary.initcopy.grpc.entity.ExecResultOrBuilder> execResultBuilder_;
     /**
-     * <code>optional string taskId = 1;</code>
+     * <code>optional .cn.com.unary.initcopy.grpc.entity.ExecResult execResult = 1;</code>
      */
-    public java.lang.String getTaskId() {
-      java.lang.Object ref = taskId_;
-      if (!(ref instanceof java.lang.String)) {
-        com.google.protobuf.ByteString bs =
-                (com.google.protobuf.ByteString) ref;
-        java.lang.String s = bs.toStringUtf8();
-        taskId_ = s;
-        return s;
+    public boolean hasExecResult() {
+        return execResultBuilder_ != null || execResult_ != null;
+    }
+    /**
+     * <code>optional .cn.com.unary.initcopy.grpc.entity.ExecResult execResult = 1;</code>
+     */
+    public cn.com.unary.initcopy.grpc.entity.ExecResult getExecResult() {
+        if (execResultBuilder_ == null) {
+            return execResult_ == null ? cn.com.unary.initcopy.grpc.entity.ExecResult.getDefaultInstance() : execResult_;
       } else {
-        return (java.lang.String) ref;
-      }
+            return execResultBuilder_.getMessage();
+        }
     }
-
     /**
-     * <code>optional string taskId = 1;</code>
+     * <code>optional .cn.com.unary.initcopy.grpc.entity.ExecResult execResult = 1;</code>
      */
-    public com.google.protobuf.ByteString
-    getTaskIdBytes() {
-      java.lang.Object ref = taskId_;
-      if (ref instanceof String) {
-        com.google.protobuf.ByteString b =
-                com.google.protobuf.ByteString.copyFromUtf8(
-                        (java.lang.String) ref);
-        taskId_ = b;
-        return b;
+    public Builder setExecResult(cn.com.unary.initcopy.grpc.entity.ExecResult value) {
+        if (execResultBuilder_ == null) {
+            if (value == null) {
+                throw new NullPointerException();
+            }
+            execResult_ = value;
+            onChanged();
+        } else {
+            execResultBuilder_.setMessage(value);
+        }
+
+      return this;
+    }
+    /**
+     * <code>optional .cn.com.unary.initcopy.grpc.entity.ExecResult execResult = 1;</code>
+     */
+    public Builder setExecResult(
+            cn.com.unary.initcopy.grpc.entity.ExecResult.Builder builderForValue) {
+        if (execResultBuilder_ == null) {
+            execResult_ = builderForValue.build();
+            onChanged();
+        } else {
+            execResultBuilder_.setMessage(builderForValue.build());
+        }
+
+      return this;
+    }
+    /**
+     * <code>optional .cn.com.unary.initcopy.grpc.entity.ExecResult execResult = 1;</code>
+     */
+    public Builder mergeExecResult(cn.com.unary.initcopy.grpc.entity.ExecResult value) {
+        if (execResultBuilder_ == null) {
+            if (execResult_ != null) {
+                execResult_ =
+                        cn.com.unary.initcopy.grpc.entity.ExecResult.newBuilder(execResult_).mergeFrom(value).buildPartial();
+            } else {
+                execResult_ = value;
+            }
+            onChanged();
       } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
-    }
+            execResultBuilder_.mergeFrom(value);
+        }
 
-    /**
-     * <code>optional string taskId = 1;</code>
-     */
-    public Builder setTaskId(
-            java.lang.String value) {
-      if (value == null) {
-        throw new NullPointerException();
-  }
-  
-      taskId_ = value;
-      onChanged();
       return this;
     }
-
     /**
-     * <code>optional string taskId = 1;</code>
+     * <code>optional .cn.com.unary.initcopy.grpc.entity.ExecResult execResult = 1;</code>
      */
-    public Builder clearTaskId() {
+    public Builder clearExecResult() {
+        if (execResultBuilder_ == null) {
+            execResult_ = null;
+            onChanged();
+        } else {
+            execResult_ = null;
+            execResultBuilder_ = null;
+        }
 
-      taskId_ = getDefaultInstance().getTaskId();
-      onChanged();
       return this;
     }
-
     /**
-     * <code>optional string taskId = 1;</code>
+     * <code>optional .cn.com.unary.initcopy.grpc.entity.ExecResult execResult = 1;</code>
      */
-    public Builder setTaskIdBytes(
-            com.google.protobuf.ByteString value) {
-      if (value == null) {
-        throw new NullPointerException();
-      }
-      checkByteStringIsUtf8(value);
-
-      taskId_ = value;
-      onChanged();
-      return this;
-    }
-
-    private boolean ready_ ;
-    /**
-     * <code>optional bool ready = 2;</code>
-     */
-    public boolean getReady() {
-      return ready_;
-    }
-    /**
-     * <code>optional bool ready = 2;</code>
-     */
-    public Builder setReady(boolean value) {
+    public cn.com.unary.initcopy.grpc.entity.ExecResult.Builder getExecResultBuilder() {
       
-      ready_ = value;
       onChanged();
-      return this;
-    }
-    /**
-     * <code>optional bool ready = 2;</code>
-     */
-    public Builder clearReady() {
-      
-      ready_ = false;
-      onChanged();
-      return this;
+        return getExecResultFieldBuilder().getBuilder();
     }
 
-    private java.lang.Object msg_ = "";
-    /**
-     * <code>optional string msg = 3;</code>
-     */
-    public java.lang.String getMsg() {
-      java.lang.Object ref = msg_;
-      if (!(ref instanceof java.lang.String)) {
-        com.google.protobuf.ByteString bs =
-            (com.google.protobuf.ByteString) ref;
-        java.lang.String s = bs.toStringUtf8();
-        msg_ = s;
-        return s;
-      } else {
-        return (java.lang.String) ref;
+      /**
+       * <code>optional .cn.com.unary.initcopy.grpc.entity.ExecResult execResult = 1;</code>
+       */
+      public cn.com.unary.initcopy.grpc.entity.ExecResultOrBuilder getExecResultOrBuilder() {
+          if (execResultBuilder_ != null) {
+              return execResultBuilder_.getMessageOrBuilder();
+          } else {
+              return execResult_ == null ?
+                      cn.com.unary.initcopy.grpc.entity.ExecResult.getDefaultInstance() : execResult_;
+          }
       }
-    }
-    /**
-     * <code>optional string msg = 3;</code>
-     */
-    public com.google.protobuf.ByteString
-        getMsgBytes() {
-      java.lang.Object ref = msg_;
-      if (ref instanceof String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (java.lang.String) ref);
-        msg_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
-    }
-    /**
-     * <code>optional string msg = 3;</code>
-     */
-    public Builder setMsg(
-        java.lang.String value) {
-      if (value == null) {
-    throw new NullPointerException();
-  }
-  
-      msg_ = value;
-      onChanged();
-      return this;
-    }
-    /**
-     * <code>optional string msg = 3;</code>
-     */
-    public Builder clearMsg() {
-      
-      msg_ = getDefaultInstance().getMsg();
-      onChanged();
-      return this;
-    }
-    /**
-     * <code>optional string msg = 3;</code>
-     */
-    public Builder setMsgBytes(
-        com.google.protobuf.ByteString value) {
-      if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-      
-      msg_ = value;
-      onChanged();
-      return this;
+
+      /**
+       * <code>optional .cn.com.unary.initcopy.grpc.entity.ExecResult execResult = 1;</code>
+       */
+      private com.google.protobuf.SingleFieldBuilderV3<
+              cn.com.unary.initcopy.grpc.entity.ExecResult, cn.com.unary.initcopy.grpc.entity.ExecResult.Builder, cn.com.unary.initcopy.grpc.entity.ExecResultOrBuilder>
+      getExecResultFieldBuilder() {
+          if (execResultBuilder_ == null) {
+              execResultBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+                      cn.com.unary.initcopy.grpc.entity.ExecResult, cn.com.unary.initcopy.grpc.entity.ExecResult.Builder, cn.com.unary.initcopy.grpc.entity.ExecResultOrBuilder>(
+                      getExecResult(),
+                      getParentForChildren(),
+                      isClean());
+              execResult_ = null;
+          }
+          return execResultBuilder_;
     }
 
     private java.util.List<cn.com.unary.initcopy.grpc.entity.DiffFileInfo> diffFileInfos_ =
       java.util.Collections.emptyList();
     private void ensureDiffFileInfosIsMutable() {
-      if (!((bitField0_ & 0x00000008) == 0x00000008)) {
+        if (!((bitField0_ & 0x00000002) == 0x00000002)) {
         diffFileInfos_ = new java.util.ArrayList<cn.com.unary.initcopy.grpc.entity.DiffFileInfo>(diffFileInfos_);
-        bitField0_ |= 0x00000008;
+            bitField0_ |= 0x00000002;
        }
     }
 
     private com.google.protobuf.RepeatedFieldBuilderV3<
         cn.com.unary.initcopy.grpc.entity.DiffFileInfo, cn.com.unary.initcopy.grpc.entity.DiffFileInfo.Builder, cn.com.unary.initcopy.grpc.entity.DiffFileInfoOrBuilder> diffFileInfosBuilder_;
 
-    /**
-     * <code>repeated .cn.com.unary.initcopy.grpc.entity.DiffFileInfo diffFileInfos = 4;</code>
+      /**
+       * <code>repeated .cn.com.unary.initcopy.grpc.entity.DiffFileInfo diffFileInfos = 2;</code>
      */
     public java.util.List<cn.com.unary.initcopy.grpc.entity.DiffFileInfo> getDiffFileInfosList() {
       if (diffFileInfosBuilder_ == null) {
@@ -767,8 +630,9 @@ public  final class ServerInitResp extends
         return diffFileInfosBuilder_.getMessageList();
       }
     }
-    /**
-     * <code>repeated .cn.com.unary.initcopy.grpc.entity.DiffFileInfo diffFileInfos = 4;</code>
+
+      /**
+       * <code>repeated .cn.com.unary.initcopy.grpc.entity.DiffFileInfo diffFileInfos = 2;</code>
      */
     public int getDiffFileInfosCount() {
       if (diffFileInfosBuilder_ == null) {
@@ -777,8 +641,9 @@ public  final class ServerInitResp extends
         return diffFileInfosBuilder_.getCount();
       }
     }
-    /**
-     * <code>repeated .cn.com.unary.initcopy.grpc.entity.DiffFileInfo diffFileInfos = 4;</code>
+
+      /**
+       * <code>repeated .cn.com.unary.initcopy.grpc.entity.DiffFileInfo diffFileInfos = 2;</code>
      */
     public cn.com.unary.initcopy.grpc.entity.DiffFileInfo getDiffFileInfos(int index) {
       if (diffFileInfosBuilder_ == null) {
@@ -787,8 +652,9 @@ public  final class ServerInitResp extends
         return diffFileInfosBuilder_.getMessage(index);
       }
     }
-    /**
-     * <code>repeated .cn.com.unary.initcopy.grpc.entity.DiffFileInfo diffFileInfos = 4;</code>
+
+      /**
+       * <code>repeated .cn.com.unary.initcopy.grpc.entity.DiffFileInfo diffFileInfos = 2;</code>
      */
     public Builder setDiffFileInfos(
         int index, cn.com.unary.initcopy.grpc.entity.DiffFileInfo value) {
@@ -804,8 +670,9 @@ public  final class ServerInitResp extends
       }
       return this;
     }
-    /**
-     * <code>repeated .cn.com.unary.initcopy.grpc.entity.DiffFileInfo diffFileInfos = 4;</code>
+
+      /**
+       * <code>repeated .cn.com.unary.initcopy.grpc.entity.DiffFileInfo diffFileInfos = 2;</code>
      */
     public Builder setDiffFileInfos(
         int index, cn.com.unary.initcopy.grpc.entity.DiffFileInfo.Builder builderForValue) {
@@ -818,8 +685,9 @@ public  final class ServerInitResp extends
       }
       return this;
     }
-    /**
-     * <code>repeated .cn.com.unary.initcopy.grpc.entity.DiffFileInfo diffFileInfos = 4;</code>
+
+      /**
+       * <code>repeated .cn.com.unary.initcopy.grpc.entity.DiffFileInfo diffFileInfos = 2;</code>
      */
     public Builder addDiffFileInfos(cn.com.unary.initcopy.grpc.entity.DiffFileInfo value) {
       if (diffFileInfosBuilder_ == null) {
@@ -834,8 +702,9 @@ public  final class ServerInitResp extends
       }
       return this;
     }
-    /**
-     * <code>repeated .cn.com.unary.initcopy.grpc.entity.DiffFileInfo diffFileInfos = 4;</code>
+
+      /**
+       * <code>repeated .cn.com.unary.initcopy.grpc.entity.DiffFileInfo diffFileInfos = 2;</code>
      */
     public Builder addDiffFileInfos(
         int index, cn.com.unary.initcopy.grpc.entity.DiffFileInfo value) {
@@ -851,8 +720,9 @@ public  final class ServerInitResp extends
       }
       return this;
     }
-    /**
-     * <code>repeated .cn.com.unary.initcopy.grpc.entity.DiffFileInfo diffFileInfos = 4;</code>
+
+      /**
+       * <code>repeated .cn.com.unary.initcopy.grpc.entity.DiffFileInfo diffFileInfos = 2;</code>
      */
     public Builder addDiffFileInfos(
         cn.com.unary.initcopy.grpc.entity.DiffFileInfo.Builder builderForValue) {
@@ -865,8 +735,9 @@ public  final class ServerInitResp extends
       }
       return this;
     }
-    /**
-     * <code>repeated .cn.com.unary.initcopy.grpc.entity.DiffFileInfo diffFileInfos = 4;</code>
+
+      /**
+       * <code>repeated .cn.com.unary.initcopy.grpc.entity.DiffFileInfo diffFileInfos = 2;</code>
      */
     public Builder addDiffFileInfos(
         int index, cn.com.unary.initcopy.grpc.entity.DiffFileInfo.Builder builderForValue) {
@@ -879,8 +750,9 @@ public  final class ServerInitResp extends
       }
       return this;
     }
-    /**
-     * <code>repeated .cn.com.unary.initcopy.grpc.entity.DiffFileInfo diffFileInfos = 4;</code>
+
+      /**
+       * <code>repeated .cn.com.unary.initcopy.grpc.entity.DiffFileInfo diffFileInfos = 2;</code>
      */
     public Builder addAllDiffFileInfos(
         java.lang.Iterable<? extends cn.com.unary.initcopy.grpc.entity.DiffFileInfo> values) {
@@ -894,21 +766,23 @@ public  final class ServerInitResp extends
       }
       return this;
     }
-    /**
-     * <code>repeated .cn.com.unary.initcopy.grpc.entity.DiffFileInfo diffFileInfos = 4;</code>
+
+      /**
+       * <code>repeated .cn.com.unary.initcopy.grpc.entity.DiffFileInfo diffFileInfos = 2;</code>
      */
     public Builder clearDiffFileInfos() {
       if (diffFileInfosBuilder_ == null) {
         diffFileInfos_ = java.util.Collections.emptyList();
-        bitField0_ = (bitField0_ & ~0x00000008);
+          bitField0_ = (bitField0_ & ~0x00000002);
         onChanged();
       } else {
         diffFileInfosBuilder_.clear();
       }
       return this;
     }
-    /**
-     * <code>repeated .cn.com.unary.initcopy.grpc.entity.DiffFileInfo diffFileInfos = 4;</code>
+
+      /**
+       * <code>repeated .cn.com.unary.initcopy.grpc.entity.DiffFileInfo diffFileInfos = 2;</code>
      */
     public Builder removeDiffFileInfos(int index) {
       if (diffFileInfosBuilder_ == null) {
@@ -920,15 +794,17 @@ public  final class ServerInitResp extends
       }
       return this;
     }
-    /**
-     * <code>repeated .cn.com.unary.initcopy.grpc.entity.DiffFileInfo diffFileInfos = 4;</code>
+
+      /**
+       * <code>repeated .cn.com.unary.initcopy.grpc.entity.DiffFileInfo diffFileInfos = 2;</code>
      */
     public cn.com.unary.initcopy.grpc.entity.DiffFileInfo.Builder getDiffFileInfosBuilder(
         int index) {
       return getDiffFileInfosFieldBuilder().getBuilder(index);
     }
-    /**
-     * <code>repeated .cn.com.unary.initcopy.grpc.entity.DiffFileInfo diffFileInfos = 4;</code>
+
+      /**
+       * <code>repeated .cn.com.unary.initcopy.grpc.entity.DiffFileInfo diffFileInfos = 2;</code>
      */
     public cn.com.unary.initcopy.grpc.entity.DiffFileInfoOrBuilder getDiffFileInfosOrBuilder(
         int index) {
@@ -937,8 +813,9 @@ public  final class ServerInitResp extends
         return diffFileInfosBuilder_.getMessageOrBuilder(index);
       }
     }
-    /**
-     * <code>repeated .cn.com.unary.initcopy.grpc.entity.DiffFileInfo diffFileInfos = 4;</code>
+
+      /**
+       * <code>repeated .cn.com.unary.initcopy.grpc.entity.DiffFileInfo diffFileInfos = 2;</code>
      */
     public java.util.List<? extends cn.com.unary.initcopy.grpc.entity.DiffFileInfoOrBuilder> 
          getDiffFileInfosOrBuilderList() {
@@ -948,23 +825,26 @@ public  final class ServerInitResp extends
         return java.util.Collections.unmodifiableList(diffFileInfos_);
       }
     }
-    /**
-     * <code>repeated .cn.com.unary.initcopy.grpc.entity.DiffFileInfo diffFileInfos = 4;</code>
+
+      /**
+       * <code>repeated .cn.com.unary.initcopy.grpc.entity.DiffFileInfo diffFileInfos = 2;</code>
      */
     public cn.com.unary.initcopy.grpc.entity.DiffFileInfo.Builder addDiffFileInfosBuilder() {
       return getDiffFileInfosFieldBuilder().addBuilder(
           cn.com.unary.initcopy.grpc.entity.DiffFileInfo.getDefaultInstance());
     }
-    /**
-     * <code>repeated .cn.com.unary.initcopy.grpc.entity.DiffFileInfo diffFileInfos = 4;</code>
+
+      /**
+       * <code>repeated .cn.com.unary.initcopy.grpc.entity.DiffFileInfo diffFileInfos = 2;</code>
      */
     public cn.com.unary.initcopy.grpc.entity.DiffFileInfo.Builder addDiffFileInfosBuilder(
         int index) {
       return getDiffFileInfosFieldBuilder().addBuilder(
           index, cn.com.unary.initcopy.grpc.entity.DiffFileInfo.getDefaultInstance());
     }
-    /**
-     * <code>repeated .cn.com.unary.initcopy.grpc.entity.DiffFileInfo diffFileInfos = 4;</code>
+
+      /**
+       * <code>repeated .cn.com.unary.initcopy.grpc.entity.DiffFileInfo diffFileInfos = 2;</code>
      */
     public java.util.List<cn.com.unary.initcopy.grpc.entity.DiffFileInfo.Builder> 
          getDiffFileInfosBuilderList() {
@@ -977,7 +857,7 @@ public  final class ServerInitResp extends
         diffFileInfosBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
             cn.com.unary.initcopy.grpc.entity.DiffFileInfo, cn.com.unary.initcopy.grpc.entity.DiffFileInfo.Builder, cn.com.unary.initcopy.grpc.entity.DiffFileInfoOrBuilder>(
                 diffFileInfos_,
-                ((bitField0_ & 0x00000008) == 0x00000008),
+                ((bitField0_ & 0x00000002) == 0x00000002),
                 getParentForChildren(),
                 isClean());
         diffFileInfos_ = null;

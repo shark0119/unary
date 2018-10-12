@@ -49,6 +49,6 @@ public class CommonUtils {
     }
 
     public static String formatGrpcEntity(MessageOrBuilder builder) {
-        return builder.toString().replaceAll("\\n", " ");
+        return builder.toString().replaceAll("\\n", "");
     }
 }

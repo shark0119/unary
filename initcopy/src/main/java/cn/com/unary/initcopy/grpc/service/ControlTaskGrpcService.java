@@ -2,14 +2,10 @@ package cn.com.unary.initcopy.grpc.service;
 
 import cn.com.unary.initcopy.common.utils.CommonUtils;
 import cn.com.unary.initcopy.common.utils.ValidateUtils;
-import cn.com.unary.initcopy.filecopy.ServerFileCopy;
 import cn.com.unary.initcopy.grpc.ControlTaskGrpc;
-import cn.com.unary.initcopy.grpc.entity.ClientInitReq;
-import cn.com.unary.initcopy.grpc.entity.DeleteTask;
-import cn.com.unary.initcopy.grpc.entity.ExecResult;
-import cn.com.unary.initcopy.grpc.entity.ModifyTask;
-import cn.com.unary.initcopy.grpc.entity.ServerInitResp;
-import cn.com.unary.initcopy.service.ServerTaskUpdater;
+import cn.com.unary.initcopy.grpc.entity.*;
+import cn.com.unary.initcopy.service.filecopy.ServerFileCopy;
+import cn.com.unary.initcopy.service.taskupdater.ServerTaskUpdater;
 import io.grpc.stub.StreamObserver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -17,6 +13,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.Objects;
 
+import static cn.com.unary.initcopy.common.Msg.*;
 /**
  * 任务控制 GRPC 服务实现类
  *
@@ -25,9 +22,8 @@ import java.util.Objects;
  */
 @Component("ControlTaskGrpcImpl")
 @Scope("singleton")
-public class ControlTaskGrpcImpl extends ControlTaskGrpc.ControlTaskImplBase {
+public class ControlTaskGrpcService extends ControlTaskGrpc.ControlTaskImplBase {
 
-    private static final String TASK_SUCCESS_MSG = "Task success!";
 
     @Autowired
     private ServerFileCopy fileCopy;
@@ -62,69 +58,85 @@ public class ControlTaskGrpcImpl extends ControlTaskGrpc.ControlTaskImplBase {
         responseObserver.onCompleted();
     }
 
-    /**
-     * 调用 {@link cn.com.unary.initcopy.grpc.ControlTaskGrpc#METHODID_INIT}
-     *
-     * @param req 初始化请求
-     * @return 初始化响应
-     */
-    private ServerInitResp initLinker(ClientInitReq req) {
-        ServerInitResp.Builder builder = ServerInitResp.newBuilder().setTaskId(req.getTaskId());
-        if (req.getBaseFileInfosCount() <= 0) {
-            builder.setMsg("Illegal request. No files.").setReady(false);
-        } else if (ValidateUtils.isEmpty(req.getTaskId())) {
-            builder.setReady(false).setMsg("Illegal request. Task Id Null");
-        } else {
-            try {
-                return fileCopy.startInit(req);
-            } catch (Exception e) {
-                logger.error("init fail", e);
-                builder.setReady(false).setMsg(e.getMessage());
-            }
-        }
-        return builder.build();
+    @Override
+    public void query(QueryTask request, StreamObserver<TaskState> responseObserver) {
+        logger.info("QueryTask:" + CommonUtils.formatGrpcEntity(request));
+        TaskState taskState = this.queryLinker(request);
+        logger.info("TaskState:" + CommonUtils.formatGrpcEntity(taskState));
+        responseObserver.onNext(taskState);
+        responseObserver.onCompleted();
     }
 
-    /**
-     * 调用 {@link cn.com.unary.initcopy.grpc.ControlTaskGrpc#METHODID_DELETE}
-     *
-     * @param task 删除任务的相关参数
-     * @return 执行结果
-     */
+    /***
+     * 下面的方法为连接具体业务的代码。
+     * ***/
+
+    private TaskState queryLinker(QueryTask request) {
+        TaskState.Builder builder = TaskState.newBuilder();
+        ExecResult.Builder resultBuilder = ExecResult.newBuilder();
+        if (ValidateUtils.isEmpty(request.getTaskId())) {
+            builder.setExecResult(resultBuilder.setHealthy(false).setMsg(MSG_TASK_ID_NULL));
+        } else {
+            resultBuilder.setTaskId(request.getTaskId());
+            try {
+                builder = taskUpdater.query(request.getTaskId()).toBuilder();
+                builder.setExecResult(resultBuilder.setHealthy(true).setMsg(MSG_TASK_SUCCESS));
+            } catch (Exception e) {
+                logger.error(MSG_TASK_FAIL, e);
+                builder.setExecResult(resultBuilder.setHealthy(false).setMsg(e.getMessage() == null ? "" : e.getMessage()));
+            }
+        }
+        return builder.setExecResult(resultBuilder).build();
+    }
+
+    private ServerInitResp initLinker(ClientInitReq req) {
+        ServerInitResp.Builder builder = ServerInitResp.newBuilder();
+        ExecResult.Builder resultBuilder = ExecResult.newBuilder();
+        if (req.getBaseFileInfosCount() <= 0) {
+            resultBuilder.setHealthy(false).setMsg("Illegal request. No files.");
+        } else if (ValidateUtils.isEmpty(req.getTaskId())) {
+            resultBuilder.setHealthy(false).setMsg(MSG_TASK_ID_NULL);
+        } else {
+            resultBuilder.setTaskId(req.getTaskId());
+            try {
+                builder = fileCopy.startInit(req).toBuilder();
+                resultBuilder.setHealthy(true).setMsg(MSG_TASK_SUCCESS);
+            } catch (Exception e) {
+                logger.error(MSG_TASK_FAIL, e);
+                resultBuilder.setHealthy(false).setMsg(e.getMessage() == null ? "" : e.getMessage());
+            }
+        }
+        return builder.setExecResult(resultBuilder).build();
+    }
+
     private ExecResult deleteLinker(DeleteTask task) {
         if (ValidateUtils.isEmpty(task.getTaskId())) {
-            throw new IllegalArgumentException("task id can't be null.");
+            throw new IllegalArgumentException(MSG_TASK_ID_NULL);
         }
         ExecResult.Builder builder = ExecResult.newBuilder();
         try {
             taskUpdater.delete(task);
-            builder.setHealthy(true).setMsg(TASK_SUCCESS_MSG);
+            builder.setHealthy(true).setMsg(MSG_TASK_SUCCESS);
         } catch (Exception e) {
-            logger.error("delete fail", e);
-            builder.setHealthy(false).setMsg(e.getMessage());
+            logger.error(MSG_TASK_FAIL, e);
+            builder.setHealthy(false).setMsg(e.getMessage() == null ? "" : e.getMessage());
         }
         return builder.build();
     }
 
-    /**
-     * 调用 {@link cn.com.unary.initcopy.grpc.ControlTaskGrpc#METHODID_MODIFY}
-     *
-     * @param task 修改任务的相关参数
-     * @return 执行结果
-     */
     private ExecResult modifyLinker(ModifyTask task) {
         Objects.requireNonNull(task);
         if (ValidateUtils.isEmpty(task.getTaskId())) {
-            throw new IllegalArgumentException("task id can't be null.");
+            throw new IllegalArgumentException(MSG_TASK_ID_NULL);
         }
         Objects.requireNonNull(task.getModifyType());
         ExecResult.Builder builder = ExecResult.newBuilder();
         try {
             taskUpdater.modify(task);
-            builder.setHealthy(true).setMsg(TASK_SUCCESS_MSG);
+            builder.setHealthy(true).setMsg(MSG_TASK_SUCCESS);
         } catch (Exception e) {
-            logger.error("modify fail", e);
-            builder.setHealthy(false).setMsg(e.getMessage());
+            logger.error(MSG_TASK_FAIL, e);
+            builder.setHealthy(false).setMsg(e.getMessage() == null ? "" : e.getMessage());
         }
         return builder.build();
     }

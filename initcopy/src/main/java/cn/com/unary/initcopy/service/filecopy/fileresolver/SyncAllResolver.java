@@ -1,4 +1,4 @@
-package cn.com.unary.initcopy.filecopy.fileresolver;
+package cn.com.unary.initcopy.service.filecopy.fileresolver;
 
 import cn.com.unary.initcopy.InitCopyContext;
 import cn.com.unary.initcopy.common.AbstractLoggable;
@@ -10,9 +10,9 @@ import cn.com.unary.initcopy.entity.Constants;
 import cn.com.unary.initcopy.entity.Constants.PackerType;
 import cn.com.unary.initcopy.entity.FileInfoDO;
 import cn.com.unary.initcopy.exception.InfoPersistenceException;
-import cn.com.unary.initcopy.filecopy.filepacker.SyncAllPacker;
-import cn.com.unary.initcopy.filecopy.io.AbstractFileOutput;
-import cn.com.unary.initcopy.filecopy.io.FileAttrProcessor;
+import cn.com.unary.initcopy.service.filecopy.filepacker.SyncAllPacker;
+import cn.com.unary.initcopy.service.filecopy.io.AbstractFileOutput;
+import cn.com.unary.initcopy.service.filecopy.io.FileAttrProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
@@ -199,7 +199,7 @@ public class SyncAllResolver extends AbstractLoggable implements Resolver {
     private boolean initCopyFile(int remainingSize) throws IOException, InfoPersistenceException {
         logger.debug("A file info json start transfer to FileInfo");
         currentFile = CommonUtils.deSerFromJson(fileInfo.array(), FileInfoDO.class);
-        if (ValidateUtils.isEmpty(backUpPath)) {
+        if (!ValidateUtils.isEmpty(currentFile.getBackUpPath())) {
             backUpPath = currentFile.getBackUpPath();
         }
         boolean isRegularFile;

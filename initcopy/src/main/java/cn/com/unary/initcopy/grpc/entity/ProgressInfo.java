@@ -22,9 +22,9 @@ public  final class ProgressInfo extends
     stage_ = 0;
     progress_ = 0;
     totalFileNum_ = 0L;
-    totalFileSize_ = 0L;
+      totalFileSize_ = "";
     syncedFileNum_ = 0L;
-    syncedFileSize_ = 0L;
+      syncedFileSize_ = "";
     syncingFileName_ = "";
   }
 
@@ -68,9 +68,10 @@ public  final class ProgressInfo extends
             totalFileNum_ = input.readSInt64();
             break;
           }
-          case 32: {
+            case 34: {
+                java.lang.String s = input.readStringRequireUtf8();
 
-            totalFileSize_ = input.readSInt64();
+                totalFileSize_ = s;
             break;
           }
           case 40: {
@@ -78,9 +79,10 @@ public  final class ProgressInfo extends
             syncedFileNum_ = input.readSInt64();
             break;
           }
-          case 48: {
+            case 50: {
+                java.lang.String s = input.readStringRequireUtf8();
 
-            syncedFileSize_ = input.readSInt64();
+                syncedFileSize_ = s;
             break;
           }
           case 58: {
@@ -152,16 +154,46 @@ public  final class ProgressInfo extends
   }
 
   public static final int TOTALFILESIZE_FIELD_NUMBER = 4;
-  private long totalFileSize_;
+    private volatile java.lang.Object totalFileSize_;
+
+    /**
+     * <pre>
+     * 需要同步的文件总大小 以字节为单位
+     * </pre>
+     *
+     * <code>optional string totalFileSize = 4;</code>
+     */
+    public java.lang.String getTotalFileSize() {
+        java.lang.Object ref = totalFileSize_;
+        if (ref instanceof java.lang.String) {
+            return (java.lang.String) ref;
+        } else {
+            com.google.protobuf.ByteString bs =
+                    (com.google.protobuf.ByteString) ref;
+            java.lang.String s = bs.toStringUtf8();
+            totalFileSize_ = s;
+            return s;
+        }
+    }
   /**
    * <pre>
    *需要同步的文件总大小 以字节为单位
    * </pre>
    *
-   * <code>optional sint64 totalFileSize = 4;</code>
+   * <code>optional string totalFileSize = 4;</code>
    */
-  public long getTotalFileSize() {
-    return totalFileSize_;
+  public com.google.protobuf.ByteString
+  getTotalFileSizeBytes() {
+      java.lang.Object ref = totalFileSize_;
+      if (ref instanceof java.lang.String) {
+          com.google.protobuf.ByteString b =
+                  com.google.protobuf.ByteString.copyFromUtf8(
+                          (java.lang.String) ref);
+          totalFileSize_ = b;
+          return b;
+      } else {
+          return (com.google.protobuf.ByteString) ref;
+    }
   }
 
   public static final int SYNCEDFILENUM_FIELD_NUMBER = 5;
@@ -178,16 +210,46 @@ public  final class ProgressInfo extends
   }
 
   public static final int SYNCEDFILESIZE_FIELD_NUMBER = 6;
-  private long syncedFileSize_;
+    private volatile java.lang.Object syncedFileSize_;
+
+    /**
+     * <pre>
+     * 已经同步的文件总大小
+     * </pre>
+     *
+     * <code>optional string syncedFileSize = 6;</code>
+     */
+    public java.lang.String getSyncedFileSize() {
+        java.lang.Object ref = syncedFileSize_;
+        if (ref instanceof java.lang.String) {
+            return (java.lang.String) ref;
+        } else {
+            com.google.protobuf.ByteString bs =
+                    (com.google.protobuf.ByteString) ref;
+            java.lang.String s = bs.toStringUtf8();
+            syncedFileSize_ = s;
+            return s;
+    }
+  }
   /**
    * <pre>
    *已经同步的文件总大小
    * </pre>
    *
-   * <code>optional sint64 syncedFileSize = 6;</code>
+   * <code>optional string syncedFileSize = 6;</code>
    */
-  public long getSyncedFileSize() {
-    return syncedFileSize_;
+  public com.google.protobuf.ByteString
+  getSyncedFileSizeBytes() {
+      java.lang.Object ref = syncedFileSize_;
+      if (ref instanceof java.lang.String) {
+          com.google.protobuf.ByteString b =
+                  com.google.protobuf.ByteString.copyFromUtf8(
+                          (java.lang.String) ref);
+          syncedFileSize_ = b;
+          return b;
+      } else {
+          return (com.google.protobuf.ByteString) ref;
+    }
   }
 
   public static final int SYNCINGFILENAME_FIELD_NUMBER = 7;
@@ -253,14 +315,14 @@ public  final class ProgressInfo extends
     if (totalFileNum_ != 0L) {
       output.writeSInt64(3, totalFileNum_);
     }
-    if (totalFileSize_ != 0L) {
-      output.writeSInt64(4, totalFileSize_);
+      if (!getTotalFileSizeBytes().isEmpty()) {
+          com.google.protobuf.GeneratedMessageV3.writeString(output, 4, totalFileSize_);
     }
     if (syncedFileNum_ != 0L) {
       output.writeSInt64(5, syncedFileNum_);
     }
-    if (syncedFileSize_ != 0L) {
-      output.writeSInt64(6, syncedFileSize_);
+      if (!getSyncedFileSizeBytes().isEmpty()) {
+          com.google.protobuf.GeneratedMessageV3.writeString(output, 6, syncedFileSize_);
     }
     if (!getSyncingFileNameBytes().isEmpty()) {
       com.google.protobuf.GeneratedMessageV3.writeString(output, 7, syncingFileName_);
@@ -284,17 +346,15 @@ public  final class ProgressInfo extends
       size += com.google.protobuf.CodedOutputStream
         .computeSInt64Size(3, totalFileNum_);
     }
-    if (totalFileSize_ != 0L) {
-      size += com.google.protobuf.CodedOutputStream
-        .computeSInt64Size(4, totalFileSize_);
+      if (!getTotalFileSizeBytes().isEmpty()) {
+          size += com.google.protobuf.GeneratedMessageV3.computeStringSize(4, totalFileSize_);
     }
     if (syncedFileNum_ != 0L) {
       size += com.google.protobuf.CodedOutputStream
         .computeSInt64Size(5, syncedFileNum_);
     }
-    if (syncedFileSize_ != 0L) {
-      size += com.google.protobuf.CodedOutputStream
-        .computeSInt64Size(6, syncedFileSize_);
+      if (!getSyncedFileSizeBytes().isEmpty()) {
+          size += com.google.protobuf.GeneratedMessageV3.computeStringSize(6, syncedFileSize_);
     }
     if (!getSyncingFileNameBytes().isEmpty()) {
       size += com.google.protobuf.GeneratedMessageV3.computeStringSize(7, syncingFileName_);
@@ -321,12 +381,12 @@ public  final class ProgressInfo extends
         == other.getProgress());
     result = result && (getTotalFileNum()
         == other.getTotalFileNum());
-    result = result && (getTotalFileSize()
-        == other.getTotalFileSize());
+      result = result && getTotalFileSize()
+              .equals(other.getTotalFileSize());
     result = result && (getSyncedFileNum()
         == other.getSyncedFileNum());
-    result = result && (getSyncedFileSize()
-        == other.getSyncedFileSize());
+      result = result && getSyncedFileSize()
+              .equals(other.getSyncedFileSize());
     result = result && getSyncingFileName()
         .equals(other.getSyncingFileName());
     return result;
@@ -347,14 +407,12 @@ public  final class ProgressInfo extends
     hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
         getTotalFileNum());
     hash = (37 * hash) + TOTALFILESIZE_FIELD_NUMBER;
-    hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
-        getTotalFileSize());
+      hash = (53 * hash) + getTotalFileSize().hashCode();
     hash = (37 * hash) + SYNCEDFILENUM_FIELD_NUMBER;
     hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
         getSyncedFileNum());
     hash = (37 * hash) + SYNCEDFILESIZE_FIELD_NUMBER;
-    hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
-        getSyncedFileSize());
+      hash = (53 * hash) + getSyncedFileSize().hashCode();
     hash = (37 * hash) + SYNCINGFILENAME_FIELD_NUMBER;
     hash = (53 * hash) + getSyncingFileName().hashCode();
     hash = (29 * hash) + unknownFields.hashCode();
@@ -483,13 +541,13 @@ public  final class ProgressInfo extends
 
       progress_ = 0;
 
-      totalFileNum_ = 0L;
+        totalFileNum_ = 0L;
 
-      totalFileSize_ = 0L;
+        totalFileSize_ = "";
 
-      syncedFileNum_ = 0L;
+        syncedFileNum_ = 0L;
 
-      syncedFileSize_ = 0L;
+        syncedFileSize_ = "";
 
       syncingFileName_ = "";
 
@@ -572,14 +630,16 @@ public  final class ProgressInfo extends
       if (other.getTotalFileNum() != 0L) {
         setTotalFileNum(other.getTotalFileNum());
       }
-      if (other.getTotalFileSize() != 0L) {
-        setTotalFileSize(other.getTotalFileSize());
+        if (!other.getTotalFileSize().isEmpty()) {
+            totalFileSize_ = other.totalFileSize_;
+        onChanged();
       }
       if (other.getSyncedFileNum() != 0L) {
         setSyncedFileNum(other.getSyncedFileNum());
       }
-      if (other.getSyncedFileSize() != 0L) {
-        setSyncedFileSize(other.getSyncedFileSize());
+        if (!other.getSyncedFileSize().isEmpty()) {
+            syncedFileSize_ = other.syncedFileSize_;
+        onChanged();
       }
       if (!other.getSyncingFileName().isEmpty()) {
         syncingFileName_ = other.syncingFileName_;
@@ -722,29 +782,63 @@ public  final class ProgressInfo extends
       
       totalFileNum_ = 0L;
       onChanged();
-      return this;
+        return this;
     }
 
-    private long totalFileSize_ ;
+      private java.lang.Object totalFileSize_ = "";
     /**
      * <pre>
      *需要同步的文件总大小 以字节为单位
      * </pre>
      *
-     * <code>optional sint64 totalFileSize = 4;</code>
+     * <code>optional string totalFileSize = 4;</code>
      */
-    public long getTotalFileSize() {
-      return totalFileSize_;
+    public java.lang.String getTotalFileSize() {
+        java.lang.Object ref = totalFileSize_;
+        if (!(ref instanceof java.lang.String)) {
+            com.google.protobuf.ByteString bs =
+                    (com.google.protobuf.ByteString) ref;
+            java.lang.String s = bs.toStringUtf8();
+            totalFileSize_ = s;
+            return s;
+        } else {
+            return (java.lang.String) ref;
+        }
+    }
+
+      /**
+       * <pre>
+       * 需要同步的文件总大小 以字节为单位
+       * </pre>
+       *
+       * <code>optional string totalFileSize = 4;</code>
+       */
+      public com.google.protobuf.ByteString
+      getTotalFileSizeBytes() {
+          java.lang.Object ref = totalFileSize_;
+          if (ref instanceof String) {
+              com.google.protobuf.ByteString b =
+                      com.google.protobuf.ByteString.copyFromUtf8(
+                              (java.lang.String) ref);
+              totalFileSize_ = b;
+              return b;
+          } else {
+              return (com.google.protobuf.ByteString) ref;
+      }
     }
     /**
      * <pre>
      *需要同步的文件总大小 以字节为单位
      * </pre>
      *
-     * <code>optional sint64 totalFileSize = 4;</code>
+     * <code>optional string totalFileSize = 4;</code>
      */
-    public Builder setTotalFileSize(long value) {
-      
+    public Builder setTotalFileSize(
+            java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
       totalFileSize_ = value;
       onChanged();
       return this;
@@ -754,11 +848,30 @@ public  final class ProgressInfo extends
      *需要同步的文件总大小 以字节为单位
      * </pre>
      *
-     * <code>optional sint64 totalFileSize = 4;</code>
+     * <code>optional string totalFileSize = 4;</code>
      */
     public Builder clearTotalFileSize() {
+
+        totalFileSize_ = getDefaultInstance().getTotalFileSize();
+        onChanged();
+        return this;
+    }
+
+      /**
+       * <pre>
+       * 需要同步的文件总大小 以字节为单位
+       * </pre>
+       *
+       * <code>optional string totalFileSize = 4;</code>
+       */
+      public Builder setTotalFileSizeBytes(
+              com.google.protobuf.ByteString value) {
+          if (value == null) {
+              throw new NullPointerException();
+          }
+          checkByteStringIsUtf8(value);
       
-      totalFileSize_ = 0L;
+      totalFileSize_ = value;
       onChanged();
       return this;
     }
@@ -795,46 +908,102 @@ public  final class ProgressInfo extends
      * <code>optional sint64 syncedFileNum = 5;</code>
      */
     public Builder clearSyncedFileNum() {
-      
-      syncedFileNum_ = 0L;
-      onChanged();
-      return this;
+
+        syncedFileNum_ = 0L;
+        onChanged();
+        return this;
     }
 
-    private long syncedFileSize_ ;
-    /**
-     * <pre>
+    private java.lang.Object syncedFileSize_ = "";
+
+      /**
+       * <pre>
+       *已经同步的文件总大小
+       * </pre>
+       *
+       * <code>optional string syncedFileSize = 6;</code>
+       */
+      public java.lang.String getSyncedFileSize() {
+          java.lang.Object ref = syncedFileSize_;
+          if (!(ref instanceof java.lang.String)) {
+              com.google.protobuf.ByteString bs =
+                      (com.google.protobuf.ByteString) ref;
+              java.lang.String s = bs.toStringUtf8();
+              syncedFileSize_ = s;
+              return s;
+          } else {
+              return (java.lang.String) ref;
+          }
+      }
+
+      /**
+       * <pre>
+       * 已经同步的文件总大小
+       * </pre>
+       *
+       * <code>optional string syncedFileSize = 6;</code>
+       */
+      public com.google.protobuf.ByteString
+      getSyncedFileSizeBytes() {
+          java.lang.Object ref = syncedFileSize_;
+          if (ref instanceof String) {
+              com.google.protobuf.ByteString b =
+                      com.google.protobuf.ByteString.copyFromUtf8(
+                              (java.lang.String) ref);
+              syncedFileSize_ = b;
+              return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+          }
+      }
+
+      /**
+       * <pre>
+       *已经同步的文件总大小
+       * </pre>
+       *
+       * <code>optional string syncedFileSize = 6;</code>
+       */
+      public Builder setSyncedFileSize(
+              java.lang.String value) {
+      if (value == null) {
+    throw new NullPointerException();
+  }
+  
+      syncedFileSize_ = value;
+          onChanged();
+          return this;
+      }
+
+      /**
+       * <pre>
      *已经同步的文件总大小
      * </pre>
      *
-     * <code>optional sint64 syncedFileSize = 6;</code>
-     */
-    public long getSyncedFileSize() {
-      return syncedFileSize_;
-    }
-    /**
-     * <pre>
-     *已经同步的文件总大小
-     * </pre>
-     *
-     * <code>optional sint64 syncedFileSize = 6;</code>
-     */
-    public Builder setSyncedFileSize(long value) {
+     * <code>optional string syncedFileSize = 6;</code>
+       */
+      public Builder clearSyncedFileSize() {
+
+          syncedFileSize_ = getDefaultInstance().getSyncedFileSize();
+          onChanged();
+          return this;
+      }
+
+      /**
+       * <pre>
+       * 已经同步的文件总大小
+       * </pre>
+       *
+       * <code>optional string syncedFileSize = 6;</code>
+       */
+      public Builder setSyncedFileSizeBytes(
+              com.google.protobuf.ByteString value) {
+          if (value == null) {
+              throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
       
       syncedFileSize_ = value;
-      onChanged();
-      return this;
-    }
-    /**
-     * <pre>
-     *已经同步的文件总大小
-     * </pre>
-     *
-     * <code>optional sint64 syncedFileSize = 6;</code>
-     */
-    public Builder clearSyncedFileSize() {
-      
-      syncedFileSize_ = 0L;
       onChanged();
       return this;
     }

@@ -48,6 +48,15 @@ public class ControlTaskGrpc {
               "cn.com.unary.initcopy.grpc.ControlTask", "Modify"),
           io.grpc.protobuf.ProtoUtils.marshaller(cn.com.unary.initcopy.grpc.entity.ModifyTask.getDefaultInstance()),
           io.grpc.protobuf.ProtoUtils.marshaller(cn.com.unary.initcopy.grpc.entity.ExecResult.getDefaultInstance()));
+    @io.grpc.ExperimentalApi("https://github.com/grpc/grpc-java/issues/1901")
+    public static final io.grpc.MethodDescriptor<cn.com.unary.initcopy.grpc.entity.QueryTask,
+            cn.com.unary.initcopy.grpc.entity.TaskState> METHOD_QUERY =
+            io.grpc.MethodDescriptor.create(
+                    io.grpc.MethodDescriptor.MethodType.UNARY,
+                    generateFullMethodName(
+                            "cn.com.unary.initcopy.grpc.ControlTask", "Query"),
+                    io.grpc.protobuf.ProtoUtils.marshaller(cn.com.unary.initcopy.grpc.entity.QueryTask.getDefaultInstance()),
+                    io.grpc.protobuf.ProtoUtils.marshaller(cn.com.unary.initcopy.grpc.entity.TaskState.getDefaultInstance()));
 
   /**
    * Creates a new async stub that supports all call types for the service
@@ -106,6 +115,16 @@ public class ControlTaskGrpc {
       asyncUnimplementedUnaryCall(METHOD_MODIFY, responseObserver);
     }
 
+      /**
+       * <pre>
+       * 查询任务
+       * </pre>
+       */
+      public void query(cn.com.unary.initcopy.grpc.entity.QueryTask request,
+                        io.grpc.stub.StreamObserver<cn.com.unary.initcopy.grpc.entity.TaskState> responseObserver) {
+          asyncUnimplementedUnaryCall(METHOD_QUERY, responseObserver);
+      }
+
     @java.lang.Override public io.grpc.ServerServiceDefinition bindService() {
       return io.grpc.ServerServiceDefinition.builder(getServiceDescriptor())
           .addMethod(
@@ -129,6 +148,13 @@ public class ControlTaskGrpc {
                 cn.com.unary.initcopy.grpc.entity.ModifyTask,
                 cn.com.unary.initcopy.grpc.entity.ExecResult>(
                   this, METHODID_MODIFY)))
+              .addMethod(
+                      METHOD_QUERY,
+                      asyncUnaryCall(
+                              new MethodHandlers<
+                                      cn.com.unary.initcopy.grpc.entity.QueryTask,
+                                      cn.com.unary.initcopy.grpc.entity.TaskState>(
+                                      this, METHODID_QUERY)))
           .build();
     }
   }
@@ -183,6 +209,17 @@ public class ControlTaskGrpc {
       asyncUnaryCall(
           getChannel().newCall(METHOD_MODIFY, getCallOptions()), request, responseObserver);
     }
+
+      /**
+       * <pre>
+       * 查询任务
+       * </pre>
+       */
+      public void query(cn.com.unary.initcopy.grpc.entity.QueryTask request,
+                        io.grpc.stub.StreamObserver<cn.com.unary.initcopy.grpc.entity.TaskState> responseObserver) {
+          asyncUnaryCall(
+                  getChannel().newCall(METHOD_QUERY, getCallOptions()), request, responseObserver);
+      }
   }
 
   /**
@@ -232,6 +269,16 @@ public class ControlTaskGrpc {
       return blockingUnaryCall(
           getChannel(), METHOD_MODIFY, getCallOptions(), request);
     }
+
+      /**
+       * <pre>
+       * 查询任务
+       * </pre>
+       */
+      public cn.com.unary.initcopy.grpc.entity.TaskState query(cn.com.unary.initcopy.grpc.entity.QueryTask request) {
+          return blockingUnaryCall(
+                  getChannel(), METHOD_QUERY, getCallOptions(), request);
+      }
   }
 
   /**
@@ -284,11 +331,23 @@ public class ControlTaskGrpc {
       return futureUnaryCall(
           getChannel().newCall(METHOD_MODIFY, getCallOptions()), request);
     }
+
+      /**
+       * <pre>
+       * 查询任务
+       * </pre>
+       */
+      public com.google.common.util.concurrent.ListenableFuture<cn.com.unary.initcopy.grpc.entity.TaskState> query(
+              cn.com.unary.initcopy.grpc.entity.QueryTask request) {
+          return futureUnaryCall(
+                  getChannel().newCall(METHOD_QUERY, getCallOptions()), request);
+      }
   }
 
   private static final int METHODID_INIT = 0;
   private static final int METHODID_DELETE = 1;
-  private static final int METHODID_MODIFY = 2;
+    private static final int METHODID_MODIFY = 2;
+  private static final int METHODID_QUERY = 3;
 
   private static class MethodHandlers<Req, Resp> implements
       io.grpc.stub.ServerCalls.UnaryMethod<Req, Resp>,
@@ -318,6 +377,10 @@ public class ControlTaskGrpc {
         case METHODID_MODIFY:
           serviceImpl.modify((cn.com.unary.initcopy.grpc.entity.ModifyTask) request,
               (io.grpc.stub.StreamObserver<cn.com.unary.initcopy.grpc.entity.ExecResult>) responseObserver);
+            break;
+          case METHODID_QUERY:
+              serviceImpl.query((cn.com.unary.initcopy.grpc.entity.QueryTask) request,
+                      (io.grpc.stub.StreamObserver<cn.com.unary.initcopy.grpc.entity.TaskState>) responseObserver);
           break;
         default:
           throw new AssertionError();
@@ -337,9 +400,10 @@ public class ControlTaskGrpc {
 
   public static io.grpc.ServiceDescriptor getServiceDescriptor() {
     return new io.grpc.ServiceDescriptor(SERVICE_NAME,
-        METHOD_INIT,
-        METHOD_DELETE,
-        METHOD_MODIFY);
+            METHOD_INIT,
+            METHOD_DELETE,
+        METHOD_MODIFY,
+        METHOD_QUERY);
   }
 
 }

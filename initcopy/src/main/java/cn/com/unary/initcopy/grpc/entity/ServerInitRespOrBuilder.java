@@ -8,51 +8,38 @@ public interface ServerInitRespOrBuilder extends
     com.google.protobuf.MessageOrBuilder {
 
   /**
-   * <code>optional string taskId = 1;</code>
+   * <code>optional .cn.com.unary.initcopy.grpc.entity.ExecResult execResult = 1;</code>
    */
-  java.lang.String getTaskId();
+  boolean hasExecResult();
+  /**
+   * <code>optional .cn.com.unary.initcopy.grpc.entity.ExecResult execResult = 1;</code>
+   */
+  cn.com.unary.initcopy.grpc.entity.ExecResult getExecResult();
+  /**
+   * <code>optional .cn.com.unary.initcopy.grpc.entity.ExecResult execResult = 1;</code>
+   */
+  cn.com.unary.initcopy.grpc.entity.ExecResultOrBuilder getExecResultOrBuilder();
 
   /**
-   * <code>optional string taskId = 1;</code>
-   */
-  com.google.protobuf.ByteString
-  getTaskIdBytes();
-
-  /**
-   * <code>optional bool ready = 2;</code>
-   */
-  boolean getReady();
-
-  /**
-   * <code>optional string msg = 3;</code>
-   */
-  java.lang.String getMsg();
-  /**
-   * <code>optional string msg = 3;</code>
-   */
-  com.google.protobuf.ByteString
-      getMsgBytes();
-
-  /**
-   * <code>repeated .cn.com.unary.initcopy.grpc.entity.DiffFileInfo diffFileInfos = 4;</code>
+   * <code>repeated .cn.com.unary.initcopy.grpc.entity.DiffFileInfo diffFileInfos = 2;</code>
    */
   java.util.List<cn.com.unary.initcopy.grpc.entity.DiffFileInfo> 
       getDiffFileInfosList();
   /**
-   * <code>repeated .cn.com.unary.initcopy.grpc.entity.DiffFileInfo diffFileInfos = 4;</code>
+   * <code>repeated .cn.com.unary.initcopy.grpc.entity.DiffFileInfo diffFileInfos = 2;</code>
    */
   cn.com.unary.initcopy.grpc.entity.DiffFileInfo getDiffFileInfos(int index);
   /**
-   * <code>repeated .cn.com.unary.initcopy.grpc.entity.DiffFileInfo diffFileInfos = 4;</code>
+   * <code>repeated .cn.com.unary.initcopy.grpc.entity.DiffFileInfo diffFileInfos = 2;</code>
    */
   int getDiffFileInfosCount();
   /**
-   * <code>repeated .cn.com.unary.initcopy.grpc.entity.DiffFileInfo diffFileInfos = 4;</code>
+   * <code>repeated .cn.com.unary.initcopy.grpc.entity.DiffFileInfo diffFileInfos = 2;</code>
    */
   java.util.List<? extends cn.com.unary.initcopy.grpc.entity.DiffFileInfoOrBuilder> 
       getDiffFileInfosOrBuilderList();
   /**
-   * <code>repeated .cn.com.unary.initcopy.grpc.entity.DiffFileInfo diffFileInfos = 4;</code>
+   * <code>repeated .cn.com.unary.initcopy.grpc.entity.DiffFileInfo diffFileInfos = 2;</code>
    */
   cn.com.unary.initcopy.grpc.entity.DiffFileInfoOrBuilder getDiffFileInfosOrBuilder(
       int index);

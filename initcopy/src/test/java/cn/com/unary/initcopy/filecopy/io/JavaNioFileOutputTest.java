@@ -1,5 +1,7 @@
 package cn.com.unary.initcopy.filecopy.io;
 
+import cn.com.unary.initcopy.service.filecopy.io.AbstractFileOutput;
+import cn.com.unary.initcopy.service.filecopy.io.JavaNioFileOutput;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -9,8 +11,6 @@ import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
-
-import static org.junit.Assert.*;
 
 public class JavaNioFileOutputTest {
 

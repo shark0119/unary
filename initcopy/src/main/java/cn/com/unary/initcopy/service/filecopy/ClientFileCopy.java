@@ -1,4 +1,4 @@
-package cn.com.unary.initcopy.filecopy;
+package cn.com.unary.initcopy.service.filecopy;
 
 import api.UnaryTransferClient;
 import cn.com.unary.initcopy.InitCopyContext;
@@ -8,13 +8,14 @@ import cn.com.unary.initcopy.common.utils.BeanExactUtil;
 import cn.com.unary.initcopy.dao.FileManager;
 import cn.com.unary.initcopy.entity.Constants;
 import cn.com.unary.initcopy.entity.FileInfoDO;
+import cn.com.unary.initcopy.entity.SyncTaskDO;
 import cn.com.unary.initcopy.exception.InfoPersistenceException;
 import cn.com.unary.initcopy.exception.TaskFailException;
-import cn.com.unary.initcopy.filecopy.filepacker.Packer;
-import cn.com.unary.initcopy.filecopy.filepacker.SyncDiffPacker;
-import cn.com.unary.initcopy.filecopy.init.ClientFileCopyInit;
 import cn.com.unary.initcopy.grpc.entity.DiffFileInfo;
 import cn.com.unary.initcopy.grpc.entity.SyncTask;
+import cn.com.unary.initcopy.service.filecopy.filepacker.Packer;
+import cn.com.unary.initcopy.service.filecopy.filepacker.SyncDiffPacker;
+import cn.com.unary.initcopy.service.filecopy.init.ClientFileCopyInit;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.concurrent.BasicThreadFactory;
@@ -94,7 +95,7 @@ public class ClientFileCopy extends AbstractLoggable implements ApplicationConte
                 break;
             case RESUME:
             default:
-                SyncTask task = fm.queryTask(taskId);
+                SyncTaskDO task = fm.queryTask(taskId);
                 UnaryTransferClient unaryTransferClient = applicationContext.getBean(UnaryTransferClient.class);
                 unaryTransferClient.setCompressType(task.getCompressType());
                 unaryTransferClient.setEncryptType(task.getEncryptType());
@@ -113,6 +114,7 @@ public class ClientFileCopy extends AbstractLoggable implements ApplicationConte
      */
     public void addTask(SyncTask task) throws TaskFailException {
         try {
+            fm.saveTask(BeanExactUtil.takeFromGrpc(task, null));
             synchronized (lock) {
                 if (close) {
                     throw new TaskFailException("file copy already shutdown");

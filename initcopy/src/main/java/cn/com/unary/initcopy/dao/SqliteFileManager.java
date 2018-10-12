@@ -4,8 +4,8 @@ import cn.com.unary.initcopy.common.AbstractLoggable;
 import cn.com.unary.initcopy.common.utils.BeanExactUtil;
 import cn.com.unary.initcopy.common.utils.ValidateUtils;
 import cn.com.unary.initcopy.entity.FileInfoDO;
+import cn.com.unary.initcopy.entity.SyncTaskDO;
 import cn.com.unary.initcopy.exception.InfoPersistenceException;
-import cn.com.unary.initcopy.grpc.entity.SyncTask;
 import com.alibaba.druid.pool.DruidDataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Objects;
 
 // TODO use AOP to log
+
 /**
  * 文件信息管理的基于 Sqlite 的实现
  *
@@ -75,6 +76,11 @@ public class SqliteFileManager extends AbstractLoggable implements FileManager {
     }
 
     @Override
+    public void deleteFileInfoByTaskId(String taskId) {
+
+    }
+
+    @Override
     public void deleteByIds(String... fileIds) throws InfoPersistenceException {
         StringBuilder sb = new StringBuilder("DELETE FROM FILE_INFO WHERE FILE_ID IN ('");
         for (String fileId : fileIds) {
@@ -110,7 +116,7 @@ public class SqliteFileManager extends AbstractLoggable implements FileManager {
     }
 
     @Override
-    public SyncTask queryTask(String taskId) {
+    public SyncTaskDO queryTask(String taskId) {
         return null;
     }
 
@@ -120,7 +126,7 @@ public class SqliteFileManager extends AbstractLoggable implements FileManager {
     }
 
     @Override
-    public SyncTask saveTask(SyncTask task) {
+    public SyncTaskDO saveTask(SyncTaskDO task) {
 
         return null;
     }

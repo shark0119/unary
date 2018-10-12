@@ -1,4 +1,4 @@
-package cn.com.unary.initcopy.filecopy.filepacker;
+package cn.com.unary.initcopy.service.filecopy.filepacker;
 
 import cn.com.unary.initcopy.grpc.entity.DiffFileInfo;
 

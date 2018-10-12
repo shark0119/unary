@@ -1,4 +1,4 @@
-package cn.com.unary.initcopy.filecopy.filepacker;
+package cn.com.unary.initcopy.service.filecopy.filepacker;
 
 import api.UnaryTransferClient;
 import cn.com.unary.initcopy.InitCopyContext;
@@ -8,9 +8,9 @@ import cn.com.unary.initcopy.dao.FileManager;
 import cn.com.unary.initcopy.entity.Constants;
 import cn.com.unary.initcopy.entity.Constants.PackerType;
 import cn.com.unary.initcopy.entity.FileInfoDO;
+import cn.com.unary.initcopy.entity.SyncTaskDO;
 import cn.com.unary.initcopy.exception.InfoPersistenceException;
-import cn.com.unary.initcopy.filecopy.io.AbstractFileInput;
-import cn.com.unary.initcopy.grpc.entity.SyncTask;
+import cn.com.unary.initcopy.service.filecopy.io.AbstractFileInput;
 import com.alibaba.fastjson.JSON;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -143,8 +143,8 @@ public class SyncAllPacker extends AbstractLoggable implements Packer {
         List<FileInfoDO> list = fm.queryUnSyncFileByTaskId(taskId);
         fiIterator = list.iterator();
         byte[] packData;
-        SyncTask task = fm.queryTask(taskId);
-        transfer.startClient(task.getTargetInfo().getIp(), task.getTargetInfo().getTransferPort());
+        SyncTaskDO task = fm.queryTask(taskId);
+        transfer.startClient(task.getIp(), task.getTransferPort());
         while (true) {
             try {
                 packData = CommonUtils.extractBytes(pack());
@@ -153,10 +153,11 @@ public class SyncAllPacker extends AbstractLoggable implements Packer {
                 return;
             }
             if (packData.length <= HEAD_LENGTH) {
-                logger.warn("pack " + packIndex + " ignore, cause it's empty, size:" + packData.length);
+                logger.warn(String.format("Pack %d ignore, cause it's empty, size %d."
+                        , packIndex, packData.length));
                 break;
             }
-            logger.debug("Pass " + packData.length + " bytes to Transfer.");
+            logger.debug(String.format("Pass %d bytes to Transfer.", packData.length));
             this.transfer.sendData(packData);
         }
     }
@@ -201,7 +202,7 @@ public class SyncAllPacker extends AbstractLoggable implements Packer {
                 takeToNextFile(buffer);
             }
         }
-        logger.info("Pack Done. PackIndex: " + packIndex + ", PackSize: " + buffer.position());
+        logger.info(String.format("Pack Done. PackIndex:%d, PackSize:%d.", packIndex, buffer.position()));
         return buffer;
     }
 
@@ -224,7 +225,7 @@ public class SyncAllPacker extends AbstractLoggable implements Packer {
             }
             currentFileInfo.setState(FileInfoDO.STATE.SYNCING);
             fm.save(currentFileInfo);
-            logger.debug("Got next file:" + currentFileInfo.getFileId() + ". Ser to json.");
+            logger.debug(String.format("Got next file:%s. Ser to json.", currentFileInfo.getFileId()));
             try {
                 byte[] fileInfoJsonBytes = JSON.toJSONBytes(currentFileInfo);
                 try {
@@ -235,8 +236,8 @@ public class SyncAllPacker extends AbstractLoggable implements Packer {
                 // set file info size and file info
                 fileInfoBuffer.putInt(fileInfoJsonBytes.length);
                 fileInfoBuffer.put(fileInfoJsonBytes);
-                logger.debug("FileID: " + currentFileInfo.getFileId() +
-                        ", file info json bytes length: " + fileInfoBuffer.capacity() + ".");
+                logger.debug(String.format("FileId:%s, fileInfo json bytes length:%d."
+                        , currentFileInfo.getFileId(), fileInfoBuffer.capacity()));
                 fileInfoBuffer.flip();
             } catch (Exception e) {
                 throw new IllegalStateException("ERROR 0x04 : Failed transfer FileInfo to Json", e);
@@ -266,8 +267,8 @@ public class SyncAllPacker extends AbstractLoggable implements Packer {
         }
         buffer.put(fileInfoBuffer.array(), fileInfoBuffer.position(), readSize);
         fileInfoBuffer.position(fileInfoBuffer.position() + readSize);
-        logger.debug("Pack " + readSize + " bytes FileInfo, current position "
-                + fileInfoBuffer.position());
+        logger.debug(String.format("Pack %d bytes FileInfo, current position %d."
+                , readSize, fileInfoBuffer.position()));
     }
 
     @Override

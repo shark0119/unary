@@ -1,4 +1,4 @@
-package cn.com.unary.initcopy.filecopy.init;
+package cn.com.unary.initcopy.service.filecopy.init;
 
 import api.UnaryTransferClient;
 import cn.com.unary.initcopy.InitCopyContext;
@@ -8,13 +8,13 @@ import cn.com.unary.initcopy.dao.FileManager;
 import cn.com.unary.initcopy.entity.BaseFileInfoDO;
 import cn.com.unary.initcopy.entity.FileInfoDO;
 import cn.com.unary.initcopy.exception.InfoPersistenceException;
-import cn.com.unary.initcopy.grpc.client.ControlTaskGrpcClient;
 import cn.com.unary.initcopy.grpc.constant.SyncType;
 import cn.com.unary.initcopy.grpc.entity.BaseFileInfo;
 import cn.com.unary.initcopy.grpc.entity.ClientInitReq;
 import cn.com.unary.initcopy.grpc.entity.DiffFileInfo;
 import cn.com.unary.initcopy.grpc.entity.ServerInitResp;
 import cn.com.unary.initcopy.grpc.entity.SyncTask;
+import cn.com.unary.initcopy.grpc.service.ControlTaskGrpcClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
@@ -22,7 +22,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.IOException;
-import java.math.BigInteger;
+import java.math.BigDecimal;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -73,30 +73,28 @@ public class ClientFileCopyInit extends AbstractLoggable {
 
         logger.debug("Set transfer option done. Start to traversing files.");
         List<FileInfoDO> syncFiles = traversingFiles(task.getFilesList(), task.getTargetDirsList());
-        List<String> syncFileIds = new ArrayList<>();
+        List<String> syncFileIds = new ArrayList<>(syncFiles.size());
         String taskId = task.getTaskId();
         for (FileInfoDO fi : syncFiles) {
             syncFileIds.add(fi.getFileId());
             fi.setTaskId(taskId);
             fm.save(fi);
         }
-        logger.debug("We got " + syncFiles.size() + " files and " + syncFileIds.size()
-                + " file id from specified local directory in task " + task.getTaskId());
+        logger.debug(String.format("We got %d files and %d file id from specified local directory in task %s."
+                , syncFiles.size(), syncFileIds.size(), task.getTaskId()));
 
         ControlTaskGrpcClient controlTaskGrpcClient =
                 new ControlTaskGrpcClient(task.getTargetInfo().getIp(), task.getTargetInfo().getGrpcPort());
 
         List<BaseFileInfo> bfiList = BeanExactUtil.takeFromDO(syncFiles);
-        BigInteger totalSize = new BigInteger("0");
+        BigDecimal totalSize = new BigDecimal("0");
 
         for (BaseFileInfoDO bfiDO : syncFiles) {
-            totalSize = totalSize.add(new BigInteger(bfiDO.getFileSize().toString()));
+            totalSize = totalSize.add(new BigDecimal(bfiDO.getFileSize().toString()));
         }
 
         ClientInitReq.Builder builder = ClientInitReq.newBuilder()
-                .setTaskId(taskId)
-                .setTotalSize(totalSize.toString())
-                .addAllBaseFileInfos(bfiList);
+                .setTaskId(taskId).setTotalSize(totalSize.toString()).addAllBaseFileInfos(bfiList);
 
         if (task.getTargetDirsCount() == 1) {
             builder.setBackUpPath(task.getTargetDirs(0));
@@ -114,7 +112,7 @@ public class ClientFileCopyInit extends AbstractLoggable {
                 break;
         }
 
-        fm.saveTask(task);
+        fm.saveTask(BeanExactUtil.takeFromGrpc(task, builder.build()));
         return syncFileIds;
     }
 
@@ -131,8 +129,8 @@ public class ClientFileCopyInit extends AbstractLoggable {
                                       List<DiffFileInfo> diffFileInfos) {
         builder.setSyncType(SyncType.SYNC_DIFF);
         ServerInitResp resp = controlTaskGrpcClient.invokeGrpcInit(builder.build());
-        if (!resp.getReady()) {
-            throw new IllegalStateException("ERROR 0x07 : Server intern Error." + resp.getMsg());
+        if (!resp.getExecResult().getHealthy()) {
+            throw new IllegalStateException("ERROR 0x07 : Server intern Error." + resp.getExecResult().getMsg());
         }
         diffFileInfos.addAll(resp.getDiffFileInfosList());
 
@@ -146,8 +144,8 @@ public class ClientFileCopyInit extends AbstractLoggable {
     private void syncAllInit(ClientInitReq.Builder builder, ControlTaskGrpcClient controlTaskGrpcClient) {
         builder.setSyncType(SyncType.SYNC_ALL);
         ServerInitResp resp = controlTaskGrpcClient.invokeGrpcInit(builder.build());
-        if (!resp.getReady()) {
-            throw new IllegalStateException("ERROR 0x07 : Server intern Error." + resp.getMsg());
+        if (!resp.getExecResult().getHealthy()) {
+            throw new IllegalStateException("ERROR 0x07 : Server intern Error." + resp.getExecResult().getMsg());
         }
     }
 
@@ -167,7 +165,7 @@ public class ClientFileCopyInit extends AbstractLoggable {
                 @Override
                 public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) {
                     if (dir.toFile().list().length == 0) {
-                        FileInfoDO fileInfo = new FileInfoDO(takeFromFile(dir.toFile()));
+                        FileInfoDO fileInfo = takeFromFile(dir.toFile());
                         fileInfo.setBackUpPath(tempBackUpPath);
                         fileInfos.add(fileInfo);
                     }
@@ -176,7 +174,7 @@ public class ClientFileCopyInit extends AbstractLoggable {
 
                 @Override
                 public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
-                    FileInfoDO fileInfo = new FileInfoDO(takeFromFile(file.toFile()));
+                    FileInfoDO fileInfo = takeFromFile(file.toFile());
                     fileInfo.setBackUpPath(tempBackUpPath);
                     fileInfos.add(fileInfo);
                     return FileVisitResult.CONTINUE;
@@ -186,12 +184,13 @@ public class ClientFileCopyInit extends AbstractLoggable {
         return fileInfos;
     }
 
-    private BaseFileInfoDO takeFromFile(File file) {
-        BaseFileInfoDO bfi = new BaseFileInfoDO();
-        bfi.setFileSize(file.length());
-        bfi.setFileId(UUID.randomUUID().toString());
-        bfi.setModifyTime(file.lastModified());
-        bfi.setFullName(file.getPath());
-        return bfi;
+    private FileInfoDO takeFromFile(File file) {
+        FileInfoDO fiDO = new FileInfoDO();
+        fiDO.setFileSize(file.length());
+        fiDO.setFileId(UUID.randomUUID().toString());
+        fiDO.setModifyTime(file.lastModified());
+        fiDO.setFullName(file.getPath());
+        fiDO.setState(FileInfoDO.STATE.WAIT);
+        return fiDO;
     }
 }

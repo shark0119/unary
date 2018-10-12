@@ -1,6 +1,5 @@
 package cn.com.unary.initcopy;
 
-import cn.com.unary.initcopy.grpc.entity.SyncTask;
 import lombok.Getter;
 import lombok.Setter;
 import org.junit.Test;
@@ -9,6 +8,8 @@ import sun.reflect.generics.reflectiveObjects.ParameterizedTypeImpl;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -78,12 +79,9 @@ public class TestTest {
 
     @Test
     public void test4() {
-        String text = "\nabc\nefg";
-        text = text.replaceAll("\\n", " ");
-        System.out.println(text);
-        SyncTask task = SyncTask.newBuilder().build();
-        task = task.toBuilder().setTaskId("12").build();
-        System.out.println(task);
+        BigDecimal bi = new BigDecimal("1000");
+        BigDecimal bi1 = new BigDecimal("832");
+        System.out.println(bi1.divide(bi, 2, RoundingMode.CEILING));
     }
 
     private static class Task implements Runnable {

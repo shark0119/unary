@@ -1,8 +1,8 @@
 package cn.com.unary.initcopy.grpc.service;
 
+import cn.com.unary.initcopy.common.Msg;
 import cn.com.unary.initcopy.common.utils.CommonUtils;
 import cn.com.unary.initcopy.common.utils.ValidateUtils;
-import cn.com.unary.initcopy.filecopy.ClientFileCopy;
 import cn.com.unary.initcopy.grpc.InitCopyGrpc;
 import cn.com.unary.initcopy.grpc.entity.DeleteTask;
 import cn.com.unary.initcopy.grpc.entity.ExecResult;
@@ -10,7 +10,8 @@ import cn.com.unary.initcopy.grpc.entity.ModifyTask;
 import cn.com.unary.initcopy.grpc.entity.QueryTask;
 import cn.com.unary.initcopy.grpc.entity.SyncTask;
 import cn.com.unary.initcopy.grpc.entity.TaskState;
-import cn.com.unary.initcopy.service.ClientTaskUpdater;
+import cn.com.unary.initcopy.service.filecopy.ClientFileCopy;
+import cn.com.unary.initcopy.service.taskupdater.ClientTaskUpdater;
 import io.grpc.stub.StreamObserver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -29,7 +30,7 @@ import java.util.UUID;
  */
 @Component("InitCopyGrpcImpl")
 @Scope("singleton")
-public class InitCopyGrpcImpl extends InitCopyGrpc.InitCopyImplBase {
+public class InitCopyGrpcService extends InitCopyGrpc.InitCopyImplBase {
 
     @Autowired
     private ClientFileCopy fileCopy;
@@ -95,9 +96,9 @@ public class InitCopyGrpcImpl extends InitCopyGrpc.InitCopyImplBase {
                 fileCopy.addTask(task);
                 builder.setHealthy(true);
             } catch (Exception e) {
-                logger.error("task add fail", e);
+                logger.error(Msg.MSG_TASK_FAIL, e);
                 builder.setHealthy(false);
-                builder.setMsg(e.getMessage());
+                builder.setMsg(e.getMessage() == null ? "" : e.getMessage());
             }
         }
         return builder.build();
@@ -107,15 +108,15 @@ public class InitCopyGrpcImpl extends InitCopyGrpc.InitCopyImplBase {
         TaskState.Builder stateBuilder = TaskState.newBuilder();
         ExecResult.Builder resultBuilder = ExecResult.newBuilder();
         if (ValidateUtils.isEmpty(task.getTaskId())) {
-            resultBuilder.setMsg("TaskId can't be null").setHealthy(false);
+            resultBuilder.setMsg(Msg.MSG_TASK_ID_NULL).setHealthy(false);
         } else {
+            resultBuilder.setTaskId(task.getTaskId());
             try {
-                return updater.query(task.getTaskId());
+                stateBuilder = updater.query(task).toBuilder();
+                resultBuilder.setMsg(Msg.MSG_TASK_SUCCESS).setHealthy(true);
             } catch (Exception e) {
-                logger.error("exception", e);
-                resultBuilder.setMsg(e.getMessage())
-                        .setHealthy(false)
-                        .setTaskId(task.getTaskId());
+                logger.error(Msg.MSG_TASK_FAIL, e);
+                resultBuilder.setMsg(e.getMessage() == null ? "" : e.getMessage()).setHealthy(false);
             }
         }
         return stateBuilder.setExecResult(resultBuilder).build();
@@ -124,14 +125,15 @@ public class InitCopyGrpcImpl extends InitCopyGrpc.InitCopyImplBase {
     private ExecResult deleteLinker(DeleteTask task) {
         ExecResult.Builder resultBuilder = ExecResult.newBuilder();
         if (ValidateUtils.isEmpty(task.getTaskId())) {
-            resultBuilder.setMsg("TaskId can't be null").setHealthy(false);
+            resultBuilder.setMsg(Msg.MSG_TASK_ID_NULL).setHealthy(false);
         } else {
-            resultBuilder.setTaskId(task.getTaskId()).setHealthy(true).setMsg("Task success.");
+            resultBuilder.setTaskId(task.getTaskId());
             try {
                 updater.delete(task);
+                resultBuilder.setHealthy(true).setMsg(Msg.MSG_TASK_SUCCESS);
             } catch (Exception e) {
-                logger.error("exception", e);
-                resultBuilder.setMsg(e.getMessage()).setHealthy(false);
+                logger.error(Msg.MSG_TASK_FAIL, e);
+                resultBuilder.setMsg(e.getMessage() == null ? "" : e.getMessage()).setHealthy(false);
             }
         }
         return resultBuilder.build();
@@ -140,16 +142,17 @@ public class InitCopyGrpcImpl extends InitCopyGrpc.InitCopyImplBase {
     private ExecResult modifyLinker(ModifyTask task) {
         ExecResult.Builder resultBuilder = ExecResult.newBuilder();
         if (ValidateUtils.isEmpty(task.getTaskId())) {
-            resultBuilder.setMsg("TaskId can't be null").setHealthy(false);
+            resultBuilder.setMsg(Msg.MSG_TASK_ID_NULL).setHealthy(false);
         } else if (task.getModifyType() == null) {
             resultBuilder.setMsg("ModifyType can't be null").setHealthy(false);
         } else {
-            resultBuilder.setTaskId(task.getTaskId()).setHealthy(true).setMsg("Task success.");
+            resultBuilder.setTaskId(task.getTaskId());
             try {
                 updater.modify(task);
+                resultBuilder.setHealthy(true).setMsg(Msg.MSG_TASK_SUCCESS);
             } catch (Exception e) {
-                logger.error("exception", e);
-                resultBuilder.setMsg(e.getMessage()).setHealthy(false);
+                logger.error(Msg.MSG_TASK_FAIL, e);
+                resultBuilder.setMsg(e.getMessage() == null ? "" : e.getMessage()).setHealthy(false);
             }
         }
         return resultBuilder.build();

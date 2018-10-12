@@ -1,11 +1,10 @@
 package cn.com.unary.initcopy.filecopy.io;
 
+import cn.com.unary.initcopy.service.filecopy.io.JavaNioFileInput;
 import org.junit.Test;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-
-import static org.junit.Assert.*;
 
 public class JavaNioFileInputTest {
 

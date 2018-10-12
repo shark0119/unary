@@ -6,7 +6,7 @@ import api.UnaryTransferServer;
 import cn.com.unary.initcopy.common.AbstractLoggable;
 import cn.com.unary.initcopy.common.utils.CommonUtils;
 import cn.com.unary.initcopy.exception.TaskFailException;
-import cn.com.unary.initcopy.filecopy.ServerFileCopy;
+import cn.com.unary.initcopy.service.filecopy.ServerFileCopy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;

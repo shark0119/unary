@@ -1,11 +1,12 @@
 package cn.com.unary.initcopy;
 
+import cn.com.unary.initcopy.common.utils.CommonUtils;
 import cn.com.unary.initcopy.config.BeanConfig;
 import cn.com.unary.initcopy.grpc.constant.SyncType;
-import cn.com.unary.initcopy.grpc.entity.ExecResult;
 import cn.com.unary.initcopy.grpc.entity.QueryTask;
 import cn.com.unary.initcopy.grpc.entity.SyncTarget;
 import cn.com.unary.initcopy.grpc.entity.SyncTask;
+import cn.com.unary.initcopy.grpc.entity.TaskState;
 import cn.com.unary.initcopy.mock.InitCopyGrpcClient;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
@@ -44,8 +45,12 @@ public class ClientTest {
                         .build());
         InitCopyGrpcClient client = new
                 InitCopyGrpcClient("127.0.0.1", ServerTest.SERVER_GRPC_PORT);
-        ExecResult result = client.add(builder.build());
-        System.out.println(result);
-        System.out.println(client.query(QueryTask.newBuilder().setTaskId(result.getTaskId()).build()));
+        /*ExecResult result = client.add(builder.build());
+        System.out.println(CommonUtils.formatGrpcEntity(result));*/
+        TaskState state = client.query(QueryTask.newBuilder()
+                .setTaskId("e037a2c2-91ce-404b-abd4-9afa51021204")
+                // .setTaskId(result.getTaskId())
+                .build());
+        System.out.println(CommonUtils.formatGrpcEntity(state));
     }
 }

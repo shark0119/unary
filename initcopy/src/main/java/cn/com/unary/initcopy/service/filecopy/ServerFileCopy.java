@@ -1,21 +1,23 @@
-package cn.com.unary.initcopy.filecopy;
+package cn.com.unary.initcopy.service.filecopy;
 
 import cn.com.unary.initcopy.InitCopyContext;
 import cn.com.unary.initcopy.common.AbstractLoggable;
 import cn.com.unary.initcopy.common.ExecExceptionsHandler;
+import cn.com.unary.initcopy.dao.FileManager;
 import cn.com.unary.initcopy.entity.Constants;
 import cn.com.unary.initcopy.exception.InfoPersistenceException;
 import cn.com.unary.initcopy.exception.TaskFailException;
-import cn.com.unary.initcopy.filecopy.filepacker.SyncAllPacker;
-import cn.com.unary.initcopy.filecopy.fileresolver.Resolver;
-import cn.com.unary.initcopy.filecopy.fileresolver.RsyncResolver;
-import cn.com.unary.initcopy.filecopy.fileresolver.SyncAllResolver;
-import cn.com.unary.initcopy.filecopy.init.ServerFileCopyInit;
 import cn.com.unary.initcopy.grpc.entity.ClientInitReq;
 import cn.com.unary.initcopy.grpc.entity.ServerInitResp;
+import cn.com.unary.initcopy.service.filecopy.filepacker.SyncAllPacker;
+import cn.com.unary.initcopy.service.filecopy.fileresolver.Resolver;
+import cn.com.unary.initcopy.service.filecopy.fileresolver.RsyncResolver;
+import cn.com.unary.initcopy.service.filecopy.fileresolver.SyncAllResolver;
+import cn.com.unary.initcopy.service.filecopy.init.ServerFileCopyInit;
 import lombok.Setter;
 import org.apache.commons.lang3.concurrent.BasicThreadFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Scope;
@@ -46,9 +48,14 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Scope("singleton")
 public class ServerFileCopy extends AbstractLoggable implements ApplicationContextAware, Closeable {
 
+    public static final int SERVER_CORE_POOL_SIZE = 2;
+    public static final int SERVER_MAX_POOL_SIZE = 30;
     private final Object lock;
     @Autowired
     private ServerFileCopyInit init;
+    @Autowired
+    @Qualifier("RamFileManager")
+    private FileManager fm;
     private volatile boolean close;
     @Setter
     private ApplicationContext applicationContext;
@@ -72,8 +79,8 @@ public class ServerFileCopy extends AbstractLoggable implements ApplicationConte
                 .namingPattern("server-%d-task-")
                 .uncaughtExceptionHandler(new ExecExceptionsHandler(this))
                 .build();
-        fileCopyExec = new ThreadPoolExecutor(2,
-                30, 0L, TimeUnit.MILLISECONDS,
+        fileCopyExec = new ThreadPoolExecutor(SERVER_CORE_POOL_SIZE,
+                SERVER_MAX_POOL_SIZE, 0L, TimeUnit.MILLISECONDS,
                 new LinkedBlockingQueue<Runnable>(200),
                 executorThreadFactory,
                 new ThreadPoolExecutor.AbortPolicy());
@@ -87,6 +94,7 @@ public class ServerFileCopy extends AbstractLoggable implements ApplicationConte
      */
     public void resolverPack(byte[] data) throws TaskFailException {
         String taskId = takeTaskId(data);
+
         synchronized (lock) {
             if (close) {
                 throw new TaskFailException("FileCopy already shutdown.");
@@ -148,7 +156,7 @@ public class ServerFileCopy extends AbstractLoggable implements ApplicationConte
      * 停止当前任务并从任务 map 中移除
      *
      * @param taskId 任务 Id
-     * @throws IOException
+     * @throws IOException Io 异常
      */
     public void deleteTask(String taskId) throws IOException {
         synchronized (lock) {
@@ -192,6 +200,10 @@ public class ServerFileCopy extends AbstractLoggable implements ApplicationConte
                 }
                 break;
         }
+    }
+
+    private String takeTaskId(byte[] data) {
+        return new String(data, 0, InitCopyContext.UUID_LEN, InitCopyContext.CHARSET);
     }
 
     protected class CopyTask implements Runnable, Closeable {
@@ -303,7 +315,9 @@ public class ServerFileCopy extends AbstractLoggable implements ApplicationConte
         }
 
         /**
-         * 会将尝试停止当前任务，并从任务执行 Map中移除该任务
+         * 会将尝试停止当前任务
+         * 1. 从任务执行 Map中移除该任务
+         * 2. 从持久化层删除相关文件信息。
          */
         @Override
         public void close() {
@@ -316,12 +330,9 @@ public class ServerFileCopy extends AbstractLoggable implements ApplicationConte
             }
             synchronized (ServerFileCopy.this.lock) {
                 ServerFileCopy.this.execTaskMap.remove(this.taskId);
+                ServerFileCopy.this.fm.deleteFileInfoByTaskId(this.taskId);
             }
             logger.info("Task resolver done. Use " + execTime + ".");
         }
-    }
-
-    private String takeTaskId(byte[] data) {
-        return new String(data, 0, InitCopyContext.UUID_LEN, InitCopyContext.CHARSET);
     }
 }

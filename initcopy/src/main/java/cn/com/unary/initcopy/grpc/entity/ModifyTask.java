@@ -486,7 +486,7 @@ public  final class ModifyTask extends
               return s;
           } else {
               return (java.lang.String) ref;
-          }
+      }
     }
     /**
      * <pre>
@@ -518,7 +518,7 @@ public  final class ModifyTask extends
     public Builder setTaskId(
             java.lang.String value) {
         if (value == null) {
-            throw new NullPointerException();
+    throw new NullPointerException();
   }
   
       taskId_ = value;
@@ -550,8 +550,8 @@ public  final class ModifyTask extends
               com.google.protobuf.ByteString value) {
           if (value == null) {
               throw new NullPointerException();
-          }
-          checkByteStringIsUtf8(value);
+  }
+  checkByteStringIsUtf8(value);
       
       taskId_ = value;
       onChanged();

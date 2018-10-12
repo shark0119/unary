@@ -3,9 +3,13 @@ package cn.com.unary.initcopy.common.utils;
 import cn.com.unary.initcopy.entity.BaseFileInfoDO;
 import cn.com.unary.initcopy.entity.Constants;
 import cn.com.unary.initcopy.entity.FileInfoDO;
+import cn.com.unary.initcopy.entity.SyncTaskDO;
 import cn.com.unary.initcopy.grpc.entity.BaseFileInfo;
+import cn.com.unary.initcopy.grpc.entity.ClientInitReq;
+import cn.com.unary.initcopy.grpc.entity.SyncTask;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -15,7 +19,9 @@ import java.nio.file.attribute.FileOwnerAttributeView;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 将实体和 SQL 互相转换
@@ -25,6 +31,9 @@ import java.util.List;
  * @since 1.0
  */
 public class BeanExactUtil {
+
+    private static final String ZERO_STR = "0";
+
     public static List<FileInfoDO> deSerFromResult(ResultSet rSet) throws SQLException {
         List<FileInfoDO> fis = new ArrayList<>();
         FileInfoDO fi ;
@@ -95,7 +104,7 @@ public class BeanExactUtil {
         return bfiList;
     }
 
-    public static BaseFileInfo takeFromDO(BaseFileInfoDO bfiDO) {
+    private static BaseFileInfo takeFromDO(BaseFileInfoDO bfiDO) {
         BaseFileInfo.Builder builder = BaseFileInfo.newBuilder();
         builder.setFileId(bfiDO.getFileId())
                 .setFullName(bfiDO.getFullName())
@@ -106,7 +115,7 @@ public class BeanExactUtil {
         return builder.build();
     }
 
-    public static BaseFileInfoDO takeFromGrpc(BaseFileInfo bfi) {
+    private static BaseFileInfoDO takeFromGrpc(BaseFileInfo bfi) {
         BaseFileInfoDO bfiDO = new BaseFileInfoDO();
         bfiDO.setFileId(bfi.getFileId());
         bfiDO.setFileSize(bfi.getFileSize());
@@ -115,5 +124,33 @@ public class BeanExactUtil {
         bfiDO.setCheckSum(bfi.getCheckSum());
         bfiDO.setBackUpPath(bfi.getBackUpPath());
         return bfiDO;
+    }
+
+    public static SyncTaskDO takeFromGrpc(SyncTask syncTask, ClientInitReq request) {
+        SyncTaskDO taskDO = new SyncTaskDO();
+        taskDO.setSyncedSize(new BigDecimal(ZERO_STR));
+        if (taskDO.getSyncedSize().equals(taskDO.getTotalSize())) {
+            throw new IllegalArgumentException(String.format("totalSize can't be null %s", request.getTotalSize()));
+        }
+        if (syncTask != null) {
+            taskDO.setTaskId(syncTask.getTaskId());
+            taskDO.setSpeedLimit(syncTask.getSpeedLimit());
+            taskDO.setIp(syncTask.getTargetInfo().getIp());
+            taskDO.setEncryptType(syncTask.getEncryptType());
+            taskDO.setCompressType(syncTask.getCompressType());
+            taskDO.setGrpcPort(syncTask.getTargetInfo().getGrpcPort());
+            taskDO.setTransferPort(syncTask.getTargetInfo().getTransferPort());
+        } else {
+            taskDO.setTaskId(request.getTaskId());
+        }
+        if (request != null) {
+            taskDO.setTotalSize(new BigDecimal(request.getTotalSize()));
+            Map<String, Long> fileSizeMap = new HashMap<>(request.getBaseFileInfosCount());
+            for (BaseFileInfo bfi : request.getBaseFileInfosList()) {
+                fileSizeMap.put(bfi.getFileId(), bfi.getFileSize());
+            }
+            taskDO.setFileSizeMap(fileSizeMap);
+        }
+        return taskDO;
     }
 }

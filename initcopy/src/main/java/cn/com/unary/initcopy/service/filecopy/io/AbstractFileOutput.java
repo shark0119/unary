@@ -1,4 +1,4 @@
-package cn.com.unary.initcopy.filecopy.io;
+package cn.com.unary.initcopy.service.filecopy.io;
 
 import cn.com.unary.initcopy.common.AbstractLoggable;
 

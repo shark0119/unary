@@ -18,11 +18,12 @@ public class ExecExceptionsHandler extends AbstractLoggable implements Thread.Un
 
     @Override
     public void uncaughtException(Thread t, Throwable e) {
-        logger.error(t.getName(), e);
         try {
             resource.close();
         } catch (Exception e1) {
             logger.error("resource close error.", e1);
+        } finally {
+            logger.error(t.getName(), e);
         }
     }
 }

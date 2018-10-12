@@ -1,4 +1,4 @@
-package cn.com.unary.initcopy.filecopy.io;
+package cn.com.unary.initcopy.service.filecopy.io;
 
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;

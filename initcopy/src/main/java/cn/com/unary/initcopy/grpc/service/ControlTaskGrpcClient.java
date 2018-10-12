@@ -1,12 +1,8 @@
-package cn.com.unary.initcopy.grpc.client;
+package cn.com.unary.initcopy.grpc.service;
 
 import cn.com.unary.initcopy.common.AbstractLoggable;
 import cn.com.unary.initcopy.grpc.ControlTaskGrpc;
-import cn.com.unary.initcopy.grpc.entity.ClientInitReq;
-import cn.com.unary.initcopy.grpc.entity.DeleteTask;
-import cn.com.unary.initcopy.grpc.entity.ExecResult;
-import cn.com.unary.initcopy.grpc.entity.ModifyTask;
-import cn.com.unary.initcopy.grpc.entity.ServerInitResp;
+import cn.com.unary.initcopy.grpc.entity.*;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 
@@ -48,12 +44,7 @@ public class ControlTaskGrpcClient extends AbstractLoggable {
      * @return 执行结果
      */
     public ExecResult invokeGrpcDelete(DeleteTask deleteTask) {
-        try {
-            return blockingStub.delete(deleteTask);
-        } catch (Exception e) {
-            logger.error("Error.", e);
-            throw new IllegalStateException(e);
-        }
+        return blockingStub.delete(deleteTask);
     }
 
     /**
@@ -63,11 +54,10 @@ public class ControlTaskGrpcClient extends AbstractLoggable {
      * @return 执行结果
      */
     public ExecResult invokeGrpcModify(ModifyTask modifyTask) {
-        try {
-            return blockingStub.modify(modifyTask);
-        } catch (Exception e) {
-            logger.error("Error.", e);
-            throw new IllegalStateException(e);
-        }
+        return blockingStub.modify(modifyTask);
+    }
+
+    public TaskState invokeGrpcQuery(QueryTask queryTask) {
+        return blockingStub.query(queryTask);
     }
 }

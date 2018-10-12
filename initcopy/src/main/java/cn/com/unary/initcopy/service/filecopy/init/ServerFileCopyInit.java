@@ -1,4 +1,4 @@
-package cn.com.unary.initcopy.filecopy.init;
+package cn.com.unary.initcopy.service.filecopy.init;
 
 import cn.com.unary.initcopy.common.utils.BeanExactUtil;
 import cn.com.unary.initcopy.dao.FileManager;
@@ -32,9 +32,6 @@ public class ServerFileCopyInit {
 
     public ServerInitResp startInit(ClientInitReq req) throws InfoPersistenceException {
         ServerInitResp.Builder builder = ServerInitResp.newBuilder();
-        builder.setReady(true);
-        builder.setMsg("success");
-        builder.setTaskId(req.getTaskId());
         List<BaseFileInfoDO> bfiDOList = BeanExactUtil.takeFromGrpc(req.getBaseFileInfosList());
         switch (req.getSyncType()) {
             case SYNC_DIFF:
@@ -46,10 +43,12 @@ public class ServerFileCopyInit {
                 for (BaseFileInfoDO fbi : bfiDOList) {
                     fi = new FileInfoDO(fbi);
                     fi.setTaskId(req.getTaskId());
+                    fi.setState(FileInfoDO.STATE.WAIT);
                     fm.save(fi);
                 }
                 break;
         }
+        fm.saveTask(BeanExactUtil.takeFromGrpc(null, req));
         return builder.build();
     }
 

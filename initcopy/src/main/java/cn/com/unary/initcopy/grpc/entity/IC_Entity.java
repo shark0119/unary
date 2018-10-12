@@ -81,8 +81,8 @@ public final class IC_Entity {
               "y\030\001 \001(\010\022\014\n\004code\030\002 \001(\005\022\013\n\003msg\030\003 \001(\t\022\016\n\006ta" +
               "skId\030\004 \001(\t\"\244\001\n\014ProgressInfo\022\r\n\005stage\030\001 \001" +
               "(\005\022\020\n\010progress\030\002 \001(\005\022\024\n\014totalFileNum\030\003 \001" +
-              "(\022\022\025\n\rtotalFileSize\030\004 \001(\022\022\025\n\rsyncedFileN" +
-              "um\030\005 \001(\022\022\026\n\016syncedFileSize\030\006 \001(\022\022\027\n\017sync",
+              "(\022\022\025\n\rtotalFileSize\030\004 \001(\t\022\025\n\rsyncedFileN" +
+              "um\030\005 \001(\022\022\026\n\016syncedFileSize\030\006 \001(\t\022\027\n\017sync",
             "ingFileName\030\007 \001(\t\"\033\n\tQueryTask\022\016\n\006taskId" +
                     "\030\001 \001(\t\"\225\001\n\tTaskState\022A\n\nexecResult\030\002 \001(\013" +
                     "2-.cn.com.unary.initcopy.grpc.entity.Exe" +

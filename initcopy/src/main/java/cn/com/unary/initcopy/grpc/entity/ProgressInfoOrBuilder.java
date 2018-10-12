@@ -39,9 +39,19 @@ public interface ProgressInfoOrBuilder extends
    *需要同步的文件总大小 以字节为单位
    * </pre>
    *
-   * <code>optional sint64 totalFileSize = 4;</code>
+   * <code>optional string totalFileSize = 4;</code>
    */
-  long getTotalFileSize();
+  java.lang.String getTotalFileSize();
+
+    /**
+     * <pre>
+     * 需要同步的文件总大小 以字节为单位
+     * </pre>
+     *
+     * <code>optional string totalFileSize = 4;</code>
+     */
+    com.google.protobuf.ByteString
+    getTotalFileSizeBytes();
 
   /**
    * <pre>
@@ -57,9 +67,19 @@ public interface ProgressInfoOrBuilder extends
    *已经同步的文件总大小
    * </pre>
    *
-   * <code>optional sint64 syncedFileSize = 6;</code>
+   * <code>optional string syncedFileSize = 6;</code>
    */
-  long getSyncedFileSize();
+  java.lang.String getSyncedFileSize();
+
+    /**
+     * <pre>
+     * 已经同步的文件总大小
+     * </pre>
+     *
+     * <code>optional string syncedFileSize = 6;</code>
+     */
+    com.google.protobuf.ByteString
+    getSyncedFileSizeBytes();
 
   /**
    * <pre>

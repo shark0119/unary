@@ -1,4 +1,4 @@
-package cn.com.unary.initcopy.filecopy.fileresolver;
+package cn.com.unary.initcopy.service.filecopy.fileresolver;
 
 import cn.com.unary.initcopy.entity.Constants.PackerType;
 import cn.com.unary.initcopy.exception.InfoPersistenceException;

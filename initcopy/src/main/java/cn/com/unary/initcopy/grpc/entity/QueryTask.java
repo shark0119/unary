@@ -409,7 +409,7 @@ public  final class QueryTask extends
               return b;
           } else {
               return (com.google.protobuf.ByteString) ref;
-      }
+          }
       }
 
       /**
@@ -422,19 +422,19 @@ public  final class QueryTask extends
   }
   
       taskId_ = value;
-      onChanged();
-      return this;
+          onChanged();
+          return this;
       }
 
       /**
        * <code>optional string taskId = 1;</code>
      */
-    public Builder clearTaskId() {
+      public Builder clearTaskId() {
 
-        taskId_ = getDefaultInstance().getTaskId();
-        onChanged();
-        return this;
-    }
+          taskId_ = getDefaultInstance().getTaskId();
+          onChanged();
+          return this;
+      }
 
       /**
        * <code>optional string taskId = 1;</code>
@@ -445,8 +445,8 @@ public  final class QueryTask extends
               throw new NullPointerException();
           }
           checkByteStringIsUtf8(value);
-
-          taskId_ = value;
+      
+      taskId_ = value;
       onChanged();
       return this;
     }
