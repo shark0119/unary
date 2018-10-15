@@ -1,3 +1,4 @@
+
 syntax = "proto3";
 
 option java_multiple_files = true;
@@ -18,5 +19,8 @@ service ControlTask {
     };
     // 修改任务 
     rpc Modify (cn.com.unary.initcopy.grpc.entity.ModifyTask) returns (cn.com.unary.initcopy.grpc.entity.ExecResult) {
+    };
+    // 查询任务
+    rpc Query (cn.com.unary.initcopy.grpc.entity.QueryTask) returns (cn.com.unary.initcopy.grpc.entity.TaskState) {
     };
 }

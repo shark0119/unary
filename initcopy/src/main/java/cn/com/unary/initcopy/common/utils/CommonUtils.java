@@ -2,6 +2,7 @@ package cn.com.unary.initcopy.common.utils;
 
 import com.alibaba.fastjson.JSONObject;
 import com.google.protobuf.MessageOrBuilder;
+import org.apache.log4j.Logger;
 
 import java.nio.ByteBuffer;
 
@@ -49,6 +50,13 @@ public class CommonUtils {
     }
 
     public static String formatGrpcEntity(MessageOrBuilder builder) {
-        return builder.toString().replaceAll("\\n", "");
+        return builder.toString().replaceAll("\\n", " ").replaceAll("  ", " ");
+    }
+
+    public static void logGrpcEntity(Logger logger, MessageOrBuilder msg) {
+        String logMsg = String.format("%s:%s",
+                msg.getClass().getSimpleName(),
+                CommonUtils.formatGrpcEntity(msg));
+        logger.info(logMsg);
     }
 }

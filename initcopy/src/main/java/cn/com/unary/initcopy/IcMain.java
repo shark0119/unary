@@ -31,6 +31,7 @@ public class IcMain {
             InitCopyContext context = ac.getBean(InitCopyContext.class);
             context.start(transPort, grpcPort, innerGrpcPort);
         } catch (Exception e) {
+            e.printStackTrace();
             System.out.println("args 1,3,5 must be integer");
             return;
         }

@@ -63,13 +63,13 @@ public class ClientFileCopyInit extends AbstractLoggable {
      * @throws IOException      IO错误
      * @throws RuntimeException Grpc 服务调用错误。
      */
-    public List<String> startInit(UnaryTransferClient client, final SyncTask task,
+    public List<String> startInit(UnaryTransferClient transferClient, final SyncTask task,
                                   final List<DiffFileInfo> diffFileInfos)
             throws IOException, InfoPersistenceException {
         logger.debug("Start init.");
-        client.setSpeedLimit(task.getSpeedLimit());
-        client.setCompressType(task.getCompressType());
-        client.setEncryptType(task.getEncryptType());
+        transferClient.setSpeedLimit(task.getSpeedLimit());
+        transferClient.setCompressType(task.getCompressType());
+        transferClient.setEncryptType(task.getEncryptType());
 
         logger.debug("Set transfer option done. Start to traversing files.");
         List<FileInfoDO> syncFiles = traversingFiles(task.getFilesList(), task.getTargetDirsList());
@@ -83,9 +83,10 @@ public class ClientFileCopyInit extends AbstractLoggable {
         logger.debug(String.format("We got %d files and %d file id from specified local directory in task %s."
                 , syncFiles.size(), syncFileIds.size(), task.getTaskId()));
 
-        ControlTaskGrpcClient controlTaskGrpcClient =
-                new ControlTaskGrpcClient(task.getTargetInfo().getIp(), task.getTargetInfo().getGrpcPort());
-
+        // @Cleanup
+        ControlTaskGrpcClient grpcClient = new ControlTaskGrpcClient(
+                task.getTargetInfo().getIp(),
+                task.getTargetInfo().getGrpcPort());
         List<BaseFileInfo> bfiList = BeanExactUtil.takeFromDO(syncFiles);
         BigDecimal totalSize = new BigDecimal("0");
 
@@ -103,12 +104,12 @@ public class ClientFileCopyInit extends AbstractLoggable {
         logger.debug("Try to init according sync type.");
         switch (task.getSyncType()) {
             case SYNC_DIFF:
-                syncFileIds = syncDiffInit(builder, controlTaskGrpcClient, diffFileInfos);
+                syncFileIds = syncDiffInit(builder, grpcClient, diffFileInfos);
                 break;
             case SYNC_ALL:
                 // sync all as default option
             default:
-                syncAllInit(builder, controlTaskGrpcClient);
+                syncAllInit(builder, grpcClient);
                 break;
         }
 

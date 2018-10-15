@@ -84,6 +84,11 @@ public class TestTest {
         System.out.println(bi1.divide(bi, 2, RoundingMode.CEILING));
     }
 
+    @Test
+    public void test5() {
+        System.out.println(BigDecimal.class.getSimpleName());
+    }
+
     private static class Task implements Runnable {
         private ReentrantLock lock = new ReentrantLock();
         private Condition ready = lock.newCondition();

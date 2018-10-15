@@ -5,6 +5,7 @@ option java_package = "cn.com.unary.initcopy.grpc.entity";
 option java_outer_classname = "TC_Entity";
 
 import "init_copy_constant.proto";
+import "init_copy_entity.proto";
 
 package cn.com.unary.initcopy.grpc.entity;
 
@@ -19,7 +20,6 @@ message BaseFileInfo {
 message ClientInitReq {
     string taskId = 1;
     string totalSize = 2; //总大小
-    // 如果源目录与目标目录是多对多关系，则设为 null
     string backUpPath = 3; // 备份的目标端路径
     cn.com.unary.initcopy.grpc.constant.SyncType syncType = 4; // 同步方式
     repeated BaseFileInfo baseFileInfos = 5; // 文件信息
@@ -34,8 +34,6 @@ message DiffFileInfo {
     repeated DiffFileChunk diffFileChunks = 2;
 }
 message ServerInitResp {
-    string taskId = 1;
-    bool ready = 2;
-    string msg = 3;
-    repeated DiffFileInfo diffFileInfos = 4;
+    cn.com.unary.initcopy.grpc.entity.ExecResult execResult = 1;
+    repeated DiffFileInfo diffFileInfos = 2;
 }

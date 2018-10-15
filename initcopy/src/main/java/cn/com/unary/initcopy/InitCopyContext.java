@@ -63,7 +63,7 @@ public class InitCopyContext extends AbstractLoggable implements Closeable {
     @Qualifier("InitCopyGrpcImpl")
     private BindableService icGrpcService;
     @Autowired
-    @Qualifier("ControlTaskGrpcImpl")
+    @Qualifier("ControlTaskGrpcService")
     private BindableService ctGrpcService;
 
     public InitCopyContext() {

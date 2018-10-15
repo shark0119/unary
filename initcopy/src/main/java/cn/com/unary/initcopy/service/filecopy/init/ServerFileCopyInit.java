@@ -30,7 +30,7 @@ public class ServerFileCopyInit {
     @Qualifier("serverFM")
     private FileManager fm;
 
-    public ServerInitResp startInit(ClientInitReq req) throws InfoPersistenceException {
+    public ServerInitResp startInit(final ClientInitReq req) throws InfoPersistenceException {
         ServerInitResp.Builder builder = ServerInitResp.newBuilder();
         List<BaseFileInfoDO> bfiDOList = BeanExactUtil.takeFromGrpc(req.getBaseFileInfosList());
         switch (req.getSyncType()) {

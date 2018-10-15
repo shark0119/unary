@@ -83,6 +83,9 @@ public class ServerTaskUpdater extends AbstractLoggable {
     public TaskState query(String taskId) throws TaskFailException {
         List<FileInfoDO> fis = fm.queryByTaskId(taskId);
         SyncTaskDO task = fm.queryTask(taskId);
+        if (task == null) {
+            throw new TaskFailException(String.format("Task %s not ready.", taskId));
+        }
         long syncedFileNum = 0L;
         BigDecimal syncedFileSize = new BigDecimal(ZERO_STR);
         String syncingFileName = "";

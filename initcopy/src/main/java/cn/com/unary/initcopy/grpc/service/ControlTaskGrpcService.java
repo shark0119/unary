@@ -20,7 +20,7 @@ import static cn.com.unary.initcopy.common.Msg.*;
  * @author Shark.Yin
  * @since 1.0
  */
-@Component("ControlTaskGrpcImpl")
+@Component("ControlTaskGrpcService")
 @Scope("singleton")
 public class ControlTaskGrpcService extends ControlTaskGrpc.ControlTaskImplBase {
 
@@ -33,36 +33,36 @@ public class ControlTaskGrpcService extends ControlTaskGrpc.ControlTaskImplBase 
     @Override
     public void init(cn.com.unary.initcopy.grpc.entity.ClientInitReq request,
                      StreamObserver<ServerInitResp> responseObserver) {
-        logger.info("ClientInitReq:" + CommonUtils.formatGrpcEntity(request));
+        CommonUtils.logGrpcEntity(logger, request);
         ServerInitResp resp = this.initLinker(request);
-        logger.info("ServerInitResp:" + CommonUtils.formatGrpcEntity(resp));
+        CommonUtils.logGrpcEntity(logger, resp);
         responseObserver.onNext(resp);
         responseObserver.onCompleted();
     }
 
     @Override
     public void delete(DeleteTask request, StreamObserver<ExecResult> responseObserver) {
-        logger.info("DeleteTask:" + CommonUtils.formatGrpcEntity(request));
-        ExecResult result = this.deleteLinker(request);
-        logger.info("ExecResult:" + CommonUtils.formatGrpcEntity(result));
-        responseObserver.onNext(result);
+        CommonUtils.logGrpcEntity(logger, request);
+        ExecResult resp = this.deleteLinker(request);
+        CommonUtils.logGrpcEntity(logger, resp);
+        responseObserver.onNext(resp);
         responseObserver.onCompleted();
     }
 
     @Override
     public void modify(ModifyTask request, StreamObserver<ExecResult> responseObserver) {
-        logger.info("DeleteTask:" + CommonUtils.formatGrpcEntity(request));
-        ExecResult result = this.modifyLinker(request);
-        logger.info("ExecResult:" + CommonUtils.formatGrpcEntity(result));
-        responseObserver.onNext(result);
+        CommonUtils.logGrpcEntity(logger, request);
+        ExecResult resp = this.modifyLinker(request);
+        CommonUtils.logGrpcEntity(logger, resp);
+        responseObserver.onNext(resp);
         responseObserver.onCompleted();
     }
 
     @Override
     public void query(QueryTask request, StreamObserver<TaskState> responseObserver) {
-        logger.info("QueryTask:" + CommonUtils.formatGrpcEntity(request));
+        CommonUtils.logGrpcEntity(logger, request);
         TaskState taskState = this.queryLinker(request);
-        logger.info("TaskState:" + CommonUtils.formatGrpcEntity(taskState));
+        CommonUtils.logGrpcEntity(logger, taskState);
         responseObserver.onNext(taskState);
         responseObserver.onCompleted();
     }
@@ -80,10 +80,10 @@ public class ControlTaskGrpcService extends ControlTaskGrpc.ControlTaskImplBase 
             resultBuilder.setTaskId(request.getTaskId());
             try {
                 builder = taskUpdater.query(request.getTaskId()).toBuilder();
-                builder.setExecResult(resultBuilder.setHealthy(true).setMsg(MSG_TASK_SUCCESS));
+                resultBuilder.setHealthy(true).setMsg(MSG_TASK_SUCCESS);
             } catch (Exception e) {
                 logger.error(MSG_TASK_FAIL, e);
-                builder.setExecResult(resultBuilder.setHealthy(false).setMsg(e.getMessage() == null ? "" : e.getMessage()));
+                resultBuilder.setHealthy(false).setMsg(e.getMessage() == null ? "" : e.getMessage());
             }
         }
         return builder.setExecResult(resultBuilder).build();

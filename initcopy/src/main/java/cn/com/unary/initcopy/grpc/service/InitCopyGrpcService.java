@@ -21,10 +21,11 @@ import java.util.UUID;
 
 /**
  * 初始化复制 GRPC 服务实现类
- *
+ * <p>
  * 1. 转发任务到具体业务逻辑
  * 2. 参数合法校验
  * 3. 会处理下层抛出的所有异常。
+ *
  * @author Shark.Yin
  * @since 1.0
  */
@@ -39,36 +40,36 @@ public class InitCopyGrpcService extends InitCopyGrpc.InitCopyImplBase {
 
     @Override
     public void add(SyncTask request, StreamObserver<ExecResult> responseObserver) {
-        logger.info("DeleteTask:" + CommonUtils.formatGrpcEntity(request));
+        CommonUtils.logGrpcEntity(logger, request);
         ExecResult result = this.addLinker(request);
-        logger.info("ExecResult:" + CommonUtils.formatGrpcEntity(result));
+        CommonUtils.logGrpcEntity(logger, result);
         responseObserver.onNext(result);
         responseObserver.onCompleted();
     }
 
     @Override
     public void query(QueryTask request, StreamObserver<TaskState> responseObserver) {
-        logger.info("DeleteTask:" + CommonUtils.formatGrpcEntity(request));
-        TaskState taskState = this.queryLinker(request);
-        logger.info("ExecResult:" + CommonUtils.formatGrpcEntity(taskState));
-        responseObserver.onNext(taskState);
+        CommonUtils.logGrpcEntity(logger, request);
+        TaskState result = this.queryLinker(request);
+        CommonUtils.logGrpcEntity(logger, result);
+        responseObserver.onNext(result);
         responseObserver.onCompleted();
     }
 
     @Override
     public void delete(DeleteTask request, StreamObserver<ExecResult> responseObserver) {
-        logger.info("DeleteTask:" + CommonUtils.formatGrpcEntity(request));
+        CommonUtils.logGrpcEntity(logger, request);
         ExecResult result = this.deleteLinker(request);
-        logger.info("ExecResult:" + CommonUtils.formatGrpcEntity(result));
+        CommonUtils.logGrpcEntity(logger, result);
         responseObserver.onNext(result);
         responseObserver.onCompleted();
     }
 
     @Override
     public void modify(ModifyTask request, StreamObserver<ExecResult> responseObserver) {
-        logger.info("DeleteTask:" + CommonUtils.formatGrpcEntity(request));
+        CommonUtils.logGrpcEntity(logger, request);
         ExecResult result = this.modifyLinker(request);
-        logger.info("ExecResult:" + CommonUtils.formatGrpcEntity(result));
+        CommonUtils.logGrpcEntity(logger, result);
         responseObserver.onNext(result);
         responseObserver.onCompleted();
     }

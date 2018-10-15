@@ -10,15 +10,18 @@ import cn.com.unary.initcopy.grpc.entity.TaskState;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 
+import java.io.Closeable;
+
 /**
  * 用于模拟调用初始化复制的 GRPC 服务
  *
  * @author Shark.Yin
  * @since 1.0
  */
-public class InitCopyGrpcClient extends AbstractLoggable {
+public class InitCopyGrpcClient extends AbstractLoggable implements Closeable {
 
     private InitCopyGrpc.InitCopyBlockingStub blockingStub;
+    private ManagedChannel channel;
 
     /**
      * 配置 GRPC 服务的相关信息
@@ -27,7 +30,7 @@ public class InitCopyGrpcClient extends AbstractLoggable {
      * @param gp GRPC 服务监听的端口
      */
     public InitCopyGrpcClient(String host, int gp) {
-        ManagedChannel channel = ManagedChannelBuilder
+        channel = ManagedChannelBuilder
                 .forAddress(host, gp).usePlaintext(true).build();
         blockingStub = InitCopyGrpc.newBlockingStub(channel);
     }
@@ -42,5 +45,10 @@ public class InitCopyGrpcClient extends AbstractLoggable {
 
     public ExecResult delete(DeleteTask task) {
         return blockingStub.delete(task);
+    }
+
+    @Override
+    public void close() {
+        channel.shutdown();
     }
 }

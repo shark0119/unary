@@ -6,15 +6,18 @@ import cn.com.unary.initcopy.grpc.entity.*;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 
+import java.io.Closeable;
+
 /**
  * 源端和目标端之间，任务控制信息GRPC接口的调用方(客户端)
  *
  * @author Shark.Yin
  * @since 1.0
  */
-public class ControlTaskGrpcClient extends AbstractLoggable {
+public class ControlTaskGrpcClient extends AbstractLoggable implements Closeable {
 
     private ControlTaskGrpc.ControlTaskBlockingStub blockingStub;
+    private ManagedChannel channel;
 
     /**
      * 配置 GRPC 服务的相关信息
@@ -23,7 +26,7 @@ public class ControlTaskGrpcClient extends AbstractLoggable {
      * @param port GRPC 服务监听的端口
      */
     public ControlTaskGrpcClient(String host, int port) {
-        ManagedChannel channel = ManagedChannelBuilder.forAddress(host, port).usePlaintext(true).build();
+        channel = ManagedChannelBuilder.forAddress(host, port).usePlaintext(true).build();
         blockingStub = ControlTaskGrpc.newBlockingStub(channel);
     }
 
@@ -59,5 +62,10 @@ public class ControlTaskGrpcClient extends AbstractLoggable {
 
     public TaskState invokeGrpcQuery(QueryTask queryTask) {
         return blockingStub.query(queryTask);
+    }
+
+    @Override
+    public void close() {
+        channel.shutdown();
     }
 }

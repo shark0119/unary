@@ -54,7 +54,7 @@ public class ServerFileCopy extends AbstractLoggable implements ApplicationConte
     @Autowired
     private ServerFileCopyInit init;
     @Autowired
-    @Qualifier("RamFileManager")
+    @Qualifier("clientFM")
     private FileManager fm;
     private volatile boolean close;
     @Setter
