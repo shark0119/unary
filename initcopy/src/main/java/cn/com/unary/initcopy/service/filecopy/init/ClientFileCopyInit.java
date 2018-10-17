@@ -14,7 +14,7 @@ import cn.com.unary.initcopy.grpc.entity.ClientInitReq;
 import cn.com.unary.initcopy.grpc.entity.DiffFileInfo;
 import cn.com.unary.initcopy.grpc.entity.ServerInitResp;
 import cn.com.unary.initcopy.grpc.entity.SyncTask;
-import cn.com.unary.initcopy.grpc.service.ControlTaskGrpcClient;
+import cn.com.unary.initcopy.grpc.service.ControlTaskGrpcClientPool;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
@@ -83,10 +83,8 @@ public class ClientFileCopyInit extends AbstractLoggable {
         logger.debug(String.format("We got %d files and %d file id from specified local directory in task %s."
                 , syncFiles.size(), syncFileIds.size(), task.getTaskId()));
 
-        // @Cleanup
-        ControlTaskGrpcClient grpcClient = new ControlTaskGrpcClient(
-                task.getTargetInfo().getIp(),
-                task.getTargetInfo().getGrpcPort());
+        ControlTaskGrpcClientPool.ControlTaskGrpcClient grpcClient =
+                ControlTaskGrpcClientPool.getClient(task.getTargetInfo().getIp(), task.getTargetInfo().getGrpcPort());
         List<BaseFileInfo> bfiList = BeanExactUtil.takeFromDO(syncFiles);
         BigDecimal totalSize = new BigDecimal("0");
 
@@ -126,7 +124,7 @@ public class ClientFileCopyInit extends AbstractLoggable {
      * @return 目标端确认后的待同步文件列表
      */
     private List<String> syncDiffInit(ClientInitReq.Builder builder,
-                                      ControlTaskGrpcClient controlTaskGrpcClient,
+                                      ControlTaskGrpcClientPool.ControlTaskGrpcClient controlTaskGrpcClient,
                                       List<DiffFileInfo> diffFileInfos) {
         builder.setSyncType(SyncType.SYNC_DIFF);
         ServerInitResp resp = controlTaskGrpcClient.invokeGrpcInit(builder.build());
@@ -142,7 +140,8 @@ public class ClientFileCopyInit extends AbstractLoggable {
         return list;
     }
 
-    private void syncAllInit(ClientInitReq.Builder builder, ControlTaskGrpcClient controlTaskGrpcClient) {
+    private void syncAllInit(ClientInitReq.Builder builder,
+                             ControlTaskGrpcClientPool.ControlTaskGrpcClient controlTaskGrpcClient) {
         builder.setSyncType(SyncType.SYNC_ALL);
         ServerInitResp resp = controlTaskGrpcClient.invokeGrpcInit(builder.build());
         if (!resp.getExecResult().getHealthy()) {

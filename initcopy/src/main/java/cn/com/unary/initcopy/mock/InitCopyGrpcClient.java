@@ -49,6 +49,10 @@ public class InitCopyGrpcClient extends AbstractLoggable implements Closeable {
 
     @Override
     public void close() {
-        channel.shutdown();
+        channel.shutdownNow();
+    }
+
+    public boolean isTerminated() {
+        return channel.isTerminated();
     }
 }

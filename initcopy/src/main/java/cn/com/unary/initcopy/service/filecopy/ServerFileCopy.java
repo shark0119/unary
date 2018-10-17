@@ -300,6 +300,11 @@ public class ServerFileCopy extends AbstractLoggable implements ApplicationConte
 
         private void addPack(byte[] pack) {
             Objects.requireNonNull(pack);
+            try {
+                Thread.sleep(4000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             synchronized (lock) {
                 if (shutdown) {
                     return;

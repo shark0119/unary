@@ -86,7 +86,7 @@ public class TestTest {
 
     @Test
     public void test5() {
-        System.out.println(BigDecimal.class.getSimpleName());
+        System.out.println(2 / 0);
     }
 
     private static class Task implements Runnable {

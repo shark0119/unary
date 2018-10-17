@@ -46,12 +46,22 @@ public class InvokeGrpcTest {
                 InitCopyGrpcClient(GRPC_IP, ClientTest.CLIENT_GRPC_PORT);
 
         /*ExecResult result = client.add(builder.build());
-        System.out.println("Result:" + CommonUtils.formatGrpcEntity(result));*/
+        System.out.println("Result:" + CommonUtils.formatGrpcEntity(result));
         TaskState state = client.query(QueryTask.newBuilder()
-                .setTaskId("fea27d09-c766-4b7b-a8cb-6868b1aeb40f")
-                // .setTaskId(result.getTaskId())
+                .setTaskId(result.getTaskId())
+                .build());
+        System.out.println("State:" + CommonUtils.formatGrpcEntity(state));*/
+        TaskState state = client.query(QueryTask.newBuilder()
+                .setTaskId("3dc9cfb0-9ce1-4b9f-a99e-ff36e51e24ba")
                 .build());
         System.out.println("State:" + CommonUtils.formatGrpcEntity(state));
         client.close();
+        while (!client.isTerminated()) {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+
+            }
+        }
     }
 }

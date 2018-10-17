@@ -12,7 +12,7 @@ import cn.com.unary.initcopy.grpc.entity.ExecResult;
 import cn.com.unary.initcopy.grpc.entity.ModifyTask;
 import cn.com.unary.initcopy.grpc.entity.QueryTask;
 import cn.com.unary.initcopy.grpc.entity.TaskState;
-import cn.com.unary.initcopy.grpc.service.ControlTaskGrpcClient;
+import cn.com.unary.initcopy.grpc.service.ControlTaskGrpcClientPool;
 import cn.com.unary.initcopy.service.filecopy.ClientFileCopy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -49,8 +49,8 @@ public class ClientTaskUpdater extends AbstractLoggable {
         }
         // 通知目标端删除任务
         SyncTaskDO taskDO = fm.queryTask(task.getTaskId());
-        // @Cleanup
-        ControlTaskGrpcClient client = new ControlTaskGrpcClient(taskDO.getIp(), context.getInnerGrpcPort());
+        ControlTaskGrpcClientPool.ControlTaskGrpcClient client =
+                ControlTaskGrpcClientPool.getClient(taskDO.getIp(), taskDO.getGrpcPort());
         final ExecResult result = client.invokeGrpcDelete(task);
         // 删除源端任务相关信息
         if (result.getHealthy()) {
@@ -81,8 +81,8 @@ public class ClientTaskUpdater extends AbstractLoggable {
             throw new TaskFailException("Client update task fail.", e);
         }
         SyncTaskDO taskDO = fm.queryTask(task.getTaskId());
-        // @Cleanup
-        ControlTaskGrpcClient client = new ControlTaskGrpcClient(taskDO.getIp(), context.getInnerGrpcPort());
+        ControlTaskGrpcClientPool.ControlTaskGrpcClient client =
+                ControlTaskGrpcClientPool.getClient(taskDO.getIp(), taskDO.getGrpcPort());
         ExecResult result = client.invokeGrpcModify(task);
         if (!result.getHealthy()) {
             throw new TaskFailException(String.format("Server update task fail. %s", result.getMsg()));
@@ -94,10 +94,8 @@ public class ClientTaskUpdater extends AbstractLoggable {
         if (taskDO == null) {
             throw new TaskFailException(String.format("Don't have information about task id:%s.", task.getTaskId()));
         }
-        // @Cleanup
-        ControlTaskGrpcClient client = new ControlTaskGrpcClient(taskDO.getIp(), taskDO.getGrpcPort());
-        TaskState resp = client.invokeGrpcQuery(task);
-        return resp;
+        ControlTaskGrpcClientPool.ControlTaskGrpcClient client = ControlTaskGrpcClientPool.getClient(taskDO.getIp(), taskDO.getGrpcPort());
+        return client.invokeGrpcQuery(task);
     }
 
 }
