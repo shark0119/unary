@@ -20,6 +20,7 @@ public class IcMain {
                 || !args[0].equals(transPortPara)
                 || !grpcPortPara.equals(args[2])
                 || !innerGrpcPortPara.equals(args[4])) {
+            System.out.println(String.format("parameter error %d", args.length));
             System.out.println("-tp [transmitPort] -gp [grpcPort] -igp [innerGrpcPort]");
             return;
         }
@@ -32,8 +33,8 @@ public class IcMain {
             context.start(transPort, grpcPort, innerGrpcPort);
         } catch (Exception e) {
             e.printStackTrace();
+            System.out.println(String.format("parameter 1:%s, 2:%s, 3:%s.", args[1], args[3], args[5]));
             System.out.println("args 1,3,5 must be integer");
-            return;
         }
     }
 }
