@@ -23,13 +23,14 @@ import java.io.IOException;
 public class TransmitServerAdapter extends AbstractLoggable implements Closeable {
     private TransmitServer server;
     private Boolean isActive = Boolean.FALSE;
+    private final Object lock = new Object();
 
     public void start(int port, final DataHandlerAdapter handler) throws IOException {
         if (isActive) {
             return;
         }
         try {
-            synchronized (isActive) {
+            synchronized (lock) {
                 if (isActive) {
                     return;
                 }
@@ -57,6 +58,17 @@ public class TransmitServerAdapter extends AbstractLoggable implements Closeable
 
     @Override
     public void close() throws IOException {
-        server.stopServer();
+        if (!isActive) {
+            return;
+        }
+        synchronized (lock) {
+            if (!isActive) {
+                return;
+            }
+            if (server != null) {
+                server.stopServer();
+            }
+            isActive = false;
+        }
     }
 }

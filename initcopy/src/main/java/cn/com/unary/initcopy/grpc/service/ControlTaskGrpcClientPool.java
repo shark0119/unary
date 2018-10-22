@@ -56,6 +56,7 @@ public class ControlTaskGrpcClientPool {
 
         private ControlTaskGrpc.ControlTaskBlockingStub blockingStub;
         private ManagedChannel channel;
+        private static final String MSG_SERVER_ERROR = "Error grpc server status";
 
         /**
          * 配置 GRPC 服务的相关信息
@@ -64,8 +65,12 @@ public class ControlTaskGrpcClientPool {
          * @param port GRPC 服务监听的端口
          */
         private ControlTaskGrpcClient(String host, int port) {
-            channel = ManagedChannelBuilder.forAddress(host, port).usePlaintext(true).build();
-            blockingStub = ControlTaskGrpc.newBlockingStub(channel);
+            try {
+                channel = ManagedChannelBuilder.forAddress(host, port).usePlaintext(true).build();
+                blockingStub = ControlTaskGrpc.newBlockingStub(channel);
+            } catch (Exception e) {
+                throw new IllegalStateException(MSG_SERVER_ERROR, e);
+            }
         }
 
         /**
@@ -75,7 +80,11 @@ public class ControlTaskGrpcClientPool {
          * @return 初始化响应
          */
         public ServerInitResp invokeGrpcInit(ClientInitReq req) {
-            return blockingStub.init(req);
+            try {
+                return blockingStub.init(req);
+            } catch (Exception e) {
+                throw new IllegalStateException(MSG_SERVER_ERROR, e);
+            }
         }
 
         /**
@@ -85,7 +94,11 @@ public class ControlTaskGrpcClientPool {
          * @return 执行结果
          */
         public ExecResult invokeGrpcDelete(DeleteTask deleteTask) {
-            return blockingStub.delete(deleteTask);
+            try {
+                return blockingStub.delete(deleteTask);
+            } catch (Exception e) {
+                throw new IllegalStateException(MSG_SERVER_ERROR, e);
+            }
         }
 
         /**
@@ -95,11 +108,19 @@ public class ControlTaskGrpcClientPool {
          * @return 执行结果
          */
         public ExecResult invokeGrpcModify(ModifyTask modifyTask) {
-            return blockingStub.modify(modifyTask);
+            try {
+                return blockingStub.modify(modifyTask);
+            } catch (Exception e) {
+                throw new IllegalStateException(MSG_SERVER_ERROR, e);
+            }
         }
 
         public TaskState invokeGrpcQuery(QueryTask queryTask) {
-            return blockingStub.query(queryTask);
+            try {
+                return blockingStub.query(queryTask);
+            } catch (Exception e) {
+                throw new IllegalStateException(MSG_SERVER_ERROR, e);
+            }
         }
 
         public void close() {

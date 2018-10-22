@@ -91,7 +91,7 @@ public class ServerTaskUpdater extends AbstractLoggable {
         String syncingFileName = "";
         ProgressInfo.Builder progress = ProgressInfo.newBuilder();
         if (fis.isEmpty()) {
-            progress.setStage(0)
+            progress
                     .setProgress(100)
                     .setSyncingFileName("")
                     .setTotalFileNum(task.getTotalFileNum())
@@ -121,7 +121,7 @@ public class ServerTaskUpdater extends AbstractLoggable {
             } else {
                 progress.setProgress(0);
             }
-            progress.setStage(0).setTotalFileNum(fis.size())
+            progress.setTotalFileNum(fis.size())
                     .setSyncedFileNum(syncedFileNum).setSyncedFileSize(syncedFileSize.toString())
                     .setSyncingFileName(syncingFileName).setTotalFileSize(task.getTotalSize().toString());
             task.setSyncedSize(syncedFileSize);

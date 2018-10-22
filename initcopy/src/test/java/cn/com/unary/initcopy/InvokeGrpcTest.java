@@ -19,7 +19,7 @@ import java.util.List;
  */
 public class InvokeGrpcTest {
     public static final String TARGET_IP = "127.0.0.1";
-    public static final String GRPC_IP = "127.0.0.1";
+    public static final String GRPC_IP = "10.10.3.207";
 
     public static void main(String[] args) {
         List<String> syncFiles = new ArrayList<>();
@@ -42,7 +42,7 @@ public class InvokeGrpcTest {
                 .setTargetInfo(targetBuilder);
 
         InitCopyGrpcClient client = new
-                InitCopyGrpcClient(GRPC_IP, ClientTest.CLIENT_GRPC_PORT);
+                InitCopyGrpcClient(GRPC_IP, 10002);
 
         /*ExecResult result = client.add(builder.build());
         System.out.println("Result:" + CommonUtils.formatGrpcEntity(result));
@@ -51,7 +51,7 @@ public class InvokeGrpcTest {
                 .build());
         System.out.println("State:" + CommonUtils.formatGrpcEntity(state));*/
         TaskState state = client.query(QueryTask.newBuilder()
-                .setTaskId("98d840c1-2f96-4b8c-88fb-1993a191f763")
+                .setTaskId("582fd05f-7e62-4bbc-b909-0fa38fcf4f45")
                 .build());
         System.out.println("State:" + CommonUtils.formatGrpcEntity(state));
         client.close();

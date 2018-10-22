@@ -143,7 +143,12 @@ public class SyncAllPacker extends AbstractLoggable implements Packer {
         fiIterator = list.iterator();
         byte[] packData;
         SyncTaskDO task = fm.queryTask(taskId);
-        transfer.start(BeanExactUtil.takeFromTaskDO(task));
+        try {
+            transfer.start(BeanExactUtil.takeFromTaskDO(task));
+        } catch (IOException e) {
+            throw new IOException(String.format("Transfer connect error. ip:%s, port:%d."
+                    , task.getIp(), task.getTransferPort()), e);
+        }
         this.transfer = transfer;
         while (true) {
             try {
