@@ -1,6 +1,7 @@
 package cn.com.unary.initcopy.service.filecopy;
 
 import cn.com.unary.initcopy.InitCopyContext;
+import cn.com.unary.initcopy.adapter.DataHandlerAdapter;
 import cn.com.unary.initcopy.common.AbstractLoggable;
 import cn.com.unary.initcopy.common.ExecExceptionsHandler;
 import cn.com.unary.initcopy.dao.FileManager;
@@ -46,10 +47,8 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 @Component("ServerFileCopy")
 @Scope("singleton")
-public class ServerFileCopy extends AbstractLoggable implements ApplicationContextAware, Closeable {
+public class ServerFileCopy extends AbstractLoggable implements DataHandlerAdapter,ApplicationContextAware, Closeable {
 
-    public static final int SERVER_CORE_POOL_SIZE = 2;
-    public static final int SERVER_MAX_POOL_SIZE = 30;
     private final Object lock;
     @Autowired
     private ServerFileCopyInit init;
@@ -59,16 +58,16 @@ public class ServerFileCopy extends AbstractLoggable implements ApplicationConte
     private volatile boolean close;
     @Setter
     private ApplicationContext applicationContext;
-    private ThreadPoolExecutor fileCopyExec;
+    private final ThreadPoolExecutor fileCopyExec;
 
     /**
      * 已放入线程池中执行的任务
      */
-    private Map<String, CopyTask> execTaskMap;
+    private final Map<String, CopyTask> execTaskMap;
     /**
      * 任务列表
      */
-    private Map<String, CopyTask> taskMap;
+    private final Map<String, CopyTask> taskMap;
 
     public ServerFileCopy() {
         close = false;
@@ -79,8 +78,8 @@ public class ServerFileCopy extends AbstractLoggable implements ApplicationConte
                 .namingPattern("server-%d-task-")
                 .uncaughtExceptionHandler(new ExecExceptionsHandler(this))
                 .build();
-        fileCopyExec = new ThreadPoolExecutor(SERVER_CORE_POOL_SIZE,
-                SERVER_MAX_POOL_SIZE, 0L, TimeUnit.MILLISECONDS,
+        fileCopyExec = new ThreadPoolExecutor(InitCopyContext.SERVER_CORE_POOL_SIZE,
+                InitCopyContext.SERVER_MAX_POOL_SIZE, 0L, TimeUnit.MILLISECONDS,
                 new LinkedBlockingQueue<Runnable>(200),
                 executorThreadFactory,
                 new ThreadPoolExecutor.AbortPolicy());
@@ -88,16 +87,18 @@ public class ServerFileCopy extends AbstractLoggable implements ApplicationConte
 
     /**
      * 先根据包信息来确定属于哪个任务。
+     * 如任务已被停止，则直接返回
      *
      * @param data 数据包
-     * @throws TaskFailException 当前任务停止时，抛出异常
      */
-    public void resolverPack(byte[] data) throws TaskFailException {
+    @Override
+    public void handle(byte[] data) {
         String taskId = takeTaskId(data);
 
         synchronized (lock) {
             if (close) {
-                throw new TaskFailException("FileCopy already shutdown.");
+                logger.error("FileCopy already shutdown.");
+                return;
             }
             if (execTaskMap.containsKey(taskId)) {
                 execTaskMap.get(taskId).addPack(data);
@@ -206,11 +207,12 @@ public class ServerFileCopy extends AbstractLoggable implements ApplicationConte
         return new String(data, 0, InitCopyContext.UUID_LEN, InitCopyContext.CHARSET);
     }
 
-    protected class CopyTask implements Runnable, Closeable {
+    class CopyTask implements Runnable, Closeable {
         private final List<byte[]> packs;
         private final Object lock;
-        private Resolver syncAllResolver, syncDiffResolver;
-        private String taskId;
+        private final Resolver syncAllResolver;
+        private final Resolver syncDiffResolver;
+        private final String taskId;
         /**
          * pause 表示当前拷贝任务处于挂起状态，等待源端传包
          * shutdown 表示当前任务已被关闭
@@ -220,8 +222,8 @@ public class ServerFileCopy extends AbstractLoggable implements ApplicationConte
         /**
          * 调试代码
          */
-        private AtomicInteger wait = new AtomicInteger(0);
-        private AtomicInteger notify = new AtomicInteger(0);
+        private final AtomicInteger wait = new AtomicInteger(0);
+        private final AtomicInteger notify = new AtomicInteger(0);
 
         /**
          * @param taskId     任务Id

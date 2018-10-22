@@ -1,7 +1,5 @@
 package cn.com.unary.initcopy.service.taskupdater;
 
-import api.UnaryTransferClient;
-import cn.com.unary.initcopy.InitCopyContext;
 import cn.com.unary.initcopy.common.AbstractLoggable;
 import cn.com.unary.initcopy.dao.FileManager;
 import cn.com.unary.initcopy.entity.Constants;
@@ -37,8 +35,6 @@ public class ClientTaskUpdater extends AbstractLoggable {
     private FileManager fm;
     @Autowired
     private ClientFileCopy fileCopy;
-    @Autowired
-    private InitCopyContext context;
 
     public void delete(DeleteTask task) throws TaskFailException {
         // 停止源端同步任务
@@ -64,8 +60,8 @@ public class ClientTaskUpdater extends AbstractLoggable {
         Constants.UpdateType updateType;
         switch (task.getModifyType()) {
             case SPEED_LIMIT:
-                UnaryTransferClient client = fileCopy.getTransferMap().get(task.getTaskId());
-                client.setSpeedLimit(task.getSpeedLimit());
+                // TransmitClientAdapter client = fileCopy.getTransferMap().get(task.getTaskId())
+                // TODO speed limit
                 return;
             case START:
                 updateType = Constants.UpdateType.RESUME;

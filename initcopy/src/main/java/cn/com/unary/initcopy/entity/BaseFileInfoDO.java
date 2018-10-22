@@ -23,4 +23,16 @@ public class BaseFileInfoDO implements Serializable {
     private String fullName;
     private String checkSum;
     private String backUpPath;
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof BaseFileInfoDO) {
+            return ((BaseFileInfoDO) obj).getFileId().equals(this.getFileId());
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return this.getFileId().hashCode();
+    }
 }

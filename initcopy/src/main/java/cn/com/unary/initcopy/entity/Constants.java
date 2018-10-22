@@ -40,7 +40,7 @@ public final class Constants {
          */
         RSYNC_JAVA(0x02),
         ;
-        private byte value;
+        private final byte value;
 
         PackerType(int b) {
             value = (byte) b;

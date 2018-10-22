@@ -22,8 +22,8 @@ import java.nio.file.StandardOpenOption;
 @Scope("prototype")
 public class JavaNioFileOutput extends AbstractFileOutput {
 
-    protected String currentFileName;
-    protected FileChannel currentFileChannel;
+    private String currentFileName;
+    private FileChannel currentFileChannel;
 
     @Override
     public int write(byte[] data) throws IOException {

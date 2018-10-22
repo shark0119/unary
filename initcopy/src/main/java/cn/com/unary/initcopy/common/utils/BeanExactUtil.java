@@ -4,6 +4,7 @@ import cn.com.unary.initcopy.entity.BaseFileInfoDO;
 import cn.com.unary.initcopy.entity.Constants;
 import cn.com.unary.initcopy.entity.FileInfoDO;
 import cn.com.unary.initcopy.entity.SyncTaskDO;
+import cn.com.unary.initcopy.entity.TransmitParams;
 import cn.com.unary.initcopy.grpc.entity.BaseFileInfo;
 import cn.com.unary.initcopy.grpc.entity.ClientInitReq;
 import cn.com.unary.initcopy.grpc.entity.SyncTask;
@@ -152,5 +153,14 @@ public class BeanExactUtil {
             taskDO.setFileSizeMap(fileSizeMap);
         }
         return taskDO;
+    }
+    public static TransmitParams takeFromTaskDO (SyncTaskDO taskDO) {
+        TransmitParams params = new TransmitParams();
+        params.setSpeedLimit(taskDO.getSpeedLimit());
+        params.setCompressType(taskDO.getCompressType());
+        params.setEncryptType(taskDO.getEncryptType());
+        params.setIp(taskDO.getIp());
+        params.setPort(taskDO.getTransferPort());
+        return params;
     }
 }

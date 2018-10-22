@@ -20,8 +20,8 @@ import java.io.Closeable;
  */
 public class InitCopyGrpcClient extends AbstractLoggable implements Closeable {
 
-    private InitCopyGrpc.InitCopyBlockingStub blockingStub;
-    private ManagedChannel channel;
+    private final InitCopyGrpc.InitCopyBlockingStub blockingStub;
+    private final ManagedChannel channel;
 
     /**
      * 配置 GRPC 服务的相关信息

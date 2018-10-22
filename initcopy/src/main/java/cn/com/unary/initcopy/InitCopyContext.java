@@ -1,13 +1,17 @@
 package cn.com.unary.initcopy;
 
-import api.UnaryTransferServer;
+import cn.com.unary.initcopy.adapter.TransmitServerAdapter;
 import cn.com.unary.initcopy.common.AbstractLoggable;
 import cn.com.unary.initcopy.common.ExecExceptionsHandler;
 import cn.com.unary.initcopy.grpc.GrpcServiceStarter;
+import cn.com.unary.initcopy.service.filecopy.ServerFileCopy;
 import io.grpc.BindableService;
+import lombok.Setter;
 import org.apache.commons.lang3.concurrent.BasicThreadFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -32,14 +36,14 @@ import java.util.concurrent.TimeUnit;
  */
 @Component("InitCopyContext")
 @Scope("singleton")
-public class InitCopyContext extends AbstractLoggable implements Closeable {
+public class InitCopyContext extends AbstractLoggable implements Closeable, ApplicationContextAware {
     public static final int TASK_NUMBER = 10;
     public static final Charset CHARSET = StandardCharsets.UTF_8;
-    public static int UUID_LEN;
+    public static final int MAX_PACK_SIZE = 8 * 1024 * 1024;
+    public static final int SERVER_CORE_POOL_SIZE = 2;
+    public static final int SERVER_MAX_POOL_SIZE = 30;
+    public static final int UUID_LEN = UUID.randomUUID().toString().getBytes(InitCopyContext.CHARSET).length;
 
-    static {
-        UUID_LEN = UUID.randomUUID().toString().getBytes(InitCopyContext.CHARSET).length;
-    }
     private final Object lock;
     /**
      * 面向外部 GRPC 服务监听的端口
@@ -58,13 +62,15 @@ public class InitCopyContext extends AbstractLoggable implements Closeable {
     private GrpcServiceStarter clientStarter;
     private GrpcServiceStarter serverStarter;
     @Autowired
-    private UnaryTransferServer uts;
+    private TransmitServerAdapter server;
     @Autowired
     @Qualifier("InitCopyGrpcImpl")
     private BindableService icGrpcService;
     @Autowired
     @Qualifier("ControlTaskGrpcService")
     private BindableService ctGrpcService;
+    @Setter
+    private ApplicationContext applicationContext;
 
     public InitCopyContext() {
         lock = new Object();
@@ -109,7 +115,7 @@ public class InitCopyContext extends AbstractLoggable implements Closeable {
     @PreDestroy
     @Override
     public void close() throws IOException {
-        uts.stopServer();
+        server.close();
         exec.shutdownNow();
         if (clientStarter != null) {
             clientStarter.close();
@@ -137,13 +143,13 @@ public class InitCopyContext extends AbstractLoggable implements Closeable {
     }
 
     private InitCopyContext serverInit() {
+        final ServerFileCopy fileCopy = applicationContext.getBean("ServerFileCopy", ServerFileCopy.class);
         // 启动和初始化传输模块（目标端）
         exec.execute(new Runnable() {
             @Override
             public void run() {
                 try {
-                    uts.startServer(getTransPort());
-                    // uts.setProcess(process)
+                    server.start(getTransPort(), fileCopy);
                 } catch (IOException e) {
                     throw new IllegalStateException(e);
                 }

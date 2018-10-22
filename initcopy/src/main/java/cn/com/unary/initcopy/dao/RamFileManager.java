@@ -24,8 +24,8 @@ public class RamFileManager extends AbstractLoggable implements FileManager {
     /**
      * key : fileId, field: 文件信息实体
      */
-    private Map<String, FileInfoDO> fiMap;
-    private Map<String, SyncTaskDO> taskMap;
+    private final Map<String, FileInfoDO> fiMap;
+    private final Map<String, SyncTaskDO> taskMap;
 
     public RamFileManager() {
         fiMap = new ConcurrentHashMap<>(InitCopyContext.TASK_NUMBER);

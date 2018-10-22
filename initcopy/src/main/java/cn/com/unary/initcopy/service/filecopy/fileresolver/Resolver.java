@@ -41,6 +41,7 @@ public interface Resolver extends Closeable {
      * 设置目标端备份的路径。当备份时有多个目标路径，则不用设置。
      *
      * @param backUpPath 备份路径
+     * @return 当前对象
      */
     Resolver setBackUpPath(String backUpPath);
 }

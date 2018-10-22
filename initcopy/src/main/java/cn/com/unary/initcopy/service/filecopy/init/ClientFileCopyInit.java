@@ -1,6 +1,5 @@
 package cn.com.unary.initcopy.service.filecopy.init;
 
-import api.UnaryTransferClient;
 import cn.com.unary.initcopy.InitCopyContext;
 import cn.com.unary.initcopy.common.AbstractLoggable;
 import cn.com.unary.initcopy.common.utils.BeanExactUtil;
@@ -30,7 +29,9 @@ import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -58,22 +59,17 @@ public class ClientFileCopyInit extends AbstractLoggable {
      * 差异复制时需要等待服务端确认核对后再返回
      *
      * @param task          同步任务的相关配置信息
-     * @param diffFileInfos 差异文件数据，由初始化模块接收到后，传入其中
+     * @param diffFileInfoList 差异文件数据，由初始化模块接收到后，传入其中
      * @return 待同步的文件Id集合
      * @throws IOException      IO错误
      * @throws RuntimeException Grpc 服务调用错误。
      */
-    public List<String> startInit(UnaryTransferClient transferClient, final SyncTask task,
-                                  final List<DiffFileInfo> diffFileInfos)
+    public Set<String> startInit(final SyncTask task,
+                                 final List<DiffFileInfo> diffFileInfoList)
             throws IOException, InfoPersistenceException {
         logger.debug("Start init.");
-        transferClient.setSpeedLimit(task.getSpeedLimit());
-        transferClient.setCompressType(task.getCompressType());
-        transferClient.setEncryptType(task.getEncryptType());
-
-        logger.debug("Set transfer option done. Start to traversing files.");
         List<FileInfoDO> syncFiles = traversingFiles(task.getFilesList(), task.getTargetDirsList());
-        List<String> syncFileIds = new ArrayList<>(syncFiles.size());
+        Set<String> syncFileIds = new HashSet<>(syncFiles.size());
         String taskId = task.getTaskId();
         for (FileInfoDO fi : syncFiles) {
             syncFileIds.add(fi.getFileId());
@@ -102,7 +98,7 @@ public class ClientFileCopyInit extends AbstractLoggable {
         logger.debug("Try to init according sync type.");
         switch (task.getSyncType()) {
             case SYNC_DIFF:
-                syncFileIds = syncDiffInit(builder, grpcClient, diffFileInfos);
+                syncFileIds = syncDiffInit(builder, grpcClient, diffFileInfoList);
                 break;
             case SYNC_ALL:
                 // sync all as default option
@@ -120,21 +116,21 @@ public class ClientFileCopyInit extends AbstractLoggable {
      *
      * @param builder               初始化请求的 Builder
      * @param controlTaskGrpcClient 和控制任务 GRPC 通讯的客户端
-     * @param diffFileInfos         从目标端收到的文件同步差异信息数据
+     * @param diffFileInfoList         从目标端收到的文件同步差异信息数据
      * @return 目标端确认后的待同步文件列表
      */
-    private List<String> syncDiffInit(ClientInitReq.Builder builder,
+    private Set<String> syncDiffInit(ClientInitReq.Builder builder,
                                       ControlTaskGrpcClientPool.ControlTaskGrpcClient controlTaskGrpcClient,
-                                      List<DiffFileInfo> diffFileInfos) {
+                                      List<DiffFileInfo> diffFileInfoList) {
         builder.setSyncType(SyncType.SYNC_DIFF);
         ServerInitResp resp = controlTaskGrpcClient.invokeGrpcInit(builder.build());
         if (!resp.getExecResult().getHealthy()) {
             throw new IllegalStateException("ERROR 0x07 : Server intern Error." + resp.getExecResult().getMsg());
         }
-        diffFileInfos.addAll(resp.getDiffFileInfosList());
+        diffFileInfoList.addAll(resp.getDiffFileInfosList());
 
-        List<String> list = new ArrayList<>();
-        for (DiffFileInfo dfi : diffFileInfos) {
+        HashSet<String> list = new HashSet<>(diffFileInfoList.size());
+        for (DiffFileInfo dfi : diffFileInfoList) {
             list.add(dfi.getFileId());
         }
         return list;
@@ -153,7 +149,7 @@ public class ClientFileCopyInit extends AbstractLoggable {
         Path path;
         String backUpPath = "";
         boolean isMultiMap = backUpPaths.size() > 1;
-        final List<FileInfoDO> fileInfos = new ArrayList<>();
+        final List<FileInfoDO> fileInfoList = new ArrayList<>();
 
         for (int i = 0; i < files.size(); i++) {
             if (isMultiMap) {
@@ -164,10 +160,14 @@ public class ClientFileCopyInit extends AbstractLoggable {
             Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
                 @Override
                 public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) {
-                    if (dir.toFile().list().length == 0) {
+                    File dirFile = dir.toFile();
+                    if (dir.toFile() == null || dir.toFile().list() == null) {
+                        return FileVisitResult.CONTINUE;
+                    }
+                    if (dirFile.list().length == 0) {
                         FileInfoDO fileInfo = takeFromFile(dir.toFile());
                         fileInfo.setBackUpPath(tempBackUpPath);
-                        fileInfos.add(fileInfo);
+                        fileInfoList.add(fileInfo);
                     }
                     return FileVisitResult.CONTINUE;
                 }
@@ -176,12 +176,12 @@ public class ClientFileCopyInit extends AbstractLoggable {
                 public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
                     FileInfoDO fileInfo = takeFromFile(file.toFile());
                     fileInfo.setBackUpPath(tempBackUpPath);
-                    fileInfos.add(fileInfo);
+                    fileInfoList.add(fileInfo);
                     return FileVisitResult.CONTINUE;
                 }
             });
         }
-        return fileInfos;
+        return fileInfoList;
     }
 
     private FileInfoDO takeFromFile(File file) {

@@ -2,6 +2,7 @@ package cn.com.unary.initcopy.entity;
 
 import cn.com.unary.initcopy.entity.Constants.FileType;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
@@ -47,14 +48,6 @@ public class FileInfoDO extends BaseFileInfoDO {
         return this.state;
     }
 
-    @Override
-    public boolean equals(Object obj) {
-        if (obj instanceof FileInfoDO) {
-            return ((FileInfoDO) obj).getFileId().equals(this.getFileId());
-        }
-        return false;
-    }
-
     public enum STATE {
         /**
          * 等待同步
@@ -71,7 +64,7 @@ public class FileInfoDO extends BaseFileInfoDO {
     }
 
     public static class FileAttr {
-        private boolean isHidden;
+        private boolean hidden;
         private String owner;
 
         public String getOwner() {
@@ -83,16 +76,16 @@ public class FileInfoDO extends BaseFileInfoDO {
         }
 
         public boolean isHidden() {
-            return isHidden;
+            return hidden;
         }
 
         public void setHidden(boolean isHidden) {
-            this.isHidden = isHidden;
+            this.hidden = isHidden;
         }
 
         @Override
         public String toString() {
-            return "FileAttr [isHidden=" + isHidden + ", owner=" + owner + "]";
+            return "FileAttr [hidden=" + hidden + ", owner=" + owner + "]";
         }
     }
 }

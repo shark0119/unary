@@ -10,7 +10,7 @@ import java.io.Closeable;
  */
 public class ExecExceptionsHandler extends AbstractLoggable implements Thread.UncaughtExceptionHandler {
 
-    private Closeable resource;
+    private final Closeable resource;
 
     public ExecExceptionsHandler(Closeable closeable) {
         this.resource = closeable;

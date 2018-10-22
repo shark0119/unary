@@ -23,7 +23,7 @@ public class Md5FileUtil extends AbstractLoggable {
 	/**
 	 * 默认的密码字符串组合，用来将字节转换成 16 进制表示的字符,apache校 验下载的文件的正确性用的就是默认的这个组合
 	 */
-	protected final static char[] hexDigits = {
+	protected final static char[] HEX_DIGITS = {
 			'0', '1', '2', '3', '4', '5', '6', '7', 
 			'8', '9', 'a', 'b', 'c', 'd', 'e', 'f' };
 
@@ -79,9 +79,9 @@ public class Md5FileUtil extends AbstractLoggable {
 	 */
 	private static void appendHexPair(byte bt, StringBuffer stringbuffer) {
 		// 取字节中高 4 位的数字转换, >>> 为逻辑右移，将符号位一起右移,此处未发现两种符号有何不同
-		char c0 = hexDigits[(bt & 0xf0) >> 4];
+		char c0 = HEX_DIGITS[(bt & 0xf0) >> 4];
 		// 取字节中低 4 位的数字转换
-		char c1 = hexDigits[bt & 0xf];
+		char c1 = HEX_DIGITS[bt & 0xf];
 		stringbuffer.append(c0);
 		stringbuffer.append(c1);
 	}

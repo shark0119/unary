@@ -9,8 +9,10 @@ http://maven.apache.org/maven-v4_0_0.xsd">
         <version>1.0</version>
     </parent>
     <artifactId>initcopy</artifactId>
+    <version>1.1</version>
     <packaging>jar</packaging>
     <name>init copy provide rpc service to COPY</name>
+    <description>与传输模块整合完毕，待测试</description>
 
     <dependencies>
         <dependency>
@@ -39,9 +41,9 @@ http://maven.apache.org/maven-v4_0_0.xsd">
             <version>1.1.10</version>
         </dependency>
         <dependency>
-            <groupId>cn.com.unary</groupId>
-            <artifactId>transfer</artifactId>
-            <version>1.0</version>
+            <groupId>Transmit</groupId>
+            <artifactId>Transmit</artifactId>
+            <version>1.0.0</version>
         </dependency>
 
         <!-- Implements from parent project below -->

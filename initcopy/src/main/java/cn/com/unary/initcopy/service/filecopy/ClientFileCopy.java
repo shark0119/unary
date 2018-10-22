@@ -1,14 +1,13 @@
 package cn.com.unary.initcopy.service.filecopy;
 
-import api.UnaryTransferClient;
 import cn.com.unary.initcopy.InitCopyContext;
+import cn.com.unary.initcopy.adapter.TransmitClientAdapter;
 import cn.com.unary.initcopy.common.AbstractLoggable;
 import cn.com.unary.initcopy.common.ExecExceptionsHandler;
 import cn.com.unary.initcopy.common.utils.BeanExactUtil;
 import cn.com.unary.initcopy.dao.FileManager;
 import cn.com.unary.initcopy.entity.Constants;
 import cn.com.unary.initcopy.entity.FileInfoDO;
-import cn.com.unary.initcopy.entity.SyncTaskDO;
 import cn.com.unary.initcopy.exception.InfoPersistenceException;
 import cn.com.unary.initcopy.exception.TaskFailException;
 import cn.com.unary.initcopy.grpc.entity.DiffFileInfo;
@@ -33,6 +32,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -56,12 +56,12 @@ public class ClientFileCopy extends AbstractLoggable implements ApplicationConte
     @Qualifier("clientFM")
     private FileManager fm;
     private boolean close;
-    private ThreadPoolExecutor exec;
+    private final ThreadPoolExecutor exec;
     @Setter
     private ApplicationContext applicationContext;
     @Getter
-    private Map<String, UnaryTransferClient> transferMap;
-    private Map<String, PackTask> execTaskMap;
+    private Map<String, TransmitClientAdapter> transferMap;
+    private final Map<String, PackTask> execTaskMap;
 
     public ClientFileCopy() {
         ThreadFactory executorThreadFactory = new BasicThreadFactory.Builder()
@@ -95,12 +95,8 @@ public class ClientFileCopy extends AbstractLoggable implements ApplicationConte
                 break;
             case RESUME:
             default:
-                SyncTaskDO task = fm.queryTask(taskId);
-                UnaryTransferClient unaryTransferClient = applicationContext.getBean(UnaryTransferClient.class);
-                unaryTransferClient.setCompressType(task.getCompressType());
-                unaryTransferClient.setEncryptType(task.getEncryptType());
-                unaryTransferClient.setSpeedLimit(task.getSpeedLimit());
-                startAllSync(unaryTransferClient, taskId);
+                TransmitClientAdapter transmitClient = applicationContext.getBean(TransmitClientAdapter.class);
+                startAllSync(transmitClient, taskId);
                 break;
         }
     }
@@ -121,22 +117,18 @@ public class ClientFileCopy extends AbstractLoggable implements ApplicationConte
                 }
             }
             logger.debug("Start File Copy Init.");
-            UnaryTransferClient unaryTransferClient = applicationContext.getBean(UnaryTransferClient.class);
+            TransmitClientAdapter transmitClient = applicationContext.getBean(TransmitClientAdapter.class);
             synchronized (lock) {
-                transferMap.put(task.getTaskId(), unaryTransferClient);
+                transferMap.put(task.getTaskId(), transmitClient);
             }
-            List<DiffFileInfo> diffFileInfos = new ArrayList<>();
-            List<String> syncFileIds = init.startInit(unaryTransferClient, task, diffFileInfos);
+            List<DiffFileInfo> diffFileInfoList = new ArrayList<>();
+            Set<String> syncFileIds = init.startInit(task, diffFileInfoList);
             logger.debug(String.format("Got %d diff file info and %d file ids.",
-                    diffFileInfos.size(), syncFileIds.size()));
+                    diffFileInfoList.size(), syncFileIds.size()));
             List<FileInfoDO> list1 = fm.queryByTaskId(task.getTaskId());
-            Map<String, String> map = new HashMap<>(100);
-            for (String id : syncFileIds) {
-                map.put(id, "");
-            }
             FileInfoDO infoDO;
             for (FileInfoDO fi : list1) {
-                if (map.containsKey(fi.getFileId())) {
+                if (syncFileIds.contains(fi.getFileId())) {
                     infoDO = BeanExactUtil.readFromBaseFileInfo(fi);
                     infoDO.setTaskId(task.getTaskId());
                     fm.save(infoDO);
@@ -149,11 +141,11 @@ public class ClientFileCopy extends AbstractLoggable implements ApplicationConte
             switch (task.getSyncType()) {
                 // 差异复制
                 case SYNC_DIFF:
-                    startDiffSync(unaryTransferClient, task.getTaskId(), diffFileInfos);
+                    startDiffSync(transmitClient, task.getTaskId(), diffFileInfoList);
                     break;
                 case SYNC_ALL:
                 default:
-                    startAllSync(unaryTransferClient, task.getTaskId());
+                    startAllSync(transmitClient, task.getTaskId());
                     break;
             }
         } catch (IOException | InfoPersistenceException e) {
@@ -170,13 +162,13 @@ public class ClientFileCopy extends AbstractLoggable implements ApplicationConte
      *
      * @param unaryTransferClient 传输模块
      * @param taskId              任务Id作为当前线程名
-     * @param diffFileInfos       差异文件数据集合
+     * @param diffFileInfoList       差异文件数据集合
      */
-    private void startDiffSync(UnaryTransferClient unaryTransferClient, String taskId,
-                               final List<DiffFileInfo> diffFileInfos) {
+    private void startDiffSync(TransmitClientAdapter unaryTransferClient, String taskId,
+                               final List<DiffFileInfo> diffFileInfoList) {
         final SyncDiffPacker syncDiffPacker =
                 applicationContext.getBean("RsyncPacker", SyncDiffPacker.class);
-        syncDiffPacker.setFileDiffInfos(diffFileInfos);
+        syncDiffPacker.setFileDiffInfos(diffFileInfoList);
         final PackTask packTask = new PackTask(taskId, syncDiffPacker, unaryTransferClient);
         synchronized (lock) {
             execTaskMap.put(taskId, packTask);
@@ -187,13 +179,13 @@ public class ClientFileCopy extends AbstractLoggable implements ApplicationConte
     /**
      * 开启一个全复制的任务
      *
-     * @param unaryTransferClient 传输模块
+     * @param client 传输模块
      * @param taskId              任务Id作为当前线程名
      */
-    private void startAllSync(UnaryTransferClient unaryTransferClient, String taskId) {
+    private void startAllSync(TransmitClientAdapter client, String taskId) {
         final Packer syncAllPacker =
                 applicationContext.getBean("SyncAllPacker", Packer.class);
-        final PackTask packTask = new PackTask(taskId, syncAllPacker, unaryTransferClient);
+        final PackTask packTask = new PackTask(taskId, syncAllPacker, client);
         synchronized (lock) {
             execTaskMap.put(taskId, packTask);
         }
@@ -210,7 +202,7 @@ public class ClientFileCopy extends AbstractLoggable implements ApplicationConte
             }
             // 关闭相应的传输模块
             for (String key : transferMap.keySet()) {
-                transferMap.get(key).stopClient();
+                transferMap.get(key).close();
             }
             execTaskMap.clear();
             transferMap.clear();
@@ -218,13 +210,13 @@ public class ClientFileCopy extends AbstractLoggable implements ApplicationConte
         }
     }
 
-    protected class PackTask implements Runnable, Closeable {
+    class PackTask implements Runnable, Closeable {
 
-        private String taskId;
-        private Packer packer;
-        private UnaryTransferClient transfer;
+        private final String taskId;
+        private final Packer packer;
+        private final TransmitClientAdapter transfer;
 
-        private PackTask(String taskId, Packer packer, UnaryTransferClient transfer) {
+        private PackTask(String taskId, Packer packer, TransmitClientAdapter transfer) {
             this.taskId = taskId;
             this.packer = packer;
             this.transfer = transfer;

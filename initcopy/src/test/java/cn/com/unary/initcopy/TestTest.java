@@ -1,5 +1,6 @@
 package cn.com.unary.initcopy;
 
+import cn.com.unary.initcopy.entity.FileInfoDO;
 import lombok.Getter;
 import lombok.Setter;
 import org.junit.Test;
@@ -86,7 +87,11 @@ public class TestTest {
 
     @Test
     public void test5() {
-        System.out.println(2 / 0);
+        FileInfoDO f1 = new FileInfoDO();
+        f1.setFileId("12");
+        FileInfoDO f2 = new FileInfoDO();
+        f2.setFileId("12");
+        System.out.println(f1.hashCode() == f2.hashCode());
     }
 
     private static class Task implements Runnable {

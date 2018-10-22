@@ -1,6 +1,6 @@
 package cn.com.unary.initcopy.service.filecopy.filepacker;
 
-import api.UnaryTransferClient;
+import cn.com.unary.initcopy.adapter.TransmitClientAdapter;
 import cn.com.unary.initcopy.common.utils.ValidateUtils;
 import cn.com.unary.initcopy.dao.FileManager;
 import cn.com.unary.initcopy.entity.Constants.PackerType;
@@ -37,15 +37,15 @@ public class RsyncPacker implements SyncDiffPacker {
     private AbstractFileInput afi;
     @Autowired
     private FileManager fm;
-    private UnaryTransferClient unaryTransferClient;
+    private TransmitClientAdapter transmitClient;
 
     private boolean ready = false;
 
     @Override
-    public void start(String taskId, UnaryTransferClient transfer) throws InfoPersistenceException {
+    public void start(String taskId, TransmitClientAdapter transfer) throws InfoPersistenceException {
         Objects.requireNonNull(transfer);
         if (ready) {
-            this.unaryTransferClient = transfer;
+            this.transmitClient = transfer;
             for (FileInfoDO fi : fm.queryByTaskId(taskId)) {
                 fiMap.put(fi.getFileId(), fi);
             }

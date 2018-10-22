@@ -1,8 +1,9 @@
 package cn.com.unary.initcopy.service.filecopy.filepacker;
 
-import api.UnaryTransferClient;
 import cn.com.unary.initcopy.InitCopyContext;
+import cn.com.unary.initcopy.adapter.TransmitClientAdapter;
 import cn.com.unary.initcopy.common.AbstractLoggable;
+import cn.com.unary.initcopy.common.utils.BeanExactUtil;
 import cn.com.unary.initcopy.common.utils.CommonUtils;
 import cn.com.unary.initcopy.dao.FileManager;
 import cn.com.unary.initcopy.entity.Constants;
@@ -12,6 +13,7 @@ import cn.com.unary.initcopy.entity.SyncTaskDO;
 import cn.com.unary.initcopy.exception.InfoPersistenceException;
 import cn.com.unary.initcopy.service.filecopy.io.AbstractFileInput;
 import com.alibaba.fastjson.JSON;
+import com.una.common.TransmitException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
@@ -81,7 +83,7 @@ public class SyncAllPacker extends AbstractLoggable implements Packer {
     /**
      * 每个包的大小
      */
-    public final static int PACK_SIZE = UnaryTransferClient.MAX_PACK_SIZE;
+    public final static int PACK_SIZE = InitCopyContext.MAX_PACK_SIZE;
     private final static int BUFFER_DIRECT_LIMIT = 16 * 1024 * 1024;
 
     /**
@@ -93,11 +95,10 @@ public class SyncAllPacker extends AbstractLoggable implements Packer {
     @Autowired
     @Qualifier("clientFM")
     private FileManager fm;
-    private UnaryTransferClient transfer;
+    private TransmitClientAdapter transfer;
     /**
      * ----我是另外一只分界线，以下是自定义全局变量----
-     */
-    /**
+     *
      * 待读取的文件列表
      */
     private Iterator<FileInfoDO> fiIterator;
@@ -136,7 +137,7 @@ public class SyncAllPacker extends AbstractLoggable implements Packer {
      * @throws InfoPersistenceException 持久化层异常
      */
     @Override
-    public void start(String taskId, UnaryTransferClient transfer)
+    public void start(String taskId, TransmitClientAdapter transfer)
             throws IOException, InfoPersistenceException {
         this.taskId = taskId.getBytes(InitCopyContext.CHARSET);
         this.transfer = transfer;
@@ -144,7 +145,7 @@ public class SyncAllPacker extends AbstractLoggable implements Packer {
         fiIterator = list.iterator();
         byte[] packData;
         SyncTaskDO task = fm.queryTask(taskId);
-        transfer.startClient(task.getIp(), task.getTransferPort());
+        transfer.start(BeanExactUtil.takeFromTaskDO(task));
         while (true) {
             try {
                 packData = CommonUtils.extractBytes(pack());
@@ -158,7 +159,11 @@ public class SyncAllPacker extends AbstractLoggable implements Packer {
                 break;
             }
             logger.debug(String.format("Pass %d bytes to Transfer.", packData.length));
-            this.transfer.sendData(packData);
+            try {
+                this.transfer.sendData(packData);
+            } catch (TransmitException e) {
+                throw new IOException(e);
+            }
         }
     }
 
@@ -172,15 +177,7 @@ public class SyncAllPacker extends AbstractLoggable implements Packer {
             return ByteBuffer.allocate(0);
         }
         ByteBuffer buffer;
-        if (PACK_SIZE < BUFFER_DIRECT_LIMIT) {
-            try {
-                buffer = ByteBuffer.allocate(PACK_SIZE);
-            } catch (Throwable e) {
-                throw e;
-            }
-        } else {
-            buffer = ByteBuffer.allocateDirect(PACK_SIZE);
-        }
+        buffer = ByteBuffer.allocate(PACK_SIZE);
         // Set TaskId 4 bytes, PackIndex 4 bytes, PackType 1 byte.
         buffer.put(taskId);
         buffer.putInt(++packIndex);
@@ -228,11 +225,7 @@ public class SyncAllPacker extends AbstractLoggable implements Packer {
             logger.debug(String.format("Got next file:%s. Ser to json.", currentFileInfo.getFileId()));
             try {
                 byte[] fileInfoJsonBytes = JSON.toJSONBytes(currentFileInfo);
-                try {
-                    fileInfoBuffer = ByteBuffer.allocate(fileInfoJsonBytes.length + FILE_INFO_LENGTH);
-                } catch (Exception e) {
-                    throw e;
-                }
+                fileInfoBuffer = ByteBuffer.allocate(fileInfoJsonBytes.length + FILE_INFO_LENGTH);
                 // set file info size and file info
                 fileInfoBuffer.putInt(fileInfoJsonBytes.length);
                 fileInfoBuffer.put(fileInfoJsonBytes);
@@ -284,7 +277,7 @@ public class SyncAllPacker extends AbstractLoggable implements Packer {
         if (input != null) {
             input.close();
         }
-        transfer.stopClient();
+        transfer.close();
         pause = true;
     }
 }
