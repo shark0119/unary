@@ -11,12 +11,11 @@ public interface ClientInitReqOrBuilder extends
    * <code>optional string taskId = 1;</code>
    */
   java.lang.String getTaskId();
-
-    /**
-     * <code>optional string taskId = 1;</code>
-     */
-    com.google.protobuf.ByteString
-    getTaskIdBytes();
+  /**
+   * <code>optional string taskId = 1;</code>
+   */
+  com.google.protobuf.ByteString
+      getTaskIdBytes();
 
   /**
    * <pre>
@@ -34,7 +33,7 @@ public interface ClientInitReqOrBuilder extends
    * <code>optional string totalSize = 2;</code>
    */
   com.google.protobuf.ByteString
-  getTotalSizeBytes();
+      getTotalSizeBytes();
 
   /**
    * <pre>
@@ -44,16 +43,15 @@ public interface ClientInitReqOrBuilder extends
    * <code>optional string backUpPath = 3;</code>
    */
   java.lang.String getBackUpPath();
-
-    /**
-     * <pre>
-     * 备份的目标端路径
-     * </pre>
-     *
-     * <code>optional string backUpPath = 3;</code>
+  /**
+   * <pre>
+   * 备份的目标端路径
+   * </pre>
+   *
+   * <code>optional string backUpPath = 3;</code>
    */
   com.google.protobuf.ByteString
-  getBackUpPathBytes();
+      getBackUpPathBytes();
 
   /**
    * <pre>

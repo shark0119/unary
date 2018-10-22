@@ -35,8 +35,8 @@ public final class IC_Service {
       "nitcopy.grpc.entity.ExecResult\"\000\022h\n\006Modi",
       "fy\022-.cn.com.unary.initcopy.grpc.entity.M" +
       "odifyTask\032-.cn.com.unary.initcopy.grpc.e" +
-              "ntity.ExecResult\"\000B*\n\032cn.com.unary.initc" +
-              "opy.grpcB\nIC_ServiceP\001b\006proto3"
+      "ntity.ExecResult\"\000B*\n\032cn.com.unary.initc" +
+      "opy.grpcB\nIC_ServiceP\001b\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {

@@ -14,15 +14,29 @@ public  final class QueryTask extends
   private QueryTask(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
     super(builder);
   }
-  private QueryTask() {
-      taskId_ = "";
-  }
+  private volatile java.lang.Object taskId_;
 
   @java.lang.Override
   public final com.google.protobuf.UnknownFieldSet
   getUnknownFields() {
     return com.google.protobuf.UnknownFieldSet.getDefaultInstance();
   }
+  private QueryTask() {
+    taskId_ = "";
+  }
+  public static final com.google.protobuf.Descriptors.Descriptor
+      getDescriptor() {
+    return cn.com.unary.initcopy.grpc.entity.IC_Entity.internal_static_cn_com_unary_initcopy_grpc_entity_QueryTask_descriptor;
+  }
+
+  protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internalGetFieldAccessorTable() {
+    return cn.com.unary.initcopy.grpc.entity.IC_Entity.internal_static_cn_com_unary_initcopy_grpc_entity_QueryTask_fieldAccessorTable
+        .ensureFieldAccessorsInitialized(
+            cn.com.unary.initcopy.grpc.entity.QueryTask.class, cn.com.unary.initcopy.grpc.entity.QueryTask.Builder.class);
+  }
+
+  public static final int TASKID_FIELD_NUMBER = 1;
   private QueryTask(
       com.google.protobuf.CodedInputStream input,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -43,10 +57,10 @@ public  final class QueryTask extends
             }
             break;
           }
-            case 10: {
-                java.lang.String s = input.readStringRequireUtf8();
+          case 10: {
+            java.lang.String s = input.readStringRequireUtf8();
 
-                taskId_ = s;
+            taskId_ = s;
             break;
           }
         }
@@ -60,52 +74,37 @@ public  final class QueryTask extends
       makeExtensionsImmutable();
     }
   }
-  public static final com.google.protobuf.Descriptors.Descriptor
-      getDescriptor() {
-    return cn.com.unary.initcopy.grpc.entity.IC_Entity.internal_static_cn_com_unary_initcopy_grpc_entity_QueryTask_descriptor;
-  }
 
-  protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-      internalGetFieldAccessorTable() {
-    return cn.com.unary.initcopy.grpc.entity.IC_Entity.internal_static_cn_com_unary_initcopy_grpc_entity_QueryTask_fieldAccessorTable
-        .ensureFieldAccessorsInitialized(
-            cn.com.unary.initcopy.grpc.entity.QueryTask.class, cn.com.unary.initcopy.grpc.entity.QueryTask.Builder.class);
-  }
-
-  public static final int TASKID_FIELD_NUMBER = 1;
-    private volatile java.lang.Object taskId_;
-
-    /**
-     * <code>optional string taskId = 1;</code>
-     */
-    public java.lang.String getTaskId() {
-        java.lang.Object ref = taskId_;
-        if (ref instanceof java.lang.String) {
-            return (java.lang.String) ref;
-        } else {
-            com.google.protobuf.ByteString bs =
-                    (com.google.protobuf.ByteString) ref;
-            java.lang.String s = bs.toStringUtf8();
-            taskId_ = s;
-            return s;
-        }
+  /**
+   * <code>optional string taskId = 1;</code>
+   */
+  public java.lang.String getTaskId() {
+    java.lang.Object ref = taskId_;
+    if (ref instanceof java.lang.String) {
+      return (java.lang.String) ref;
+    } else {
+      com.google.protobuf.ByteString bs = 
+          (com.google.protobuf.ByteString) ref;
+      java.lang.String s = bs.toStringUtf8();
+      taskId_ = s;
+      return s;
     }
-
-    /**
-     * <code>optional string taskId = 1;</code>
-     */
-    public com.google.protobuf.ByteString
-    getTaskIdBytes() {
-        java.lang.Object ref = taskId_;
-        if (ref instanceof java.lang.String) {
-            com.google.protobuf.ByteString b =
-                    com.google.protobuf.ByteString.copyFromUtf8(
-                            (java.lang.String) ref);
-            taskId_ = b;
-            return b;
-        } else {
-            return (com.google.protobuf.ByteString) ref;
-        }
+  }
+  /**
+   * <code>optional string taskId = 1;</code>
+   */
+  public com.google.protobuf.ByteString
+      getTaskIdBytes() {
+    java.lang.Object ref = taskId_;
+    if (ref instanceof java.lang.String) {
+      com.google.protobuf.ByteString b = 
+          com.google.protobuf.ByteString.copyFromUtf8(
+              (java.lang.String) ref);
+      taskId_ = b;
+      return b;
+    } else {
+      return (com.google.protobuf.ByteString) ref;
+    }
   }
 
   private byte memoizedIsInitialized = -1;
@@ -120,8 +119,8 @@ public  final class QueryTask extends
 
   public void writeTo(com.google.protobuf.CodedOutputStream output)
                       throws java.io.IOException {
-      if (!getTaskIdBytes().isEmpty()) {
-          com.google.protobuf.GeneratedMessageV3.writeString(output, 1, taskId_);
+    if (!getTaskIdBytes().isEmpty()) {
+      com.google.protobuf.GeneratedMessageV3.writeString(output, 1, taskId_);
     }
   }
 
@@ -130,8 +129,8 @@ public  final class QueryTask extends
     if (size != -1) return size;
 
     size = 0;
-      if (!getTaskIdBytes().isEmpty()) {
-          size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, taskId_);
+    if (!getTaskIdBytes().isEmpty()) {
+      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, taskId_);
     }
     memoizedSize = size;
     return size;
@@ -149,8 +148,8 @@ public  final class QueryTask extends
     cn.com.unary.initcopy.grpc.entity.QueryTask other = (cn.com.unary.initcopy.grpc.entity.QueryTask) obj;
 
     boolean result = true;
-      result = result && getTaskId()
-              .equals(other.getTaskId());
+    result = result && getTaskId()
+        .equals(other.getTaskId());
     return result;
   }
 
@@ -162,7 +161,7 @@ public  final class QueryTask extends
     int hash = 41;
     hash = (19 * hash) + getDescriptorForType().hashCode();
     hash = (37 * hash) + TASKID_FIELD_NUMBER;
-      hash = (53 * hash) + getTaskId().hashCode();
+    hash = (53 * hash) + getTaskId().hashCode();
     hash = (29 * hash) + unknownFields.hashCode();
     memoizedHashCode = hash;
     return hash;
@@ -279,12 +278,7 @@ public  final class QueryTask extends
               .alwaysUseFieldBuilders) {
       }
     }
-    public Builder clear() {
-      super.clear();
-        taskId_ = "";
-
-      return this;
-    }
+    private java.lang.Object taskId_ = "";
 
     public com.google.protobuf.Descriptors.Descriptor
         getDescriptorForType() {
@@ -345,13 +339,10 @@ public  final class QueryTask extends
       }
     }
 
-    public Builder mergeFrom(cn.com.unary.initcopy.grpc.entity.QueryTask other) {
-      if (other == cn.com.unary.initcopy.grpc.entity.QueryTask.getDefaultInstance()) return this;
-        if (!other.getTaskId().isEmpty()) {
-            taskId_ = other.taskId_;
-            onChanged();
-      }
-      onChanged();
+    public Builder clear() {
+      super.clear();
+      taskId_ = "";
+
       return this;
     }
 
@@ -377,76 +368,84 @@ public  final class QueryTask extends
       return this;
     }
 
-      private java.lang.Object taskId_ = "";
-
-      /**
-       * <code>optional string taskId = 1;</code>
-       */
-      public java.lang.String getTaskId() {
-          java.lang.Object ref = taskId_;
-          if (!(ref instanceof java.lang.String)) {
-              com.google.protobuf.ByteString bs =
-                      (com.google.protobuf.ByteString) ref;
-              java.lang.String s = bs.toStringUtf8();
-              taskId_ = s;
-              return s;
-          } else {
-              return (java.lang.String) ref;
-          }
+    public Builder mergeFrom(cn.com.unary.initcopy.grpc.entity.QueryTask other) {
+      if (other == cn.com.unary.initcopy.grpc.entity.QueryTask.getDefaultInstance()) return this;
+      if (!other.getTaskId().isEmpty()) {
+        taskId_ = other.taskId_;
+        onChanged();
       }
+      onChanged();
+      return this;
+    }
 
-      /**
-       * <code>optional string taskId = 1;</code>
-       */
-      public com.google.protobuf.ByteString
-      getTaskIdBytes() {
-          java.lang.Object ref = taskId_;
-          if (ref instanceof String) {
-              com.google.protobuf.ByteString b =
-                      com.google.protobuf.ByteString.copyFromUtf8(
-                              (java.lang.String) ref);
-              taskId_ = b;
-              return b;
-          } else {
-              return (com.google.protobuf.ByteString) ref;
-          }
-      }
-
-      /**
-       * <code>optional string taskId = 1;</code>
-       */
-      public Builder setTaskId(
-              java.lang.String value) {
-          if (value == null) {
-              throw new NullPointerException();
-  }
-  
-      taskId_ = value;
-          onChanged();
-          return this;
-      }
-
-      /**
-       * <code>optional string taskId = 1;</code>
+    /**
+     * <code>optional string taskId = 1;</code>
      */
-      public Builder clearTaskId() {
-
-          taskId_ = getDefaultInstance().getTaskId();
-          onChanged();
-          return this;
+    public java.lang.String getTaskId() {
+      java.lang.Object ref = taskId_;
+      if (!(ref instanceof java.lang.String)) {
+        com.google.protobuf.ByteString bs =
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        taskId_ = s;
+        return s;
+      } else {
+        return (java.lang.String) ref;
       }
+    }
 
-      /**
-       * <code>optional string taskId = 1;</code>
-       */
-      public Builder setTaskIdBytes(
-              com.google.protobuf.ByteString value) {
-          if (value == null) {
-              throw new NullPointerException();
-          }
-          checkByteStringIsUtf8(value);
-      
+    /**
+     * <code>optional string taskId = 1;</code>
+     */
+    public Builder setTaskId(
+        java.lang.String value) {
+      if (value == null) {
+    throw new NullPointerException();
+  }
+
       taskId_ = value;
+      onChanged();
+      return this;
+    }
+
+    /**
+     * <code>optional string taskId = 1;</code>
+     */
+    public com.google.protobuf.ByteString
+        getTaskIdBytes() {
+      java.lang.Object ref = taskId_;
+      if (ref instanceof String) {
+        com.google.protobuf.ByteString b =
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        taskId_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    /**
+     * <code>optional string taskId = 1;</code>
+     */
+    public Builder setTaskIdBytes(
+        com.google.protobuf.ByteString value) {
+      if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+
+      taskId_ = value;
+      onChanged();
+      return this;
+    }
+
+    /**
+     * <code>optional string taskId = 1;</code>
+     */
+    public Builder clearTaskId() {
+
+      taskId_ = getDefaultInstance().getTaskId();
       onChanged();
       return this;
     }

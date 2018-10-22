@@ -25,10 +25,9 @@ public class InvokeGrpcTest {
         List<String> syncFiles = new ArrayList<>();
         List<String> targetDirs = new ArrayList<>();
 
-        syncFiles.add("G:\\temp\\rpc");
-        syncFiles.add("G:\\tc");
-        targetDirs.add("D:\\target\\t1");
-        targetDirs.add("D:\\target\\t2");
+        syncFiles.add("E:\\monitor1");
+        targetDirs.add("D:\\target");
+        // targetDirs.add("D:\\target\\t2");
 
         SyncTarget.Builder targetBuilder =
                 SyncTarget.newBuilder()
@@ -52,7 +51,7 @@ public class InvokeGrpcTest {
                 .build());
         System.out.println("State:" + CommonUtils.formatGrpcEntity(state));*/
         TaskState state = client.query(QueryTask.newBuilder()
-                .setTaskId("3dc9cfb0-9ce1-4b9f-a99e-ff36e51e24ba")
+                .setTaskId("98d840c1-2f96-4b8c-88fb-1993a191f763")
                 .build());
         System.out.println("State:" + CommonUtils.formatGrpcEntity(state));
         client.close();
@@ -60,7 +59,6 @@ public class InvokeGrpcTest {
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
-
             }
         }
     }

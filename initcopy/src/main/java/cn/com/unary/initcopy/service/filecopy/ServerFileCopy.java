@@ -1,7 +1,6 @@
 package cn.com.unary.initcopy.service.filecopy;
 
 import cn.com.unary.initcopy.InitCopyContext;
-import cn.com.unary.initcopy.adapter.DataHandlerAdapter;
 import cn.com.unary.initcopy.common.AbstractLoggable;
 import cn.com.unary.initcopy.common.ExecExceptionsHandler;
 import cn.com.unary.initcopy.dao.FileManager;
@@ -15,6 +14,7 @@ import cn.com.unary.initcopy.service.filecopy.fileresolver.Resolver;
 import cn.com.unary.initcopy.service.filecopy.fileresolver.RsyncResolver;
 import cn.com.unary.initcopy.service.filecopy.fileresolver.SyncAllResolver;
 import cn.com.unary.initcopy.service.filecopy.init.ServerFileCopyInit;
+import cn.com.unary.initcopy.service.transmitadapter.DataHandlerAdapter;
 import lombok.Setter;
 import org.apache.commons.lang3.concurrent.BasicThreadFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -218,7 +218,7 @@ public class ServerFileCopy extends AbstractLoggable implements DataHandlerAdapt
          * shutdown 表示当前任务已被关闭
          */
         private boolean pause, shutdown;
-        private long execTime, tempTime;
+        private long waitTime, tempTime, startTime;
         /**
          * 调试代码
          */
@@ -237,6 +237,7 @@ public class ServerFileCopy extends AbstractLoggable implements DataHandlerAdapt
             syncAllResolver.setTaskId(taskId).setBackUpPath(backUpPath);
             syncDiffResolver.setTaskId(taskId).setBackUpPath(backUpPath);
             packs = new ArrayList<>(30);
+            startTime = System.currentTimeMillis();
             lock = new Object();
             pause = false;
             shutdown = false;
@@ -248,7 +249,6 @@ public class ServerFileCopy extends AbstractLoggable implements DataHandlerAdapt
         @Override
         public void run() {
             Thread.currentThread().setName(Thread.currentThread().getName() + taskId);
-            tempTime = System.nanoTime();
             byte[] pack;
             while (true) {
                 synchronized (lock) {
@@ -256,10 +256,10 @@ public class ServerFileCopy extends AbstractLoggable implements DataHandlerAdapt
                         pack = packs.get(0);
                         packs.remove(0);
                     } else {
-                        execTime += (System.nanoTime() - tempTime);
                         logger.info(wait.incrementAndGet() + "'s wait when pack null.");
                         pause = true;
                         try {
+                            tempTime = System.currentTimeMillis();
                             lock.wait();
                         } catch (InterruptedException e) {
                             throw new IllegalStateException(e);
@@ -302,11 +302,6 @@ public class ServerFileCopy extends AbstractLoggable implements DataHandlerAdapt
 
         private void addPack(byte[] pack) {
             Objects.requireNonNull(pack);
-            try {
-                Thread.sleep(4000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
             synchronized (lock) {
                 if (shutdown) {
                     return;
@@ -314,9 +309,9 @@ public class ServerFileCopy extends AbstractLoggable implements DataHandlerAdapt
                 this.packs.add(pack);
                 if (pause) {
                     logger.info(notify.incrementAndGet() + "'s notify when pack arrive.");
+                    waitTime += System.currentTimeMillis() - tempTime;
                     lock.notify();
                     pause = false;
-                    tempTime = System.nanoTime();
                 }
             }
         }
@@ -339,7 +334,8 @@ public class ServerFileCopy extends AbstractLoggable implements DataHandlerAdapt
                 ServerFileCopy.this.execTaskMap.remove(this.taskId);
                 ServerFileCopy.this.fm.deleteFileInfoByTaskId(this.taskId);
             }
-            logger.info("Task resolver done. Use " + execTime + ".");
+            logger.info(String.format("Task resolver done. WaitTime: %d. Total cost:%d.",
+                    waitTime, System.currentTimeMillis() - startTime));
         }
     }
 }

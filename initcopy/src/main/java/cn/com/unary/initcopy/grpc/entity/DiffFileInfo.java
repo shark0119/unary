@@ -75,12 +75,12 @@ public  final class DiffFileInfo extends
   }
   public static final com.google.protobuf.Descriptors.Descriptor
       getDescriptor() {
-      return cn.com.unary.initcopy.grpc.entity.TC_Entity.internal_static_cn_com_unary_initcopy_grpc_entity_DiffFileInfo_descriptor;
+    return cn.com.unary.initcopy.grpc.entity.TC_Entity.internal_static_cn_com_unary_initcopy_grpc_entity_DiffFileInfo_descriptor;
   }
 
   protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internalGetFieldAccessorTable() {
-      return cn.com.unary.initcopy.grpc.entity.TC_Entity.internal_static_cn_com_unary_initcopy_grpc_entity_DiffFileInfo_fieldAccessorTable
+    return cn.com.unary.initcopy.grpc.entity.TC_Entity.internal_static_cn_com_unary_initcopy_grpc_entity_DiffFileInfo_fieldAccessorTable
         .ensureFieldAccessorsInitialized(
             cn.com.unary.initcopy.grpc.entity.DiffFileInfo.class, cn.com.unary.initcopy.grpc.entity.DiffFileInfo.Builder.class);
   }
@@ -322,12 +322,12 @@ public  final class DiffFileInfo extends
       cn.com.unary.initcopy.grpc.entity.DiffFileInfoOrBuilder {
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-        return cn.com.unary.initcopy.grpc.entity.TC_Entity.internal_static_cn_com_unary_initcopy_grpc_entity_DiffFileInfo_descriptor;
+      return cn.com.unary.initcopy.grpc.entity.TC_Entity.internal_static_cn_com_unary_initcopy_grpc_entity_DiffFileInfo_descriptor;
     }
 
     protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
         internalGetFieldAccessorTable() {
-        return cn.com.unary.initcopy.grpc.entity.TC_Entity.internal_static_cn_com_unary_initcopy_grpc_entity_DiffFileInfo_fieldAccessorTable
+      return cn.com.unary.initcopy.grpc.entity.TC_Entity.internal_static_cn_com_unary_initcopy_grpc_entity_DiffFileInfo_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
               cn.com.unary.initcopy.grpc.entity.DiffFileInfo.class, cn.com.unary.initcopy.grpc.entity.DiffFileInfo.Builder.class);
     }
@@ -363,7 +363,7 @@ public  final class DiffFileInfo extends
 
     public com.google.protobuf.Descriptors.Descriptor
         getDescriptorForType() {
-        return cn.com.unary.initcopy.grpc.entity.TC_Entity.internal_static_cn_com_unary_initcopy_grpc_entity_DiffFileInfo_descriptor;
+      return cn.com.unary.initcopy.grpc.entity.TC_Entity.internal_static_cn_com_unary_initcopy_grpc_entity_DiffFileInfo_descriptor;
     }
 
     public cn.com.unary.initcopy.grpc.entity.DiffFileInfo getDefaultInstanceForType() {

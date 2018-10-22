@@ -66,8 +66,8 @@ public final class IC_Entity {
       "\n\026init_copy_entity.proto\022!cn.com.unary.i" +
       "nitcopy.grpc.entity\032\030init_copy_constant." +
       "proto\"@\n\nSyncTarget\022\n\n\002ip\030\001 \001(\t\022\024\n\014trans" +
-              "ferPort\030\002 \001(\005\022\020\n\010grpcPort\030\003 \001(\005\"\246\003\n\010Sync" +
-              "Task\022\016\n\006taskId\030\001 \001(\t\022A\n\ntargetInfo\030\002 \001(\013" +
+      "ferPort\030\002 \001(\005\022\020\n\010grpcPort\030\003 \001(\005\"\246\003\n\010Sync" +
+      "Task\022\016\n\006taskId\030\001 \001(\t\022A\n\ntargetInfo\030\002 \001(\013" +
       "2-.cn.com.unary.initcopy.grpc.entity.Syn" +
       "cTarget\022?\n\010syncType\030\003 \001(\0162-.cn.com.unary" +
       ".initcopy.grpc.constant.SyncType\022G\n\014comp" +
@@ -76,24 +76,24 @@ public final class IC_Entity {
       "\030\005 \001(\01620.cn.com.unary.initcopy.grpc.cons" +
       "tant.EncryptType\022?\n\010packType\030\006 \001(\0162-.cn." +
       "com.unary.initcopy.grpc.constant.PackTyp" +
-              "e\022\022\n\nspeedLimit\030\007 \001(\005\022\022\n\ntargetDirs\030\010 \003(" +
-              "\t\022\r\n\005files\030\t \003(\t\"H\n\nExecResult\022\017\n\007health" +
-              "y\030\001 \001(\010\022\014\n\004code\030\002 \001(\005\022\013\n\003msg\030\003 \001(\t\022\016\n\006ta" +
-              "skId\030\004 \001(\t\"\244\001\n\014ProgressInfo\022\r\n\005stage\030\001 \001" +
-              "(\005\022\020\n\010progress\030\002 \001(\005\022\024\n\014totalFileNum\030\003 \001" +
-              "(\022\022\025\n\rtotalFileSize\030\004 \001(\t\022\025\n\rsyncedFileN" +
-              "um\030\005 \001(\022\022\026\n\016syncedFileSize\030\006 \001(\t\022\027\n\017sync",
-            "ingFileName\030\007 \001(\t\"\033\n\tQueryTask\022\016\n\006taskId" +
-                    "\030\001 \001(\t\"\225\001\n\tTaskState\022A\n\nexecResult\030\002 \001(\013" +
-                    "2-.cn.com.unary.initcopy.grpc.entity.Exe" +
-                    "cResult\022E\n\014progressInfo\030\003 \001(\0132/.cn.com.u" +
-                    "nary.initcopy.grpc.entity.ProgressInfo\"u" +
-                    "\n\nModifyTask\022\016\n\006taskId\030\001 \001(\t\022C\n\nmodifyTy" +
-                    "pe\030\002 \001(\0162/.cn.com.unary.initcopy.grpc.co" +
-                    "nstant.ModifyType\022\022\n\nspeedLimit\030\003 \001(\005\"0\n" +
-                    "\nDeleteTask\022\016\n\006taskId\030\001 \001(\t\022\022\n\ndeleteFil" +
-                    "e\030\002 \001(\010B0\n!cn.com.unary.initcopy.grpc.en",
-      "tityB\tIC_EntityP\001b\006proto3"
+      "e\022\022\n\nspeedLimit\030\007 \001(\005\022\022\n\ntargetDirs\030\010 \003(" +
+      "\t\022\r\n\005files\030\t \003(\t\"H\n\nExecResult\022\017\n\007health" +
+      "y\030\001 \001(\010\022\014\n\004code\030\002 \001(\005\022\013\n\003msg\030\003 \001(\t\022\016\n\006ta" +
+      "skId\030\004 \001(\t\"\225\001\n\014ProgressInfo\022\020\n\010progress\030" +
+      "\001 \001(\005\022\024\n\014totalFileNum\030\002 \001(\022\022\025\n\rtotalFile" +
+      "Size\030\003 \001(\t\022\025\n\rsyncedFileNum\030\004 \001(\022\022\026\n\016syn" +
+      "cedFileSize\030\005 \001(\t\022\027\n\017syncingFileName\030\006 \001",
+      "(\t\"\033\n\tQueryTask\022\016\n\006taskId\030\001 \001(\t\"\225\001\n\tTask" +
+      "State\022A\n\nexecResult\030\002 \001(\0132-.cn.com.unary" +
+      ".initcopy.grpc.entity.ExecResult\022E\n\014prog" +
+      "ressInfo\030\003 \001(\0132/.cn.com.unary.initcopy.g" +
+      "rpc.entity.ProgressInfo\"u\n\nModifyTask\022\016\n" +
+      "\006taskId\030\001 \001(\t\022C\n\nmodifyType\030\002 \001(\0162/.cn.c" +
+      "om.unary.initcopy.grpc.constant.ModifyTy" +
+      "pe\022\022\n\nspeedLimit\030\003 \001(\005\"0\n\nDeleteTask\022\016\n\006" +
+      "taskId\030\001 \001(\t\022\022\n\ndeleteFile\030\002 \001(\010B0\n!cn.c" +
+      "om.unary.initcopy.grpc.entityB\tIC_Entity",
+      "P\001b\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -119,19 +119,19 @@ public final class IC_Entity {
     internal_static_cn_com_unary_initcopy_grpc_entity_SyncTask_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_cn_com_unary_initcopy_grpc_entity_SyncTask_descriptor,
-            new java.lang.String[]{"TaskId", "TargetInfo", "SyncType", "CompressType", "EncryptType", "PackType", "SpeedLimit", "TargetDirs", "Files",});
+        new java.lang.String[] { "TaskId", "TargetInfo", "SyncType", "CompressType", "EncryptType", "PackType", "SpeedLimit", "TargetDirs", "Files", });
     internal_static_cn_com_unary_initcopy_grpc_entity_ExecResult_descriptor =
       getDescriptor().getMessageTypes().get(2);
     internal_static_cn_com_unary_initcopy_grpc_entity_ExecResult_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_cn_com_unary_initcopy_grpc_entity_ExecResult_descriptor,
-            new java.lang.String[]{"Healthy", "Code", "Msg", "TaskId",});
+        new java.lang.String[] { "Healthy", "Code", "Msg", "TaskId", });
     internal_static_cn_com_unary_initcopy_grpc_entity_ProgressInfo_descriptor =
       getDescriptor().getMessageTypes().get(3);
     internal_static_cn_com_unary_initcopy_grpc_entity_ProgressInfo_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_cn_com_unary_initcopy_grpc_entity_ProgressInfo_descriptor,
-        new java.lang.String[] { "Stage", "Progress", "TotalFileNum", "TotalFileSize", "SyncedFileNum", "SyncedFileSize", "SyncingFileName", });
+        new java.lang.String[] { "Progress", "TotalFileNum", "TotalFileSize", "SyncedFileNum", "SyncedFileSize", "SyncingFileName", });
     internal_static_cn_com_unary_initcopy_grpc_entity_QueryTask_descriptor =
       getDescriptor().getMessageTypes().get(4);
     internal_static_cn_com_unary_initcopy_grpc_entity_QueryTask_fieldAccessorTable = new
@@ -143,7 +143,7 @@ public final class IC_Entity {
     internal_static_cn_com_unary_initcopy_grpc_entity_TaskState_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_cn_com_unary_initcopy_grpc_entity_TaskState_descriptor,
-            new java.lang.String[]{"ExecResult", "ProgressInfo",});
+        new java.lang.String[] { "ExecResult", "ProgressInfo", });
     internal_static_cn_com_unary_initcopy_grpc_entity_ModifyTask_descriptor =
       getDescriptor().getMessageTypes().get(6);
     internal_static_cn_com_unary_initcopy_grpc_entity_ModifyTask_fieldAccessorTable = new

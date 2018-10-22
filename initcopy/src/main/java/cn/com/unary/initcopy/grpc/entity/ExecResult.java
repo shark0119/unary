@@ -177,8 +177,8 @@ public  final class ExecResult extends
     if (ref instanceof java.lang.String) {
       return (java.lang.String) ref;
     } else {
-        com.google.protobuf.ByteString bs =
-                (com.google.protobuf.ByteString) ref;
+      com.google.protobuf.ByteString bs = 
+          (com.google.protobuf.ByteString) ref;
       java.lang.String s = bs.toStringUtf8();
       taskId_ = s;
       return s;
@@ -192,12 +192,12 @@ public  final class ExecResult extends
    * <code>optional string taskId = 4;</code>
    */
   public com.google.protobuf.ByteString
-  getTaskIdBytes() {
+      getTaskIdBytes() {
     java.lang.Object ref = taskId_;
     if (ref instanceof java.lang.String) {
-        com.google.protobuf.ByteString b =
-                com.google.protobuf.ByteString.copyFromUtf8(
-                        (java.lang.String) ref);
+      com.google.protobuf.ByteString b = 
+          com.google.protobuf.ByteString.copyFromUtf8(
+              (java.lang.String) ref);
       taskId_ = b;
       return b;
     } else {
@@ -238,7 +238,7 @@ public  final class ExecResult extends
     size = 0;
     if (healthy_ != false) {
       size += com.google.protobuf.CodedOutputStream
-              .computeBoolSize(1, healthy_);
+        .computeBoolSize(1, healthy_);
     }
     if (code_ != 0) {
       size += com.google.protobuf.CodedOutputStream
@@ -267,13 +267,13 @@ public  final class ExecResult extends
 
     boolean result = true;
     result = result && (getHealthy()
-            == other.getHealthy());
+        == other.getHealthy());
     result = result && (getCode()
         == other.getCode());
     result = result && getMsg()
         .equals(other.getMsg());
     result = result && getTaskId()
-            .equals(other.getTaskId());
+        .equals(other.getTaskId());
     return result;
   }
 
@@ -549,8 +549,8 @@ public  final class ExecResult extends
      * <code>optional bool healthy = 1;</code>
      */
     public Builder setHealthy(boolean value) {
-
-        healthy_ = value;
+      
+      healthy_ = value;
       onChanged();
       return this;
     }
@@ -562,8 +562,8 @@ public  final class ExecResult extends
      * <code>optional bool healthy = 1;</code>
      */
     public Builder clearHealthy() {
-
-        healthy_ = false;
+      
+      healthy_ = false;
       onChanged();
       return this;
     }
@@ -656,7 +656,7 @@ public  final class ExecResult extends
     public Builder setMsg(
         java.lang.String value) {
       if (value == null) {
-          throw new NullPointerException();
+    throw new NullPointerException();
   }
   
       msg_ = value;
@@ -707,7 +707,7 @@ public  final class ExecResult extends
       java.lang.Object ref = taskId_;
       if (!(ref instanceof java.lang.String)) {
         com.google.protobuf.ByteString bs =
-                (com.google.protobuf.ByteString) ref;
+            (com.google.protobuf.ByteString) ref;
         java.lang.String s = bs.toStringUtf8();
         taskId_ = s;
         return s;
@@ -715,26 +715,7 @@ public  final class ExecResult extends
         return (java.lang.String) ref;
       }
     }
-    /**
-     * <pre>
-     * 任务 Id
-     * </pre>
-     *
-     * <code>optional string taskId = 4;</code>
-     */
-    public com.google.protobuf.ByteString
-    getTaskIdBytes() {
-      java.lang.Object ref = taskId_;
-      if (ref instanceof String) {
-          com.google.protobuf.ByteString b =
-                  com.google.protobuf.ByteString.copyFromUtf8(
-                          (java.lang.String) ref);
-        taskId_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
-    }
+
     /**
      * <pre>
      * 任务 Id
@@ -743,15 +724,56 @@ public  final class ExecResult extends
      * <code>optional string taskId = 4;</code>
      */
     public Builder setTaskId(
-            java.lang.String value) {
+        java.lang.String value) {
       if (value == null) {
-          throw new NullPointerException();
-      }
-  
+    throw new NullPointerException();
+  }
+
       taskId_ = value;
       onChanged();
       return this;
     }
+
+    /**
+     * <pre>
+     * 任务 Id
+     * </pre>
+     *
+     * <code>optional string taskId = 4;</code>
+     */
+    public com.google.protobuf.ByteString
+        getTaskIdBytes() {
+      java.lang.Object ref = taskId_;
+      if (ref instanceof String) {
+        com.google.protobuf.ByteString b =
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        taskId_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    /**
+     * <pre>
+     * 任务 Id
+     * </pre>
+     *
+     * <code>optional string taskId = 4;</code>
+     */
+    public Builder setTaskIdBytes(
+        com.google.protobuf.ByteString value) {
+      if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+
+      taskId_ = value;
+      onChanged();
+      return this;
+    }
+
     /**
      * <pre>
      * 任务 Id
@@ -761,25 +783,7 @@ public  final class ExecResult extends
      */
     public Builder clearTaskId() {
 
-        taskId_ = getDefaultInstance().getTaskId();
-      onChanged();
-      return this;
-    }
-    /**
-     * <pre>
-     * 任务 Id
-     * </pre>
-     *
-     * <code>optional string taskId = 4;</code>
-     */
-    public Builder setTaskIdBytes(
-            com.google.protobuf.ByteString value) {
-      if (value == null) {
-          throw new NullPointerException();
-      }
-        checkByteStringIsUtf8(value);
-      
-      taskId_ = value;
+      taskId_ = getDefaultInstance().getTaskId();
       onChanged();
       return this;
     }

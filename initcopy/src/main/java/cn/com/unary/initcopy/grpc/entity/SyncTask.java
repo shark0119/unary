@@ -164,8 +164,8 @@ public  final class SyncTask extends
     if (ref instanceof java.lang.String) {
       return (java.lang.String) ref;
     } else {
-        com.google.protobuf.ByteString bs =
-                (com.google.protobuf.ByteString) ref;
+      com.google.protobuf.ByteString bs = 
+          (com.google.protobuf.ByteString) ref;
       java.lang.String s = bs.toStringUtf8();
       taskId_ = s;
       return s;
@@ -179,12 +179,12 @@ public  final class SyncTask extends
    * <code>optional string taskId = 1;</code>
    */
   public com.google.protobuf.ByteString
-  getTaskIdBytes() {
+      getTaskIdBytes() {
     java.lang.Object ref = taskId_;
     if (ref instanceof java.lang.String) {
-        com.google.protobuf.ByteString b =
-                com.google.protobuf.ByteString.copyFromUtf8(
-                        (java.lang.String) ref);
+      com.google.protobuf.ByteString b = 
+          com.google.protobuf.ByteString.copyFromUtf8(
+              (java.lang.String) ref);
       taskId_ = b;
       return b;
     } else {
@@ -344,7 +344,7 @@ public  final class SyncTask extends
    * <code>repeated string targetDirs = 8;</code>
    */
   public com.google.protobuf.ProtocolStringList
-  getTargetDirsList() {
+      getTargetDirsList() {
     return targetDirs_;
   }
   /**
@@ -375,7 +375,7 @@ public  final class SyncTask extends
    * <code>repeated string targetDirs = 8;</code>
    */
   public com.google.protobuf.ByteString
-  getTargetDirsBytes(int index) {
+      getTargetDirsBytes(int index) {
     return targetDirs_.getByteString(index);
   }
 
@@ -530,7 +530,7 @@ public  final class SyncTask extends
 
     boolean result = true;
     result = result && getTaskId()
-            .equals(other.getTaskId());
+        .equals(other.getTaskId());
     result = result && (hasTargetInfo() == other.hasTargetInfo());
     if (hasTargetInfo()) {
       result = result && getTargetInfo()
@@ -543,7 +543,7 @@ public  final class SyncTask extends
     result = result && (getSpeedLimit()
         == other.getSpeedLimit());
     result = result && getTargetDirsList()
-            .equals(other.getTargetDirsList());
+        .equals(other.getTargetDirsList());
     result = result && getFilesList()
         .equals(other.getFilesList());
     return result;
@@ -892,7 +892,7 @@ public  final class SyncTask extends
       java.lang.Object ref = taskId_;
       if (!(ref instanceof java.lang.String)) {
         com.google.protobuf.ByteString bs =
-                (com.google.protobuf.ByteString) ref;
+            (com.google.protobuf.ByteString) ref;
         java.lang.String s = bs.toStringUtf8();
         taskId_ = s;
         return s;
@@ -900,26 +900,7 @@ public  final class SyncTask extends
         return (java.lang.String) ref;
       }
     }
-    /**
-     * <pre>
-     *任务ID
-     * </pre>
-     *
-     * <code>optional string taskId = 1;</code>
-     */
-    public com.google.protobuf.ByteString
-    getTaskIdBytes() {
-      java.lang.Object ref = taskId_;
-      if (ref instanceof String) {
-          com.google.protobuf.ByteString b =
-                  com.google.protobuf.ByteString.copyFromUtf8(
-                          (java.lang.String) ref);
-        taskId_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
-    }
+
     /**
      * <pre>
      *任务ID
@@ -928,15 +909,56 @@ public  final class SyncTask extends
      * <code>optional string taskId = 1;</code>
      */
     public Builder setTaskId(
-            java.lang.String value) {
+        java.lang.String value) {
       if (value == null) {
-          throw new NullPointerException();
+    throw new NullPointerException();
   }
-  
+
       taskId_ = value;
       onChanged();
       return this;
     }
+
+    /**
+     * <pre>
+     *任务ID
+     * </pre>
+     *
+     * <code>optional string taskId = 1;</code>
+     */
+    public com.google.protobuf.ByteString
+        getTaskIdBytes() {
+      java.lang.Object ref = taskId_;
+      if (ref instanceof String) {
+        com.google.protobuf.ByteString b =
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        taskId_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    /**
+     * <pre>
+     *任务ID
+     * </pre>
+     *
+     * <code>optional string taskId = 1;</code>
+     */
+    public Builder setTaskIdBytes(
+        com.google.protobuf.ByteString value) {
+      if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+
+      taskId_ = value;
+      onChanged();
+      return this;
+    }
+
     /**
      * <pre>
      *任务ID
@@ -946,25 +968,7 @@ public  final class SyncTask extends
      */
     public Builder clearTaskId() {
 
-        taskId_ = getDefaultInstance().getTaskId();
-      onChanged();
-      return this;
-    }
-    /**
-     * <pre>
-     *任务ID
-     * </pre>
-     *
-     * <code>optional string taskId = 1;</code>
-     */
-    public Builder setTaskIdBytes(
-            com.google.protobuf.ByteString value) {
-      if (value == null) {
-          throw new NullPointerException();
-      }
-        checkByteStringIsUtf8(value);
-      
-      taskId_ = value;
+      taskId_ = getDefaultInstance().getTaskId();
       onChanged();
       return this;
     }
@@ -1402,6 +1406,7 @@ public  final class SyncTask extends
       onChanged();
       return this;
     }
+
     /**
      * <pre>
      *限速 以M为单位  0为不限速
@@ -1410,8 +1415,8 @@ public  final class SyncTask extends
      * <code>optional int32 speedLimit = 7;</code>
      */
     public Builder clearSpeedLimit() {
-
-        speedLimit_ = 0;
+      
+      speedLimit_ = 0;
       onChanged();
       return this;
     }
@@ -1421,7 +1426,7 @@ public  final class SyncTask extends
       if (!((bitField0_ & 0x00000080) == 0x00000080)) {
         targetDirs_ = new com.google.protobuf.LazyStringArrayList(targetDirs_);
         bitField0_ |= 0x00000080;
-      }
+       }
     }
     /**
      * <pre>
@@ -1431,7 +1436,7 @@ public  final class SyncTask extends
      * <code>repeated string targetDirs = 8;</code>
      */
     public com.google.protobuf.ProtocolStringList
-    getTargetDirsList() {
+        getTargetDirsList() {
       return targetDirs_.getUnmodifiableView();
     }
     /**
@@ -1462,7 +1467,7 @@ public  final class SyncTask extends
      * <code>repeated string targetDirs = 8;</code>
      */
     public com.google.protobuf.ByteString
-    getTargetDirsBytes(int index) {
+        getTargetDirsBytes(int index) {
       return targetDirs_.getByteString(index);
     }
     /**
@@ -1473,11 +1478,11 @@ public  final class SyncTask extends
      * <code>repeated string targetDirs = 8;</code>
      */
     public Builder setTargetDirs(
-            int index, java.lang.String value) {
+        int index, java.lang.String value) {
       if (value == null) {
-          throw new NullPointerException();
-      }
-        ensureTargetDirsIsMutable();
+    throw new NullPointerException();
+  }
+  ensureTargetDirsIsMutable();
       targetDirs_.set(index, value);
       onChanged();
       return this;
@@ -1490,11 +1495,11 @@ public  final class SyncTask extends
      * <code>repeated string targetDirs = 8;</code>
      */
     public Builder addTargetDirs(
-            java.lang.String value) {
+        java.lang.String value) {
       if (value == null) {
-          throw new NullPointerException();
-      }
-        ensureTargetDirsIsMutable();
+    throw new NullPointerException();
+  }
+  ensureTargetDirsIsMutable();
       targetDirs_.add(value);
       onChanged();
       return this;
@@ -1507,10 +1512,10 @@ public  final class SyncTask extends
      * <code>repeated string targetDirs = 8;</code>
      */
     public Builder addAllTargetDirs(
-            java.lang.Iterable<java.lang.String> values) {
+        java.lang.Iterable<java.lang.String> values) {
       ensureTargetDirsIsMutable();
       com.google.protobuf.AbstractMessageLite.Builder.addAll(
-              values, targetDirs_);
+          values, targetDirs_);
       onChanged();
       return this;
     }
@@ -1535,7 +1540,7 @@ public  final class SyncTask extends
      * <code>repeated string targetDirs = 8;</code>
      */
     public Builder addTargetDirsBytes(
-            com.google.protobuf.ByteString value) {
+        com.google.protobuf.ByteString value) {
       if (value == null) {
     throw new NullPointerException();
   }

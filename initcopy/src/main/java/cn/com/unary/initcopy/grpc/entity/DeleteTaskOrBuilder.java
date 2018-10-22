@@ -11,12 +11,11 @@ public interface DeleteTaskOrBuilder extends
    * <code>optional string taskId = 1;</code>
    */
   java.lang.String getTaskId();
-
-    /**
-     * <code>optional string taskId = 1;</code>
-     */
-    com.google.protobuf.ByteString
-    getTaskIdBytes();
+  /**
+   * <code>optional string taskId = 1;</code>
+   */
+  com.google.protobuf.ByteString
+      getTaskIdBytes();
 
   /**
    * <pre>

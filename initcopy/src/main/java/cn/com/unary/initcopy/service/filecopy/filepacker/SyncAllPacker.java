@@ -1,7 +1,6 @@
 package cn.com.unary.initcopy.service.filecopy.filepacker;
 
 import cn.com.unary.initcopy.InitCopyContext;
-import cn.com.unary.initcopy.adapter.TransmitClientAdapter;
 import cn.com.unary.initcopy.common.AbstractLoggable;
 import cn.com.unary.initcopy.common.utils.BeanExactUtil;
 import cn.com.unary.initcopy.common.utils.CommonUtils;
@@ -12,6 +11,7 @@ import cn.com.unary.initcopy.entity.FileInfoDO;
 import cn.com.unary.initcopy.entity.SyncTaskDO;
 import cn.com.unary.initcopy.exception.InfoPersistenceException;
 import cn.com.unary.initcopy.service.filecopy.io.AbstractFileInput;
+import cn.com.unary.initcopy.service.transmitadapter.TransmitClientAdapter;
 import com.alibaba.fastjson.JSON;
 import com.una.common.TransmitException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -84,7 +84,6 @@ public class SyncAllPacker extends AbstractLoggable implements Packer {
      * 每个包的大小
      */
     public final static int PACK_SIZE = InitCopyContext.MAX_PACK_SIZE;
-    private final static int BUFFER_DIRECT_LIMIT = 16 * 1024 * 1024;
 
     /**
      * ----我来组成分割线，以下是 Spring 容器来管理的实体----
@@ -140,12 +139,12 @@ public class SyncAllPacker extends AbstractLoggable implements Packer {
     public void start(String taskId, TransmitClientAdapter transfer)
             throws IOException, InfoPersistenceException {
         this.taskId = taskId.getBytes(InitCopyContext.CHARSET);
-        this.transfer = transfer;
         List<FileInfoDO> list = fm.queryUnSyncFileByTaskId(taskId);
         fiIterator = list.iterator();
         byte[] packData;
         SyncTaskDO task = fm.queryTask(taskId);
         transfer.start(BeanExactUtil.takeFromTaskDO(task));
+        this.transfer = transfer;
         while (true) {
             try {
                 packData = CommonUtils.extractBytes(pack());

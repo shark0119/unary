@@ -259,8 +259,8 @@ public  final class BaseFileInfo extends
     if (ref instanceof java.lang.String) {
       return (java.lang.String) ref;
     } else {
-        com.google.protobuf.ByteString bs =
-                (com.google.protobuf.ByteString) ref;
+      com.google.protobuf.ByteString bs = 
+          (com.google.protobuf.ByteString) ref;
       java.lang.String s = bs.toStringUtf8();
       backUpPath_ = s;
       return s;
@@ -270,12 +270,12 @@ public  final class BaseFileInfo extends
    * <code>optional string backUpPath = 6;</code>
    */
   public com.google.protobuf.ByteString
-  getBackUpPathBytes() {
+      getBackUpPathBytes() {
     java.lang.Object ref = backUpPath_;
     if (ref instanceof java.lang.String) {
-        com.google.protobuf.ByteString b =
-                com.google.protobuf.ByteString.copyFromUtf8(
-                        (java.lang.String) ref);
+      com.google.protobuf.ByteString b = 
+          com.google.protobuf.ByteString.copyFromUtf8(
+              (java.lang.String) ref);
       backUpPath_ = b;
       return b;
     } else {
@@ -367,7 +367,7 @@ public  final class BaseFileInfo extends
     result = result && getFileId()
         .equals(other.getFileId());
     result = result && getBackUpPath()
-            .equals(other.getBackUpPath());
+        .equals(other.getBackUpPath());
     return result;
   }
 
@@ -970,7 +970,7 @@ public  final class BaseFileInfo extends
       java.lang.Object ref = backUpPath_;
       if (!(ref instanceof java.lang.String)) {
         com.google.protobuf.ByteString bs =
-                (com.google.protobuf.ByteString) ref;
+            (com.google.protobuf.ByteString) ref;
         java.lang.String s = bs.toStringUtf8();
         backUpPath_ = s;
         return s;
@@ -978,55 +978,59 @@ public  final class BaseFileInfo extends
         return (java.lang.String) ref;
       }
     }
+
+    /**
+     * <code>optional string backUpPath = 6;</code>
+     */
+    public Builder setBackUpPath(
+        java.lang.String value) {
+      if (value == null) {
+    throw new NullPointerException();
+  }
+
+      backUpPath_ = value;
+      onChanged();
+      return this;
+    }
+
     /**
      * <code>optional string backUpPath = 6;</code>
      */
     public com.google.protobuf.ByteString
-    getBackUpPathBytes() {
+        getBackUpPathBytes() {
       java.lang.Object ref = backUpPath_;
       if (ref instanceof String) {
-          com.google.protobuf.ByteString b =
-                  com.google.protobuf.ByteString.copyFromUtf8(
-                          (java.lang.String) ref);
+        com.google.protobuf.ByteString b =
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
         backUpPath_ = b;
         return b;
       } else {
         return (com.google.protobuf.ByteString) ref;
       }
     }
+
     /**
      * <code>optional string backUpPath = 6;</code>
      */
-    public Builder setBackUpPath(
-            java.lang.String value) {
+    public Builder setBackUpPathBytes(
+        com.google.protobuf.ByteString value) {
       if (value == null) {
-          throw new NullPointerException();
-      }
-  
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+
       backUpPath_ = value;
       onChanged();
       return this;
     }
+
     /**
      * <code>optional string backUpPath = 6;</code>
      */
     public Builder clearBackUpPath() {
 
-        backUpPath_ = getDefaultInstance().getBackUpPath();
-      onChanged();
-      return this;
-    }
-    /**
-     * <code>optional string backUpPath = 6;</code>
-     */
-    public Builder setBackUpPathBytes(
-            com.google.protobuf.ByteString value) {
-      if (value == null) {
-          throw new NullPointerException();
-      }
-        checkByteStringIsUtf8(value);
-      
-      backUpPath_ = value;
+      backUpPath_ = getDefaultInstance().getBackUpPath();
       onChanged();
       return this;
     }

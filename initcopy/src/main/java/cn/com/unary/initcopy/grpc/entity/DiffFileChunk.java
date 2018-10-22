@@ -76,12 +76,12 @@ public  final class DiffFileChunk extends
   }
   public static final com.google.protobuf.Descriptors.Descriptor
       getDescriptor() {
-      return cn.com.unary.initcopy.grpc.entity.TC_Entity.internal_static_cn_com_unary_initcopy_grpc_entity_DiffFileChunk_descriptor;
+    return cn.com.unary.initcopy.grpc.entity.TC_Entity.internal_static_cn_com_unary_initcopy_grpc_entity_DiffFileChunk_descriptor;
   }
 
   protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internalGetFieldAccessorTable() {
-      return cn.com.unary.initcopy.grpc.entity.TC_Entity.internal_static_cn_com_unary_initcopy_grpc_entity_DiffFileChunk_fieldAccessorTable
+    return cn.com.unary.initcopy.grpc.entity.TC_Entity.internal_static_cn_com_unary_initcopy_grpc_entity_DiffFileChunk_fieldAccessorTable
         .ensureFieldAccessorsInitialized(
             cn.com.unary.initcopy.grpc.entity.DiffFileChunk.class, cn.com.unary.initcopy.grpc.entity.DiffFileChunk.Builder.class);
   }
@@ -378,12 +378,12 @@ public  final class DiffFileChunk extends
       cn.com.unary.initcopy.grpc.entity.DiffFileChunkOrBuilder {
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-        return cn.com.unary.initcopy.grpc.entity.TC_Entity.internal_static_cn_com_unary_initcopy_grpc_entity_DiffFileChunk_descriptor;
+      return cn.com.unary.initcopy.grpc.entity.TC_Entity.internal_static_cn_com_unary_initcopy_grpc_entity_DiffFileChunk_descriptor;
     }
 
     protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
         internalGetFieldAccessorTable() {
-        return cn.com.unary.initcopy.grpc.entity.TC_Entity.internal_static_cn_com_unary_initcopy_grpc_entity_DiffFileChunk_fieldAccessorTable
+      return cn.com.unary.initcopy.grpc.entity.TC_Entity.internal_static_cn_com_unary_initcopy_grpc_entity_DiffFileChunk_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
               cn.com.unary.initcopy.grpc.entity.DiffFileChunk.class, cn.com.unary.initcopy.grpc.entity.DiffFileChunk.Builder.class);
     }
@@ -416,7 +416,7 @@ public  final class DiffFileChunk extends
 
     public com.google.protobuf.Descriptors.Descriptor
         getDescriptorForType() {
-        return cn.com.unary.initcopy.grpc.entity.TC_Entity.internal_static_cn_com_unary_initcopy_grpc_entity_DiffFileChunk_descriptor;
+      return cn.com.unary.initcopy.grpc.entity.TC_Entity.internal_static_cn_com_unary_initcopy_grpc_entity_DiffFileChunk_descriptor;
     }
 
     public cn.com.unary.initcopy.grpc.entity.DiffFileChunk getDefaultInstanceForType() {

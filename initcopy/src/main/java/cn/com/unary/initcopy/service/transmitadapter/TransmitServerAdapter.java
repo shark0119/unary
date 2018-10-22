@@ -1,4 +1,4 @@
-package cn.com.unary.initcopy.adapter;
+package cn.com.unary.initcopy.service.transmitadapter;
 
 import cn.com.unary.initcopy.common.AbstractLoggable;
 import com.una.api.AcceptHandler;

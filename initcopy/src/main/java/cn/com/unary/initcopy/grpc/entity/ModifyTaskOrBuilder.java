@@ -15,16 +15,15 @@ public interface ModifyTaskOrBuilder extends
    * <code>optional string taskId = 1;</code>
    */
   java.lang.String getTaskId();
-
-    /**
-     * <pre>
-     * 对应的任务id
-     * </pre>
-     *
-     * <code>optional string taskId = 1;</code>
-     */
-    com.google.protobuf.ByteString
-    getTaskIdBytes();
+  /**
+   * <pre>
+   *对应的任务id
+   * </pre>
+   *
+   * <code>optional string taskId = 1;</code>
+   */
+  com.google.protobuf.ByteString
+      getTaskIdBytes();
 
   /**
    * <code>optional .cn.com.unary.initcopy.grpc.constant.ModifyType modifyType = 2;</code>

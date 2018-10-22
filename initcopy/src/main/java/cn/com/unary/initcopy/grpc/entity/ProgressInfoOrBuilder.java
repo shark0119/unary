@@ -9,19 +9,10 @@ public interface ProgressInfoOrBuilder extends
 
   /**
    * <pre>
-   *阶段
-   * </pre>
-   *
-   * <code>optional int32 stage = 1;</code>
-   */
-  int getStage();
-
-  /**
-   * <pre>
    *进度百分比   0到100之间的数值
    * </pre>
    *
-   * <code>optional int32 progress = 2;</code>
+   * <code>optional int32 progress = 1;</code>
    */
   int getProgress();
 
@@ -30,7 +21,7 @@ public interface ProgressInfoOrBuilder extends
    *需要同步的文件总数
    * </pre>
    *
-   * <code>optional sint64 totalFileNum = 3;</code>
+   * <code>optional sint64 totalFileNum = 2;</code>
    */
   long getTotalFileNum();
 
@@ -39,26 +30,25 @@ public interface ProgressInfoOrBuilder extends
    *需要同步的文件总大小 以字节为单位
    * </pre>
    *
-   * <code>optional string totalFileSize = 4;</code>
+   * <code>optional string totalFileSize = 3;</code>
    */
   java.lang.String getTotalFileSize();
-
-    /**
-     * <pre>
-     * 需要同步的文件总大小 以字节为单位
-     * </pre>
-     *
-     * <code>optional string totalFileSize = 4;</code>
-     */
-    com.google.protobuf.ByteString
-    getTotalFileSizeBytes();
+  /**
+   * <pre>
+   *需要同步的文件总大小 以字节为单位
+   * </pre>
+   *
+   * <code>optional string totalFileSize = 3;</code>
+   */
+  com.google.protobuf.ByteString
+      getTotalFileSizeBytes();
 
   /**
    * <pre>
    *已经同步的文件总数
    * </pre>
    *
-   * <code>optional sint64 syncedFileNum = 5;</code>
+   * <code>optional sint64 syncedFileNum = 4;</code>
    */
   long getSyncedFileNum();
 
@@ -67,26 +57,25 @@ public interface ProgressInfoOrBuilder extends
    *已经同步的文件总大小
    * </pre>
    *
-   * <code>optional string syncedFileSize = 6;</code>
+   * <code>optional string syncedFileSize = 5;</code>
    */
   java.lang.String getSyncedFileSize();
-
-    /**
-     * <pre>
-     * 已经同步的文件总大小
-     * </pre>
-     *
-     * <code>optional string syncedFileSize = 6;</code>
-     */
-    com.google.protobuf.ByteString
-    getSyncedFileSizeBytes();
+  /**
+   * <pre>
+   *已经同步的文件总大小
+   * </pre>
+   *
+   * <code>optional string syncedFileSize = 5;</code>
+   */
+  com.google.protobuf.ByteString
+      getSyncedFileSizeBytes();
 
   /**
    * <pre>
    *当前正在同步的文件
    * </pre>
    *
-   * <code>optional string syncingFileName = 7;</code>
+   * <code>optional string syncingFileName = 6;</code>
    */
   java.lang.String getSyncingFileName();
   /**
@@ -94,7 +83,7 @@ public interface ProgressInfoOrBuilder extends
    *当前正在同步的文件
    * </pre>
    *
-   * <code>optional string syncingFileName = 7;</code>
+   * <code>optional string syncingFileName = 6;</code>
    */
   com.google.protobuf.ByteString
       getSyncingFileNameBytes();

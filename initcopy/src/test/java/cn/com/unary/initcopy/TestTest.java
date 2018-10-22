@@ -1,6 +1,5 @@
 package cn.com.unary.initcopy;
 
-import cn.com.unary.initcopy.entity.FileInfoDO;
 import lombok.Getter;
 import lombok.Setter;
 import org.junit.Test;
@@ -87,13 +86,34 @@ public class TestTest {
 
     @Test
     public void test5() {
-        FileInfoDO f1 = new FileInfoDO();
-        f1.setFileId("12");
-        FileInfoDO f2 = new FileInfoDO();
-        f2.setFileId("12");
-        System.out.println(f1.hashCode() == f2.hashCode());
+        B b = new B();
+        b.test();
     }
 
+    static class A {
+        int a = 1;
+        A() {
+            print(this);
+        }
+        void print(A a) {
+            System.out.println(a.a);
+            this.overrideMtd();
+        }
+        void overrideMtd () {
+            System.out.println("overrideMtd");
+        }
+    }
+    static class B extends A{
+        int a = 2;
+        void test () {
+            print(this);
+            System.out.println(a);
+        }
+        @Override
+        void overrideMtd() {
+            System.out.println("overrideMtd in subclass");
+        }
+    }
     private static class Task implements Runnable {
         private ReentrantLock lock = new ReentrantLock();
         private Condition ready = lock.newCondition();

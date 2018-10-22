@@ -15,16 +15,15 @@ public interface SyncTaskOrBuilder extends
    * <code>optional string taskId = 1;</code>
    */
   java.lang.String getTaskId();
-
-    /**
-     * <pre>
-     * 任务ID
-     * </pre>
-     *
-     * <code>optional string taskId = 1;</code>
-     */
-    com.google.protobuf.ByteString
-    getTaskIdBytes();
+  /**
+   * <pre>
+   *任务ID
+   * </pre>
+   *
+   * <code>optional string taskId = 1;</code>
+   */
+  com.google.protobuf.ByteString
+      getTaskIdBytes();
 
   /**
    * <pre>
@@ -136,7 +135,7 @@ public interface SyncTaskOrBuilder extends
    * <code>repeated string targetDirs = 8;</code>
    */
   java.util.List<java.lang.String>
-  getTargetDirsList();
+      getTargetDirsList();
   /**
    * <pre>
    *要同步的目标目录
@@ -145,25 +144,23 @@ public interface SyncTaskOrBuilder extends
    * <code>repeated string targetDirs = 8;</code>
    */
   int getTargetDirsCount();
-
-    /**
-     * <pre>
-     * 要同步的目标目录
-     * </pre>
-     *
-     * <code>repeated string targetDirs = 8;</code>
-     */
-    java.lang.String getTargetDirs(int index);
-
-    /**
-     * <pre>
-     *要同步的目标目录
-     * </pre>
-     *
-     * <code>repeated string targetDirs = 8;</code>
+  /**
+   * <pre>
+   *要同步的目标目录
+   * </pre>
+   *
+   * <code>repeated string targetDirs = 8;</code>
+   */
+  java.lang.String getTargetDirs(int index);
+  /**
+   * <pre>
+   *要同步的目标目录
+   * </pre>
+   *
+   * <code>repeated string targetDirs = 8;</code>
    */
   com.google.protobuf.ByteString
-  getTargetDirsBytes(int index);
+      getTargetDirsBytes(int index);
 
   /**
    * <pre>

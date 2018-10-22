@@ -1,4 +1,4 @@
-package cn.com.unary.initcopy.adapter;
+package cn.com.unary.initcopy.service.transmitadapter;
 
 import cn.com.unary.initcopy.common.AbstractLoggable;
 import cn.com.unary.initcopy.entity.TransmitParams;
@@ -24,16 +24,17 @@ import java.io.IOException;
 @Component
 @Scope("prototype")
 public class TransmitClientAdapter extends AbstractLoggable implements Closeable {
+    private final Object lock = new Object();
     private TransmitClient client;
-    private Boolean isActive = Boolean.FALSE;
+    private boolean isActive = Boolean.FALSE;
     private Conmunication communication;
 
     public void start(TransmitParams params) throws IOException {
         if (isActive) {
             return;
         }
-        synchronized (isActive) {
-            if (!isActive) {
+        synchronized (lock) {
+            if (isActive) {
                 return;
             }
             client = new TransmitClient();
@@ -85,6 +86,17 @@ public class TransmitClientAdapter extends AbstractLoggable implements Closeable
 
     @Override
     public void close() {
-        communication.close();
+        if (isActive) {
+            synchronized (lock) {
+                if (!isActive) {
+                    return;
+                }
+                if (communication != null) {
+                    communication.close();
+                    logger.info("Transfer Closed!");
+                }
+                isActive = false;
+            }
+        }
     }
 }

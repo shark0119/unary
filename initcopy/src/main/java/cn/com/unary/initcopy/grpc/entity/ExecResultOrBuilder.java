@@ -43,22 +43,21 @@ public interface ExecResultOrBuilder extends
   com.google.protobuf.ByteString
       getMsgBytes();
 
-    /**
-     * <pre>
-     * 任务 Id
-     * </pre>
-     *
-     * <code>optional string taskId = 4;</code>
-     */
-    java.lang.String getTaskId();
-
-    /**
-     * <pre>
-     * 任务 Id
-     * </pre>
-     *
-     * <code>optional string taskId = 4;</code>
-     */
-    com.google.protobuf.ByteString
-    getTaskIdBytes();
+  /**
+   * <pre>
+   * 任务 Id
+   * </pre>
+   *
+   * <code>optional string taskId = 4;</code>
+   */
+  java.lang.String getTaskId();
+  /**
+   * <pre>
+   * 任务 Id
+   * </pre>
+   *
+   * <code>optional string taskId = 4;</code>
+   */
+  com.google.protobuf.ByteString
+      getTaskIdBytes();
 }

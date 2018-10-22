@@ -15,35 +15,35 @@ message SyncTarget { //目标端IP及端口信息
 }
 
 message SyncTask { //同步任务
-                   string taskId = 1; //任务ID
+    string taskId = 1; //任务ID
     SyncTarget targetInfo = 2; // 目标端IP及端口信息
-                   cn.com.unary.initcopy.grpc.constant.SyncType syncType = 3; //同步方式
+    cn.com.unary.initcopy.grpc.constant.SyncType syncType = 3;    //同步方式
     cn.com.unary.initcopy.grpc.constant.CompressType compressType = 4; //压缩方式
     cn.com.unary.initcopy.grpc.constant.EncryptType encryptType = 5; //加密方式
-                   cn.com.unary.initcopy.grpc.constant.PackType packType = 6; //打包类型
-                   int32 speedLimit = 7; //限速 以M为单位  0为不限速
-                   repeated string targetDirs = 8; //要同步的目标目录
+    cn.com.unary.initcopy.grpc.constant.PackType packType = 6;       //打包类型
+    int32 speedLimit = 7;  //限速 以M为单位  0为不限速
+    repeated string targetDirs = 8;     //要同步的目标目录
     repeated string files = 9; //要同步的源文件
 }
 
-message ExecResult { // 任务执行结果
-                     bool healthy = 1; // 任务装态是否正常
-                     int32 code = 2; // 执行状况代码
-                     string msg = 3; // 信息
-                     string taskId = 4; // 任务 Id
+message ExecResult {	// 任务执行结果
+	bool healthy = 1;	// 任务装态是否正常
+	int32 code = 2;	// 执行状况代码
+	string msg = 3;	// 信息
+	string taskId = 4; // 任务 Id
 }
 
 message ProgressInfo { //进度信息
-                       int32 progress = 1; //进度百分比   0到100之间的数值
-                       sint64 totalFileNum = 2; //需要同步的文件总数
-                       string totalFileSize = 3; //需要同步的文件总大小 以字节为单位
-                       sint64 syncedFileNum = 4; //已经同步的文件总数
-                       string syncedFileSize = 5; //已经同步的文件总大小
-                       string syncingFileName = 6; //当前正在同步的文件
+    int32 progress = 1;     //进度百分比   0到100之间的数值
+    sint64 totalFileNum = 2;    //需要同步的文件总数
+    string totalFileSize = 3;   //需要同步的文件总大小 以字节为单位
+    sint64 syncedFileNum = 4;   //已经同步的文件总数
+    string syncedFileSize =5;   //已经同步的文件总大小
+    string syncingFileName = 6; //当前正在同步的文件
 }
 
 message QueryTask {
-    string taskId = 1;
+	string taskId = 1;
 }
 
 message TaskState { // 任务状态
@@ -52,12 +52,12 @@ message TaskState { // 任务状态
 }
 
 message ModifyTask { // 修改任务 只支持修改限速
-                     string taskId = 1; //对应的任务id
+    string taskId = 1; //对应的任务id
     cn.com.unary.initcopy.grpc.constant.ModifyType modifyType = 2;
-                     int32 speedLimit = 3; //限速 以M为单位  0为不限速
+    int32  speedLimit = 3;  //限速 以M为单位  0为不限速
 }
 
 message DeleteTask { //删除任务信息 
-                     string taskId = 1;
-                     bool deleteFile = 2; //目标端是否删除备份的文件
+    string taskId = 1;
+    bool deleteFile = 2;//目标端是否删除备份的文件
 }

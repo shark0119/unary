@@ -4,62 +4,61 @@
 package cn.com.unary.initcopy.grpc;
 
 public final class TC_Service {
-    private TC_Service() {
-    }
+  private static  com.google.protobuf.Descriptors.FileDescriptor
+      descriptor;
 
-    public static void registerAllExtensions(
-            com.google.protobuf.ExtensionRegistryLite registry) {
-    }
-
-    public static void registerAllExtensions(
-            com.google.protobuf.ExtensionRegistry registry) {
-        registerAllExtensions(
-                (com.google.protobuf.ExtensionRegistryLite) registry);
-    }
-
-    public static com.google.protobuf.Descriptors.FileDescriptor
-    getDescriptor() {
-        return descriptor;
-    }
-
-    private static com.google.protobuf.Descriptors.FileDescriptor
-            descriptor;
-
-    static {
-        java.lang.String[] descriptorData = {
-                "\n\022task_control.proto\022\032cn.com.unary.initc" +
-                        "opy.grpc\032\026init_copy_entity.proto\032\031task_c" +
-                        "ontrol_entity.proto2\267\003\n\013ControlTask\022m\n\004I" +
-                        "nit\0220.cn.com.unary.initcopy.grpc.entity." +
-                        "ClientInitReq\0321.cn.com.unary.initcopy.gr" +
-                        "pc.entity.ServerInitResp\"\000\022h\n\006Delete\022-.c" +
-                        "n.com.unary.initcopy.grpc.entity.DeleteT" +
-                        "ask\032-.cn.com.unary.initcopy.grpc.entity." +
-                        "ExecResult\"\000\022h\n\006Modify\022-.cn.com.unary.in" +
-                        "itcopy.grpc.entity.ModifyTask\032-.cn.com.u",
-                "nary.initcopy.grpc.entity.ExecResult\"\000\022e" +
-                        "\n\005Query\022,.cn.com.unary.initcopy.grpc.ent" +
-                        "ity.QueryTask\032,.cn.com.unary.initcopy.gr" +
-                        "pc.entity.TaskState\"\000B*\n\032cn.com.unary.in" +
-                        "itcopy.grpcB\nTC_ServiceP\001b\006proto3"
+  static {
+    java.lang.String[] descriptorData = {
+      "\n\022task_control.proto\022\032cn.com.unary.initc" +
+      "opy.grpc\032\026init_copy_entity.proto\032\031task_c" +
+      "ontrol_entity.proto2\267\003\n\013ControlTask\022m\n\004I" +
+      "nit\0220.cn.com.unary.initcopy.grpc.entity." +
+      "ClientInitReq\0321.cn.com.unary.initcopy.gr" +
+      "pc.entity.ServerInitResp\"\000\022h\n\006Delete\022-.c" +
+      "n.com.unary.initcopy.grpc.entity.DeleteT" +
+      "ask\032-.cn.com.unary.initcopy.grpc.entity." +
+      "ExecResult\"\000\022h\n\006Modify\022-.cn.com.unary.in" +
+      "itcopy.grpc.entity.ModifyTask\032-.cn.com.u",
+      "nary.initcopy.grpc.entity.ExecResult\"\000\022e" +
+      "\n\005Query\022,.cn.com.unary.initcopy.grpc.ent" +
+      "ity.QueryTask\032,.cn.com.unary.initcopy.gr" +
+      "pc.entity.TaskState\"\000B*\n\032cn.com.unary.in" +
+      "itcopy.grpcB\nTC_ServiceP\001b\006proto3"
+    };
+    com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
+        new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
+          public com.google.protobuf.ExtensionRegistry assignDescriptors(
+              com.google.protobuf.Descriptors.FileDescriptor root) {
+            descriptor = root;
+            return null;
+          }
         };
-        com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
-                new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
-                    public com.google.protobuf.ExtensionRegistry assignDescriptors(
-                            com.google.protobuf.Descriptors.FileDescriptor root) {
-                        descriptor = root;
-                        return null;
-                    }
-                };
-        com.google.protobuf.Descriptors.FileDescriptor
-                .internalBuildGeneratedFileFrom(descriptorData,
-                        new com.google.protobuf.Descriptors.FileDescriptor[]{
-                                cn.com.unary.initcopy.grpc.entity.IC_Entity.getDescriptor(),
-                                cn.com.unary.initcopy.grpc.entity.TC_Entity.getDescriptor(),
-                        }, assigner);
-        cn.com.unary.initcopy.grpc.entity.IC_Entity.getDescriptor();
-        cn.com.unary.initcopy.grpc.entity.TC_Entity.getDescriptor();
-    }
+    com.google.protobuf.Descriptors.FileDescriptor
+      .internalBuildGeneratedFileFrom(descriptorData,
+        new com.google.protobuf.Descriptors.FileDescriptor[] {
+          cn.com.unary.initcopy.grpc.entity.IC_Entity.getDescriptor(),
+          cn.com.unary.initcopy.grpc.entity.TC_Entity.getDescriptor(),
+        }, assigner);
+    cn.com.unary.initcopy.grpc.entity.IC_Entity.getDescriptor();
+    cn.com.unary.initcopy.grpc.entity.TC_Entity.getDescriptor();
+  }
 
-    // @@protoc_insertion_point(outer_class_scope)
+  private TC_Service() {}
+
+  public static void registerAllExtensions(
+      com.google.protobuf.ExtensionRegistryLite registry) {
+  }
+
+  public static void registerAllExtensions(
+      com.google.protobuf.ExtensionRegistry registry) {
+    registerAllExtensions(
+        (com.google.protobuf.ExtensionRegistryLite) registry);
+  }
+
+  public static com.google.protobuf.Descriptors.FileDescriptor
+      getDescriptor() {
+    return descriptor;
+  }
+
+  // @@protoc_insertion_point(outer_class_scope)
 }

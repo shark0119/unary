@@ -1,8 +1,8 @@
 package cn.com.unary.initcopy.service.filecopy.filepacker;
 
-import cn.com.unary.initcopy.adapter.TransmitClientAdapter;
 import cn.com.unary.initcopy.entity.Constants.PackerType;
 import cn.com.unary.initcopy.exception.InfoPersistenceException;
+import cn.com.unary.initcopy.service.transmitadapter.TransmitClientAdapter;
 
 import java.io.Closeable;
 import java.io.IOException;

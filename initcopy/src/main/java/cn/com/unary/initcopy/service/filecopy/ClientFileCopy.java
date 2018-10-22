@@ -1,7 +1,6 @@
 package cn.com.unary.initcopy.service.filecopy;
 
 import cn.com.unary.initcopy.InitCopyContext;
-import cn.com.unary.initcopy.adapter.TransmitClientAdapter;
 import cn.com.unary.initcopy.common.AbstractLoggable;
 import cn.com.unary.initcopy.common.ExecExceptionsHandler;
 import cn.com.unary.initcopy.common.utils.BeanExactUtil;
@@ -15,6 +14,7 @@ import cn.com.unary.initcopy.grpc.entity.SyncTask;
 import cn.com.unary.initcopy.service.filecopy.filepacker.Packer;
 import cn.com.unary.initcopy.service.filecopy.filepacker.SyncDiffPacker;
 import cn.com.unary.initcopy.service.filecopy.init.ClientFileCopyInit;
+import cn.com.unary.initcopy.service.transmitadapter.TransmitClientAdapter;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.concurrent.BasicThreadFactory;

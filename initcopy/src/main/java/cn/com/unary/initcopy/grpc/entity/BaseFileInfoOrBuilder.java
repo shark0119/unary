@@ -71,14 +71,13 @@ public interface BaseFileInfoOrBuilder extends
   com.google.protobuf.ByteString
       getFileIdBytes();
 
-    /**
-     * <code>optional string backUpPath = 6;</code>
-     */
-    java.lang.String getBackUpPath();
-
-    /**
-     * <code>optional string backUpPath = 6;</code>
-     */
-    com.google.protobuf.ByteString
-    getBackUpPathBytes();
+  /**
+   * <code>optional string backUpPath = 6;</code>
+   */
+  java.lang.String getBackUpPath();
+  /**
+   * <code>optional string backUpPath = 6;</code>
+   */
+  com.google.protobuf.ByteString
+      getBackUpPathBytes();
 }

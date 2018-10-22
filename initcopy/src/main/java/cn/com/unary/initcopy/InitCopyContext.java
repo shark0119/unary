@@ -1,10 +1,10 @@
 package cn.com.unary.initcopy;
 
-import cn.com.unary.initcopy.adapter.TransmitServerAdapter;
 import cn.com.unary.initcopy.common.AbstractLoggable;
 import cn.com.unary.initcopy.common.ExecExceptionsHandler;
 import cn.com.unary.initcopy.grpc.GrpcServiceStarter;
 import cn.com.unary.initcopy.service.filecopy.ServerFileCopy;
+import cn.com.unary.initcopy.service.transmitadapter.TransmitServerAdapter;
 import io.grpc.BindableService;
 import lombok.Setter;
 import org.apache.commons.lang3.concurrent.BasicThreadFactory;

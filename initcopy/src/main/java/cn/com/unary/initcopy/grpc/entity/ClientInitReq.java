@@ -117,8 +117,8 @@ public  final class ClientInitReq extends
     if (ref instanceof java.lang.String) {
       return (java.lang.String) ref;
     } else {
-        com.google.protobuf.ByteString bs =
-                (com.google.protobuf.ByteString) ref;
+      com.google.protobuf.ByteString bs = 
+          (com.google.protobuf.ByteString) ref;
       java.lang.String s = bs.toStringUtf8();
       taskId_ = s;
       return s;
@@ -128,12 +128,12 @@ public  final class ClientInitReq extends
    * <code>optional string taskId = 1;</code>
    */
   public com.google.protobuf.ByteString
-  getTaskIdBytes() {
+      getTaskIdBytes() {
     java.lang.Object ref = taskId_;
     if (ref instanceof java.lang.String) {
-        com.google.protobuf.ByteString b =
-                com.google.protobuf.ByteString.copyFromUtf8(
-                        (java.lang.String) ref);
+      com.google.protobuf.ByteString b = 
+          com.google.protobuf.ByteString.copyFromUtf8(
+              (java.lang.String) ref);
       taskId_ = b;
       return b;
     } else {
@@ -155,8 +155,8 @@ public  final class ClientInitReq extends
     if (ref instanceof java.lang.String) {
       return (java.lang.String) ref;
     } else {
-        com.google.protobuf.ByteString bs =
-                (com.google.protobuf.ByteString) ref;
+      com.google.protobuf.ByteString bs = 
+          (com.google.protobuf.ByteString) ref;
       java.lang.String s = bs.toStringUtf8();
       totalSize_ = s;
       return s;
@@ -170,12 +170,12 @@ public  final class ClientInitReq extends
    * <code>optional string totalSize = 2;</code>
    */
   public com.google.protobuf.ByteString
-  getTotalSizeBytes() {
+      getTotalSizeBytes() {
     java.lang.Object ref = totalSize_;
     if (ref instanceof java.lang.String) {
-        com.google.protobuf.ByteString b =
-                com.google.protobuf.ByteString.copyFromUtf8(
-                        (java.lang.String) ref);
+      com.google.protobuf.ByteString b = 
+          com.google.protobuf.ByteString.copyFromUtf8(
+              (java.lang.String) ref);
       totalSize_ = b;
       return b;
     } else {
@@ -212,7 +212,7 @@ public  final class ClientInitReq extends
    * <code>optional string backUpPath = 3;</code>
    */
   public com.google.protobuf.ByteString
-  getBackUpPathBytes() {
+      getBackUpPathBytes() {
     java.lang.Object ref = backUpPath_;
     if (ref instanceof java.lang.String) {
       com.google.protobuf.ByteString b = 
@@ -372,11 +372,11 @@ public  final class ClientInitReq extends
 
     boolean result = true;
     result = result && getTaskId()
-            .equals(other.getTaskId());
+        .equals(other.getTaskId());
     result = result && getTotalSize()
-            .equals(other.getTotalSize());
+        .equals(other.getTotalSize());
     result = result && getBackUpPath()
-            .equals(other.getBackUpPath());
+        .equals(other.getBackUpPath());
     result = result && syncType_ == other.syncType_;
     result = result && getBaseFileInfosList()
         .equals(other.getBaseFileInfosList());
@@ -690,7 +690,7 @@ public  final class ClientInitReq extends
       java.lang.Object ref = taskId_;
       if (!(ref instanceof java.lang.String)) {
         com.google.protobuf.ByteString bs =
-                (com.google.protobuf.ByteString) ref;
+            (com.google.protobuf.ByteString) ref;
         java.lang.String s = bs.toStringUtf8();
         taskId_ = s;
         return s;
@@ -698,60 +698,65 @@ public  final class ClientInitReq extends
         return (java.lang.String) ref;
       }
     }
+
+    /**
+     * <code>optional string taskId = 1;</code>
+     */
+    public Builder setTaskId(
+        java.lang.String value) {
+      if (value == null) {
+    throw new NullPointerException();
+  }
+
+      taskId_ = value;
+      onChanged();
+      return this;
+    }
+
     /**
      * <code>optional string taskId = 1;</code>
      */
     public com.google.protobuf.ByteString
-    getTaskIdBytes() {
+        getTaskIdBytes() {
       java.lang.Object ref = taskId_;
       if (ref instanceof String) {
-          com.google.protobuf.ByteString b =
-                  com.google.protobuf.ByteString.copyFromUtf8(
-                          (java.lang.String) ref);
+        com.google.protobuf.ByteString b =
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
         taskId_ = b;
         return b;
       } else {
         return (com.google.protobuf.ByteString) ref;
       }
     }
+
     /**
      * <code>optional string taskId = 1;</code>
      */
-    public Builder setTaskId(
-            java.lang.String value) {
+    public Builder setTaskIdBytes(
+        com.google.protobuf.ByteString value) {
       if (value == null) {
-          throw new NullPointerException();
+    throw new NullPointerException();
   }
-  
+  checkByteStringIsUtf8(value);
+
       taskId_ = value;
       onChanged();
       return this;
     }
+
     /**
      * <code>optional string taskId = 1;</code>
      */
     public Builder clearTaskId() {
 
-        taskId_ = getDefaultInstance().getTaskId();
-      onChanged();
-      return this;
-    }
-    /**
-     * <code>optional string taskId = 1;</code>
-     */
-    public Builder setTaskIdBytes(
-            com.google.protobuf.ByteString value) {
-      if (value == null) {
-          throw new NullPointerException();
-      }
-        checkByteStringIsUtf8(value);
-      
-      taskId_ = value;
+      taskId_ = getDefaultInstance().getTaskId();
       onChanged();
       return this;
     }
 
     private java.lang.Object totalSize_ = "";
+
     /**
      * <pre>
      *总大小
@@ -763,7 +768,7 @@ public  final class ClientInitReq extends
       java.lang.Object ref = totalSize_;
       if (!(ref instanceof java.lang.String)) {
         com.google.protobuf.ByteString bs =
-                (com.google.protobuf.ByteString) ref;
+            (com.google.protobuf.ByteString) ref;
         java.lang.String s = bs.toStringUtf8();
         totalSize_ = s;
         return s;
@@ -771,26 +776,7 @@ public  final class ClientInitReq extends
         return (java.lang.String) ref;
       }
     }
-    /**
-     * <pre>
-     *总大小
-     * </pre>
-     *
-     * <code>optional string totalSize = 2;</code>
-     */
-    public com.google.protobuf.ByteString
-    getTotalSizeBytes() {
-      java.lang.Object ref = totalSize_;
-      if (ref instanceof String) {
-          com.google.protobuf.ByteString b =
-                  com.google.protobuf.ByteString.copyFromUtf8(
-                          (java.lang.String) ref);
-        totalSize_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
-    }
+
     /**
      * <pre>
      *总大小
@@ -799,15 +785,56 @@ public  final class ClientInitReq extends
      * <code>optional string totalSize = 2;</code>
      */
     public Builder setTotalSize(
-            java.lang.String value) {
+        java.lang.String value) {
       if (value == null) {
-          throw new NullPointerException();
+    throw new NullPointerException();
   }
-  
+
       totalSize_ = value;
       onChanged();
       return this;
     }
+
+    /**
+     * <pre>
+     *总大小
+     * </pre>
+     *
+     * <code>optional string totalSize = 2;</code>
+     */
+    public com.google.protobuf.ByteString
+        getTotalSizeBytes() {
+      java.lang.Object ref = totalSize_;
+      if (ref instanceof String) {
+        com.google.protobuf.ByteString b =
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        totalSize_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    /**
+     * <pre>
+     *总大小
+     * </pre>
+     *
+     * <code>optional string totalSize = 2;</code>
+     */
+    public Builder setTotalSizeBytes(
+        com.google.protobuf.ByteString value) {
+      if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+
+      totalSize_ = value;
+      onChanged();
+      return this;
+    }
+
     /**
      * <pre>
      *总大小
@@ -817,25 +844,7 @@ public  final class ClientInitReq extends
      */
     public Builder clearTotalSize() {
 
-        totalSize_ = getDefaultInstance().getTotalSize();
-      onChanged();
-      return this;
-    }
-    /**
-     * <pre>
-     *总大小
-     * </pre>
-     *
-     * <code>optional string totalSize = 2;</code>
-     */
-    public Builder setTotalSizeBytes(
-            com.google.protobuf.ByteString value) {
-      if (value == null) {
-          throw new NullPointerException();
-      }
-        checkByteStringIsUtf8(value);
-      
-      totalSize_ = value;
+      totalSize_ = getDefaultInstance().getTotalSize();
       onChanged();
       return this;
     }
@@ -910,6 +919,7 @@ public  final class ClientInitReq extends
       onChanged();
       return this;
     }
+
     /**
      * <pre>
      * 备份的目标端路径
@@ -920,7 +930,7 @@ public  final class ClientInitReq extends
     public Builder setBackUpPathBytes(
         com.google.protobuf.ByteString value) {
       if (value == null) {
-          throw new NullPointerException();
+    throw new NullPointerException();
   }
   checkByteStringIsUtf8(value);
       
