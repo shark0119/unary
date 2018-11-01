@@ -11,7 +11,7 @@ import cn.com.unary.initcopy.entity.FileInfoDO;
 import cn.com.unary.initcopy.entity.SyncTaskDO;
 import cn.com.unary.initcopy.exception.InfoPersistenceException;
 import cn.com.unary.initcopy.service.filecopy.io.AbstractFileInput;
-import cn.com.unary.initcopy.service.transmitadapter.TransmitClientAdapter;
+import cn.com.unary.initcopy.service.transmit.TransmitClientAdapter;
 import com.alibaba.fastjson.JSON;
 import com.una.common.TransmitException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -101,25 +101,13 @@ public class SyncAllPacker extends AbstractLoggable implements Packer {
      * 待读取的文件列表
      */
     private Iterator<FileInfoDO> fiIterator;
-    /**
-     * 当前正在读取的文件
-     */
     private FileInfoDO currentFileInfo;
     /**
      * 文件信息数据
      */
     private ByteBuffer fileInfoBuffer;
-    /**
-     * 当前的包序号
-     */
     private int packIndex = 0;
-    /**
-     * 任务ID。
-     */
     private byte[] taskId;
-    /**
-     * 当前打包进程是否暂停
-     */
     private volatile boolean pause;
 
     public SyncAllPacker() {
@@ -144,7 +132,7 @@ public class SyncAllPacker extends AbstractLoggable implements Packer {
         byte[] packData;
         SyncTaskDO task = fm.queryTask(taskId);
         try {
-            transfer.start(BeanExactUtil.takeFromTaskDO(task));
+            transfer.start(BeanExactUtil.takeFromTransmitParamTaskDO(task));
         } catch (IOException e) {
             throw new IOException(String.format("Transfer connect error. ip:%s, port:%d."
                     , task.getIp(), task.getTransferPort()), e);
@@ -154,7 +142,7 @@ public class SyncAllPacker extends AbstractLoggable implements Packer {
             try {
                 packData = CommonUtils.extractBytes(pack());
             } catch (ClosedChannelException e) {
-                logger.warn("packer stop because channel close.");
+                logger.warn("packer stop because channel shutdown.");
                 return;
             }
             if (packData.length <= HEAD_LENGTH) {
@@ -174,7 +162,7 @@ public class SyncAllPacker extends AbstractLoggable implements Packer {
     /**
      * 将文件数据打包
      *
-     * @return 如无数据，返回长度为0 的字节数组
+     * @return 如无数据，返回长度为 0 的字节数组
      */
     private ByteBuffer pack() throws IOException, InfoPersistenceException {
         if (pause) {

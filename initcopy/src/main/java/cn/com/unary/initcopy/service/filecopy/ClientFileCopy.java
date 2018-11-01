@@ -5,16 +5,16 @@ import cn.com.unary.initcopy.common.AbstractLoggable;
 import cn.com.unary.initcopy.common.ExecExceptionsHandler;
 import cn.com.unary.initcopy.common.utils.BeanExactUtil;
 import cn.com.unary.initcopy.dao.FileManager;
-import cn.com.unary.initcopy.entity.Constants;
 import cn.com.unary.initcopy.entity.FileInfoDO;
 import cn.com.unary.initcopy.exception.InfoPersistenceException;
 import cn.com.unary.initcopy.exception.TaskFailException;
+import cn.com.unary.initcopy.grpc.constant.ModifyType;
 import cn.com.unary.initcopy.grpc.entity.DiffFileInfo;
 import cn.com.unary.initcopy.grpc.entity.SyncTask;
 import cn.com.unary.initcopy.service.filecopy.filepacker.Packer;
 import cn.com.unary.initcopy.service.filecopy.filepacker.SyncDiffPacker;
 import cn.com.unary.initcopy.service.filecopy.init.ClientFileCopyInit;
-import cn.com.unary.initcopy.service.transmitadapter.TransmitClientAdapter;
+import cn.com.unary.initcopy.service.transmit.TransmitClientAdapter;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.concurrent.BasicThreadFactory;
@@ -86,7 +86,7 @@ public class ClientFileCopy extends AbstractLoggable implements ApplicationConte
      * @param modifyType 更新操作
      * @throws IOException 任务关闭异常
      */
-    public void updateTask(String taskId, Constants.UpdateType modifyType) throws IOException {
+    public void updateTask(String taskId, ModifyType modifyType) throws IOException {
         switch (modifyType) {
             case PAUSE:
                 synchronized (lock) {
@@ -94,9 +94,14 @@ public class ClientFileCopy extends AbstractLoggable implements ApplicationConte
                 }
                 break;
             case RESUME:
-            default:
                 TransmitClientAdapter transmitClient = applicationContext.getBean(TransmitClientAdapter.class);
                 startAllSync(transmitClient, taskId);
+                break;
+            case SPEED_LIMIT:
+                // TransmitClientAdapter client = fileCopy.getTransferMap().get(task.getTaskId())
+                // TODO speed limit
+                return;
+            default:
                 break;
         }
     }
@@ -234,7 +239,7 @@ public class ClientFileCopy extends AbstractLoggable implements ApplicationConte
                 try {
                     this.close();
                 } catch (IOException e) {
-                    logger.error("packer close error, taskId:" + taskId, e);
+                    logger.error("packer shutdown error, taskId:" + taskId, e);
                 }
             }
         }

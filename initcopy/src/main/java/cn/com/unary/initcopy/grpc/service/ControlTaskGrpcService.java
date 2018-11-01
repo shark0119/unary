@@ -50,9 +50,9 @@ public class ControlTaskGrpcService extends ControlTaskGrpc.ControlTaskImplBase 
     }
 
     @Override
-    public void modify(ModifyTask request, StreamObserver<ExecResult> responseObserver) {
+    public void resume(ResumeTask request, StreamObserver<SyncProcess> responseObserver) {
         CommonUtils.logGrpcEntity(logger, request);
-        ExecResult resp = this.modifyLinker(request);
+        SyncProcess resp = this.resumeLinker(request);
         CommonUtils.logGrpcEntity(logger, resp);
         responseObserver.onNext(resp);
         responseObserver.onCompleted();
@@ -124,21 +124,21 @@ public class ControlTaskGrpcService extends ControlTaskGrpc.ControlTaskImplBase 
         return builder.build();
     }
 
-    private ExecResult modifyLinker(ModifyTask task) {
+    private SyncProcess resumeLinker(ResumeTask task) {
         Objects.requireNonNull(task);
         if (ValidateUtils.isEmpty(task.getTaskId())) {
             throw new IllegalArgumentException(MSG_TASK_ID_NULL);
         }
-        Objects.requireNonNull(task.getModifyType());
-        ExecResult.Builder builder = ExecResult.newBuilder();
+        SyncProcess.Builder builder = SyncProcess.newBuilder();
+        ExecResult.Builder resultBuilder = ExecResult.newBuilder();
         try {
-            taskUpdater.modify(task);
-            builder.setHealthy(true).setMsg(MSG_TASK_SUCCESS);
+            taskUpdater.resume(task.getTaskId());
+            resultBuilder.setHealthy(true).setMsg(MSG_TASK_SUCCESS);
         } catch (Exception e) {
             logger.error(MSG_TASK_FAIL, e);
-            builder.setHealthy(false).setMsg(e.getMessage() == null ? "" : e.getMessage());
+            resultBuilder.setHealthy(false).setMsg(e.getMessage() == null ? "" : e.getMessage());
         }
-        return builder.build();
+        return builder.setExecResult(resultBuilder).build();
     }
 
 }

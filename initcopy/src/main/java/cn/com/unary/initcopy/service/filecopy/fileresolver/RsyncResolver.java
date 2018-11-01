@@ -1,6 +1,7 @@
 package cn.com.unary.initcopy.service.filecopy.fileresolver;
 
 import cn.com.unary.initcopy.entity.Constants;
+import cn.com.unary.initcopy.grpc.entity.SyncProcess;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -17,8 +18,13 @@ import java.io.IOException;
 public class RsyncResolver implements Resolver{
 
 	@Override
-	public boolean process(byte[] data) {
-		return false;
+	public SyncProcess pause() throws IOException {
+		return null;
+	}
+
+	@Override
+	public void process(byte[] data) {
+
 	}
 
 	@Override
@@ -27,14 +33,8 @@ public class RsyncResolver implements Resolver{
 	}
 
 	@Override
-    public Resolver setTaskId(String taskId) {
-		return this;
-	}
+	public void init(String taskId, String backupPath) {
 
-	@Override
-    public Resolver setBackUpPath(String backUpPath) {
-
-		return this;
 	}
 
 	@Override

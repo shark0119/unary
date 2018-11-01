@@ -900,25 +900,6 @@ public  final class SyncTask extends
         return (java.lang.String) ref;
       }
     }
-
-    /**
-     * <pre>
-     *任务ID
-     * </pre>
-     *
-     * <code>optional string taskId = 1;</code>
-     */
-    public Builder setTaskId(
-        java.lang.String value) {
-      if (value == null) {
-    throw new NullPointerException();
-  }
-
-      taskId_ = value;
-      onChanged();
-      return this;
-    }
-
     /**
      * <pre>
      *任务ID
@@ -930,7 +911,7 @@ public  final class SyncTask extends
         getTaskIdBytes() {
       java.lang.Object ref = taskId_;
       if (ref instanceof String) {
-        com.google.protobuf.ByteString b =
+          com.google.protobuf.ByteString b =
             com.google.protobuf.ByteString.copyFromUtf8(
                 (java.lang.String) ref);
         taskId_ = b;
@@ -948,16 +929,34 @@ public  final class SyncTask extends
      * <code>optional string taskId = 1;</code>
      */
     public Builder setTaskIdBytes(
-        com.google.protobuf.ByteString value) {
-      if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
+            com.google.protobuf.ByteString value) {
+        if (value == null) {
+            throw new NullPointerException();
+        }
+        checkByteStringIsUtf8(value);
 
-      taskId_ = value;
-      onChanged();
-      return this;
+        taskId_ = value;
+        onChanged();
+        return this;
     }
+
+      /**
+       * <pre>
+       * 任务ID
+       * </pre>
+       *
+       * <code>optional string taskId = 1;</code>
+       */
+      public Builder setTaskId(
+              java.lang.String value) {
+          if (value == null) {
+              throw new NullPointerException();
+          }
+
+          taskId_ = value;
+          onChanged();
+          return this;
+      }
 
     /**
      * <pre>
@@ -1406,7 +1405,6 @@ public  final class SyncTask extends
       onChanged();
       return this;
     }
-
     /**
      * <pre>
      *限速 以M为单位  0为不限速

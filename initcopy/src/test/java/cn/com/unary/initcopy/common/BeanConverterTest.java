@@ -42,7 +42,7 @@ public class BeanConverterTest {
         BaseFileInfoDO infoDO = new BaseFileInfoDO();
         infoDO.setFileId("fileId");
         infoDO.setFileSize(10000L);
-        infoDO.setFullName("i modify just now..");
+        infoDO.setFullName("i resume just now..");
         BaseFileInfo info = BeanConverter.convert(infoDO, BaseFileInfo.class, true);
         System.out.println(info);
         System.out.println("************pojo2pojo******************");

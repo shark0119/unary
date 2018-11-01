@@ -29,10 +29,10 @@ public final class IC_Constant {
       "\022\021\n\rCOMPRESS_NONE\020\000\022\021\n\rCOMPRESS_ZLIB\020\001*0" +
       "\n\013EncryptType\022\020\n\014ENCRYPT_NONE\020\000\022\017\n\013ENCRY" +
       "PT_AES\020\001**\n\010PackType\022\r\n\tPACK_NONE\020\000\022\017\n\013P" +
-      "ACK_FORMAT\020\001*3\n\nModifyType\022\t\n\005PAUSE\020\000\022\t\n" +
-      "\005START\020\001\022\017\n\013SPEED_LIMIT\020\002B4\n#cn.com.unar" +
-      "y.initcopy.grpc.constantB\013IC_ConstantP\001b" +
-      "\006proto3"
+              "ACK_FORMAT\020\001*4\n\nModifyType\022\t\n\005PAUSE\020\000\022\n\n" +
+              "\006RESUME\020\001\022\017\n\013SPEED_LIMIT\020\002B4\n#cn.com.una" +
+              "ry.initcopy.grpc.constantB\013IC_ConstantP\001" +
+              "b\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {

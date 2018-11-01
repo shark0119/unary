@@ -11,12 +11,13 @@ import "task_control_entity.proto";
 package cn.com.unary.initcopy.grpc;
 
 service ControlTask {
-	// 任务初始化
-	rpc Init (cn.com.unary.initcopy.grpc.entity.ClientInitReq) returns (cn.com.unary.initcopy.grpc.entity.ServerInitResp) {};
-	// 删除任务
+    // 任务初始化
+    rpc Init (cn.com.unary.initcopy.grpc.entity.ClientInitReq) returns (cn.com.unary.initcopy.grpc.entity.ServerInitResp) {};
+    // 删除任务
     rpc Delete (cn.com.unary.initcopy.grpc.entity.DeleteTask) returns (cn.com.unary.initcopy.grpc.entity.ExecResult) {};
-    // 修改任务 
-    rpc Modify (cn.com.unary.initcopy.grpc.entity.ModifyTask) returns (cn.com.unary.initcopy.grpc.entity.ExecResult) {};
-	// 查询任务
+    // 唤醒任务
+    rpc Resume (cn.com.unary.initcopy.grpc.entity.ResumeTask) returns (cn.com.unary.initcopy.grpc.entity.SyncProcess) {
+    };
+    // 查询任务
     rpc Query (cn.com.unary.initcopy.grpc.entity.QueryTask) returns (cn.com.unary.initcopy.grpc.entity.TaskState) {};
 }

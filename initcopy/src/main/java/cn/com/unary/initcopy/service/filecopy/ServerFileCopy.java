@@ -9,12 +9,13 @@ import cn.com.unary.initcopy.exception.InfoPersistenceException;
 import cn.com.unary.initcopy.exception.TaskFailException;
 import cn.com.unary.initcopy.grpc.entity.ClientInitReq;
 import cn.com.unary.initcopy.grpc.entity.ServerInitResp;
+import cn.com.unary.initcopy.grpc.entity.SyncProcess;
 import cn.com.unary.initcopy.service.filecopy.filepacker.SyncAllPacker;
 import cn.com.unary.initcopy.service.filecopy.fileresolver.Resolver;
 import cn.com.unary.initcopy.service.filecopy.fileresolver.RsyncResolver;
 import cn.com.unary.initcopy.service.filecopy.fileresolver.SyncAllResolver;
 import cn.com.unary.initcopy.service.filecopy.init.ServerFileCopyInit;
-import cn.com.unary.initcopy.service.transmitadapter.DataHandlerAdapter;
+import cn.com.unary.initcopy.service.transmit.DataHandlerAdapter;
 import lombok.Setter;
 import org.apache.commons.lang3.concurrent.BasicThreadFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,14 +30,16 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import static cn.com.unary.initcopy.InitCopyContext.RESOURCE_TIME_OUT;
 
 /**
  * 目标端的文件复制模块
@@ -47,9 +50,18 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 @Component("ServerFileCopy")
 @Scope("singleton")
-public class ServerFileCopy extends AbstractLoggable implements DataHandlerAdapter,ApplicationContextAware, Closeable {
+public class ServerFileCopy extends AbstractLoggable implements DataHandlerAdapter, ApplicationContextAware, Closeable {
 
+    private final ThreadPoolExecutor fileCopyExec;
     private final Object lock;
+    /**
+     * 存放待执行的任务列表
+     */
+    private final Map<String, CopyTask> taskMap;
+    /**
+     * 已放入线程池中执行的任务
+     */
+    private final Map<String, CopyTask> execTaskMap;
     @Autowired
     private ServerFileCopyInit init;
     @Autowired
@@ -58,16 +70,6 @@ public class ServerFileCopy extends AbstractLoggable implements DataHandlerAdapt
     private volatile boolean close;
     @Setter
     private ApplicationContext applicationContext;
-    private final ThreadPoolExecutor fileCopyExec;
-
-    /**
-     * 已放入线程池中执行的任务
-     */
-    private final Map<String, CopyTask> execTaskMap;
-    /**
-     * 任务列表
-     */
-    private final Map<String, CopyTask> taskMap;
 
     public ServerFileCopy() {
         close = false;
@@ -93,8 +95,11 @@ public class ServerFileCopy extends AbstractLoggable implements DataHandlerAdapt
      */
     @Override
     public void handle(byte[] data) {
-        String taskId = takeTaskId(data);
-
+        if (close) {
+            logger.error("FileCopy already shutdown.");
+            return;
+        }
+        String taskId = new String(data, 0, InitCopyContext.UUID_LEN, InitCopyContext.CHARSET);
         synchronized (lock) {
             if (close) {
                 logger.error("FileCopy already shutdown.");
@@ -104,12 +109,12 @@ public class ServerFileCopy extends AbstractLoggable implements DataHandlerAdapt
                 execTaskMap.get(taskId).addPack(data);
             } else {
                 if (taskMap.containsKey(taskId)) {
-                    final CopyTask copyTask = taskMap.get(taskId);
+                    final CopyTask copyTask = taskMap.remove(taskId);
                     copyTask.addPack(data);
                     fileCopyExec.execute(copyTask);
                     execTaskMap.put(taskId, copyTask);
                 } else {
-                    logger.error("Task " + taskId + " not found;");
+                    logger.warn(String.format("Task not found:%s, ignore a pack.", taskId));
                 }
             }
         }
@@ -123,12 +128,15 @@ public class ServerFileCopy extends AbstractLoggable implements DataHandlerAdapt
      * @throws TaskFailException 任务初始化失败异常
      */
     public ServerInitResp startInit(ClientInitReq req) throws TaskFailException {
-        CopyTask task = new CopyTask(req.getTaskId(), req.getBackUpPath());
+        final CopyTask task = new CopyTask(req.getTaskId(), req.getBackUpPath());
         synchronized (lock) {
             if (close) {
                 throw new TaskFailException("FileCopy already shutdown.");
             }
-            taskMap.put(req.getTaskId(), task);
+            final CopyTask oldTask = taskMap.put(req.getTaskId(), task);
+            if (null != oldTask) {
+                logger.warn(String.format("Task %s was replaced by %s", oldTask.toString(), task.toString()));
+            }
         }
         try {
             return init.startInit(req);
@@ -146,9 +154,12 @@ public class ServerFileCopy extends AbstractLoggable implements DataHandlerAdapt
     public void close() {
         synchronized (lock) {
             fileCopyExec.shutdownNow();
-            for (String i : taskMap.keySet()) {
-                taskMap.get(i).close();
+            taskMap.clear();
+            for (Map.Entry<String, CopyTask> entry : execTaskMap.entrySet()) {
+                entry.getValue().shutdown();
+                fm.deleteFileInfoByTaskId(entry.getValue().taskId);
             }
+            execTaskMap.clear();
             close = true;
         }
     }
@@ -161,86 +172,75 @@ public class ServerFileCopy extends AbstractLoggable implements DataHandlerAdapt
      */
     public void deleteTask(String taskId) throws IOException {
         synchronized (lock) {
-            if (!taskMap.containsKey(taskId)) {
-                throw new IllegalStateException("Task not found with id:" + taskId);
+            CopyTask task = execTaskMap.remove(taskId);
+            if (task == null) {
+                task = taskMap.remove(taskId);
+                if (task == null) {
+                    throw new IllegalStateException(String.format("Task not found:%s", taskId));
+                }
             }
-        }
-        this.updateTask(taskId, Constants.UpdateType.PAUSE);
-        synchronized (lock) {
-            taskMap.remove(taskId);
+            logger.info(String.format("Task delete:%s", task.toString()));
         }
     }
 
     /**
-     * 暂停或者唤醒某个任务
-     *
-     * @param taskId     任务Id
-     * @param updateType 更新操作类型
-     * @throws IOException IO 异常
+     * 检查在线程池中执行的任务列表，如果超时未接受到数据，
+     * 默认为客户端断开连接，则暂停该任务并放入待执行任务列表中
      */
-    public void updateTask(String taskId, Constants.UpdateType updateType) throws IOException {
-        switch (updateType) {
-            case RESUME:
-                synchronized (lock) {
-                    if (execTaskMap.containsKey(taskId)) {
-                        return;
-                    }
-                    if (taskMap.containsKey(taskId)) {
-                        final CopyTask copyTask = taskMap.get(taskId);
-                        fileCopyExec.execute(copyTask);
-                        execTaskMap.put(taskId, copyTask);
-                    } else {
-                        throw new IOException("Task " + taskId + " not found;");
-                    }
+    public void clean() {
+        synchronized (lock) {
+            Iterator<Map.Entry<String, CopyTask>> iterator = execTaskMap.entrySet().iterator();
+            Map.Entry<String, CopyTask> entry;
+            long currentTime = System.currentTimeMillis();
+            while (iterator.hasNext()) {
+                entry = iterator.next();
+                if (currentTime - entry.getValue().timeStamp > RESOURCE_TIME_OUT) {
+                    iterator.remove();
+                    entry.getValue().pause = true;
+                    taskMap.put(entry.getKey(), entry.getValue());
                 }
-                break;
-            case PAUSE:
-            default:
-                synchronized (lock) {
-                    execTaskMap.get(taskId).close();
-                }
-                break;
+            }
         }
     }
 
-    private String takeTaskId(byte[] data) {
-        return new String(data, 0, InitCopyContext.UUID_LEN, InitCopyContext.CHARSET);
+    public void resume(String taskId) {
     }
 
-    class CopyTask implements Runnable, Closeable {
+    class CopyTask implements Runnable {
         private final List<byte[]> packs;
         private final Object lock;
-        private final Resolver syncAllResolver;
-        private final Resolver syncDiffResolver;
-        private final String taskId;
+        private final String taskId, backUpPath;
+        private final AtomicInteger tempWait = new AtomicInteger(0);
+        private final AtomicInteger tempNotify = new AtomicInteger(0);
+        private Resolver resolver;
         /**
-         * pause 表示当前拷贝任务处于挂起状态，等待源端传包
+         * wait 表示当前拷贝任务处于挂起状态，等待源端传包
          * shutdown 表示当前任务已被关闭
+         * pause 表示资源长时间未使用，被关闭
          */
-        private boolean pause, shutdown;
-        private long waitTime, tempTime, startTime;
+        private volatile boolean wait, shutdown, pause;
         /**
-         * 调试代码
+         * 资源被使用的最近时间点
          */
-        private final AtomicInteger wait = new AtomicInteger(0);
-        private final AtomicInteger notify = new AtomicInteger(0);
+        private long timeStamp;
+        /**
+         * 用于任务计时
+         */
+        private long waitTime, tempTime, startTime;
+        private SyncProcess syncProcessDO;
 
         /**
          * @param taskId     任务Id
-         * @param backUpPath 如果源目录与目标目录是多对一关系，则不为空，否则设为空
+         * @param backUpPath 如果源目录与目标目录是多对一关系，则不为空，否则设为 null
          */
         private CopyTask(String taskId, String backUpPath) {
+            wait = false;
+            shutdown = false;
+            lock = new Object();
             this.taskId = taskId;
-            this.syncAllResolver = applicationContext.getBean("SyncAllResolver", SyncAllResolver.class);
-            this.syncDiffResolver = applicationContext.getBean("RsyncResolver", RsyncResolver.class);
-            // TODO
-            syncAllResolver.setTaskId(taskId).setBackUpPath(backUpPath);
-            syncDiffResolver.setTaskId(taskId).setBackUpPath(backUpPath);
+            this.backUpPath = backUpPath;
             packs = new ArrayList<>(30);
             startTime = System.currentTimeMillis();
-            lock = new Object();
-            pause = false;
-            shutdown = false;
         }
 
         /**
@@ -248,6 +248,7 @@ public class ServerFileCopy extends AbstractLoggable implements DataHandlerAdapt
          */
         @Override
         public void run() {
+            pause = false;
             Thread.currentThread().setName(Thread.currentThread().getName() + taskId);
             byte[] pack;
             while (true) {
@@ -256,8 +257,12 @@ public class ServerFileCopy extends AbstractLoggable implements DataHandlerAdapt
                         pack = packs.get(0);
                         packs.remove(0);
                     } else {
-                        logger.info(wait.incrementAndGet() + "'s wait when pack null.");
-                        pause = true;
+                        if (pause) {
+                            logger.info(String.format("CopyTask:%s, paused.", taskId));
+                            break;
+                        }
+                        logger.info(tempWait.incrementAndGet() + "'s wait when pack null.");
+                        wait = true;
                         try {
                             tempTime = System.currentTimeMillis();
                             lock.wait();
@@ -272,26 +277,27 @@ public class ServerFileCopy extends AbstractLoggable implements DataHandlerAdapt
 
                     }
                 }
-                // 当前任务已完成解析
-                if (resolve(pack)) {
-                    synchronized (lock) {
-                        if (!packs.isEmpty()) {
-                            throw new IllegalStateException("Program error. Task Done but "
-                                    + "Pack size: " + packs.size());
-                        }
-                    }
-                    break;
-                }
+                resolve(pack);
             }
-            this.close();
+            this.shutdown();
         }
 
-        private boolean resolve(byte[] pack) {
+        private void resolve(byte[] pack) {
             try {
-                if (Constants.PackerType.SYNC_ALL_JAVA.getValue() == pack[SyncAllPacker.HEAD_LENGTH - 1]) {
-                    return syncAllResolver.process(pack);
-                } else {
-                    return syncDiffResolver.process(pack);
+                if (fm.taskFinished(taskId)) {
+                    throw new IllegalStateException("Task already finished.");
+                }
+                if (resolver == null) {
+                    if (Constants.PackerType.SYNC_ALL_JAVA.getValue() == pack[SyncAllPacker.HEAD_LENGTH - 1]) {
+                        resolver = applicationContext.getBean(SyncAllResolver.class);
+                    } else {
+                        resolver = applicationContext.getBean(RsyncResolver.class);
+                    }
+                    resolver.init(taskId, backUpPath);
+                }
+                resolver.process(pack);
+                if (fm.taskFinished(taskId)) {
+                    resolver.close();
                 }
             } catch (IOException e) {
                 throw new IllegalStateException("ERROR 0x01 : IO error.", e);
@@ -301,17 +307,17 @@ public class ServerFileCopy extends AbstractLoggable implements DataHandlerAdapt
         }
 
         private void addPack(byte[] pack) {
-            Objects.requireNonNull(pack);
             synchronized (lock) {
                 if (shutdown) {
                     return;
                 }
+                timeStamp = System.currentTimeMillis();
                 this.packs.add(pack);
-                if (pause) {
-                    logger.info(notify.incrementAndGet() + "'s notify when pack arrive.");
+                if (wait) {
+                    logger.info(tempNotify.incrementAndGet() + "'s notify when pack arrive.");
                     waitTime += System.currentTimeMillis() - tempTime;
                     lock.notify();
-                    pause = false;
+                    wait = false;
                 }
             }
         }
@@ -319,20 +325,17 @@ public class ServerFileCopy extends AbstractLoggable implements DataHandlerAdapt
         /**
          * 会将尝试停止当前任务
          * 1. 从任务执行 Map中移除该任务
-         * 2. 从持久化层删除相关文件信息。
          */
-        @Override
-        public void close() {
+        void shutdown() {
+            if (shutdown) {
+                return;
+            }
             synchronized (lock) {
                 if (shutdown) {
                     return;
                 }
                 packs.clear();
                 shutdown = true;
-            }
-            synchronized (ServerFileCopy.this.lock) {
-                ServerFileCopy.this.execTaskMap.remove(this.taskId);
-                ServerFileCopy.this.fm.deleteFileInfoByTaskId(this.taskId);
             }
             logger.info(String.format("Task resolver done. WaitTime: %d. Total cost:%d.",
                     waitTime, System.currentTimeMillis() - startTime));

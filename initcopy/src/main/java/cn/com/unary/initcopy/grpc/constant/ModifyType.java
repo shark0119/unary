@@ -21,9 +21,9 @@ public enum ModifyType
    *重启
    * </pre>
    *
-   * <code>START = 1;</code>
+   * <code>RESUME = 1;</code>
    */
-  START(1),
+  RESUME(1),
   /**
    * <pre>
    * 限速
@@ -48,9 +48,9 @@ public enum ModifyType
    *重启
    * </pre>
    *
-   * <code>START = 1;</code>
+   * <code>RESUME = 1;</code>
    */
-  public static final int START_VALUE = 1;
+  public static final int RESUME_VALUE = 1;
   /**
    * <pre>
    * 限速
@@ -80,7 +80,8 @@ public enum ModifyType
   public static ModifyType forNumber(int value) {
     switch (value) {
       case 0: return PAUSE;
-      case 1: return START;
+        case 1:
+            return RESUME;
       case 2: return SPEED_LIMIT;
       default: return null;
     }

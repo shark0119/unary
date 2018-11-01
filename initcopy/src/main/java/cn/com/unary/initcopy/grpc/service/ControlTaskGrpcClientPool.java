@@ -11,16 +11,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import static cn.com.unary.initcopy.InitCopyContext.RESOURCE_TIME_OUT;
+
 /**
  * @author Shark.Yin
  * @since 1.0
  */
 public class ControlTaskGrpcClientPool {
 
-    /**
-     * 默认为 10s，超时未使用的会被删除
-     */
-    public static long TIME_OUT = 10000L;
     private static Map<String, ClientInfo> grpcClientMap = new ConcurrentHashMap<>(10);
 
     private ControlTaskGrpcClientPool() {
@@ -32,19 +30,22 @@ public class ControlTaskGrpcClientPool {
             clientInfo = new ClientInfo();
             clientInfo.grpcClient = new ControlTaskGrpcClient(ip, port);
         }
+        clientInfo.timeStamp = System.currentTimeMillis();
+        return clientInfo.grpcClient;
+    }
+
+    public static void clean() {
         long currentTimeTimeMillis = System.currentTimeMillis();
-        clientInfo.timeStamp = currentTimeTimeMillis;
         List<String> removeKey = new ArrayList<>(grpcClientMap.size() / 2);
 
         for (Map.Entry<String, ClientInfo> entry : grpcClientMap.entrySet()) {
-            if (currentTimeTimeMillis - entry.getValue().timeStamp > TIME_OUT) {
+            if (currentTimeTimeMillis - entry.getValue().timeStamp > RESOURCE_TIME_OUT) {
                 removeKey.add(entry.getKey());
             }
         }
         for (String key : removeKey) {
             grpcClientMap.remove(key).grpcClient.close();
         }
-        return clientInfo.grpcClient;
     }
 
     private static class ClientInfo {
@@ -54,9 +55,9 @@ public class ControlTaskGrpcClientPool {
 
     public static class ControlTaskGrpcClient extends AbstractLoggable {
 
+        private static final String MSG_SERVER_ERROR = "Error grpc server status";
         private ControlTaskGrpc.ControlTaskBlockingStub blockingStub;
         private ManagedChannel channel;
-        private static final String MSG_SERVER_ERROR = "Error grpc server status";
 
         /**
          * 配置 GRPC 服务的相关信息
@@ -102,14 +103,14 @@ public class ControlTaskGrpcClientPool {
         }
 
         /**
-         * 调用 {@link cn.com.unary.initcopy.grpc.ControlTaskGrpc#METHODID_MODIFY}
+         * 调用 {@link cn.com.unary.initcopy.grpc.ControlTaskGrpc#METHOD_RESUME}
          *
-         * @param modifyTask 修改任务的相关参数
+         * @param resumeTask 修改任务的相关参数
          * @return 执行结果
          */
-        public ExecResult invokeGrpcModify(ModifyTask modifyTask) {
+        public SyncProcess invokeGrpcResume(ResumeTask resumeTask) {
             try {
-                return blockingStub.modify(modifyTask);
+                return blockingStub.resume(resumeTask);
             } catch (Exception e) {
                 throw new IllegalStateException(MSG_SERVER_ERROR, e);
             }

@@ -67,7 +67,7 @@ public class RamFileManager extends AbstractLoggable implements FileManager {
                 totalFileNum++;
             }
         }
-        if (taskDO != null) {
+        if (taskDO != null && totalFileNum != 0L) {
             taskDO.setTotalFileNum(totalFileNum);
         }
     }

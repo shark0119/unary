@@ -10,6 +10,7 @@ import cn.com.unary.initcopy.entity.Constants;
 import cn.com.unary.initcopy.entity.Constants.PackerType;
 import cn.com.unary.initcopy.entity.FileInfoDO;
 import cn.com.unary.initcopy.exception.InfoPersistenceException;
+import cn.com.unary.initcopy.grpc.entity.SyncProcess;
 import cn.com.unary.initcopy.service.filecopy.filepacker.SyncAllPacker;
 import cn.com.unary.initcopy.service.filecopy.io.AbstractFileOutput;
 import cn.com.unary.initcopy.service.filecopy.io.FileAttrProcessor;
@@ -26,6 +27,7 @@ import java.nio.ByteBuffer;
  * 全复制时使用的文件解析器，标识为
  * PackType.SYNC_ALL_JAVA
  * 抛出的 IllegalStateException#Program Error 都是调试代码
+ * 关闭后，再调用 process 则会默认从文件头开始读取。
  *
  * @author shark
  */
@@ -52,18 +54,23 @@ public class SyncAllResolver extends AbstractLoggable implements Resolver {
     private AbstractFileOutput output;
     @Autowired
     private FileAttrProcessor faProcessor;
-    private ReadProcess stage = ReadProcess.FILE_DONE;
     private ByteBuffer fileInfo;
+    private ReadProcess stage = ReadProcess.FILE_DONE;
     /**
      * 当前读取的包序号
      */
     private int packIndex;
-    private String taskId;
+    private String taskId, backUpPath;
     private FileInfoDO currentFile;
-    private String backUpPath;
 
     @Override
-    public boolean process(byte[] data) throws IOException, InfoPersistenceException {
+    public void init(String taskId, String backUpPath) {
+        this.taskId = taskId;
+        this.backUpPath = backUpPath;
+    }
+
+    @Override
+    public void process(byte[] data) throws IOException, InfoPersistenceException {
         packIndex = CommonUtils.byteArrayToInt(data, InitCopyContext.UUID_LEN);
         logger.info(String.format("we got pack with index: %d", packIndex));
         // get pack info
@@ -97,17 +104,6 @@ public class SyncAllResolver extends AbstractLoggable implements Resolver {
                 break;
             default:
                 throw new IllegalStateException("Program error. Unexpected state " + stage);
-        }
-        if (fm.taskFinished(taskId)) {
-            try {
-                this.close();
-            } catch (Exception e) {
-                logger.error("close resource error", e);
-            }
-            logger.info(String.format("Task:%s done.", taskId));
-            return true;
-        } else {
-            return false;
         }
     }
 
@@ -294,23 +290,34 @@ public class SyncAllResolver extends AbstractLoggable implements Resolver {
         return PackerType.SYNC_ALL_JAVA;
     }
 
-    @Override
-    public Resolver setTaskId(String taskId) {
-        this.taskId = taskId;
-        return this;
-    }
-
-    @Override
-    public Resolver setBackUpPath(String backUpPath) {
-        this.backUpPath = backUpPath;
-        return this;
-    }
-
+    /**
+     * 关闭后再次调用 process 则会默认从文件头开始解析。
+     *
+     * @throws IOException 关闭失败抛出 IO 异常
+     */
     @Override
     public void close() throws IOException {
         if (output != null) {
             output.close();
         }
+        stage = ReadProcess.FILE_DONE;
+    }
+
+    @Override
+    public SyncProcess pause() throws IOException {
+        if (output != null) {
+            output.close();
+        }
+        SyncProcess.Builder builder = SyncProcess.newBuilder();
+        builder.setFileId(currentFile.getFileId()).setPackIndex(packIndex);
+        long filePos;
+        if (packIndex >= endPackIndex) {
+            filePos = currentFile.getFileSize();
+        } else {
+            filePos = ((long) packIndex - beginPackIndex) * ((long) PACK_SIZE - HEAD_LENGTH);
+        }
+        builder.setFilePos(filePos);
+        return builder.build();
     }
 
     /**

@@ -14,29 +14,14 @@ public  final class QueryTask extends
   private QueryTask(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
     super(builder);
   }
-  private volatile java.lang.Object taskId_;
+
+    public static final int TASKID_FIELD_NUMBER = 1;
 
   @java.lang.Override
   public final com.google.protobuf.UnknownFieldSet
   getUnknownFields() {
     return com.google.protobuf.UnknownFieldSet.getDefaultInstance();
   }
-  private QueryTask() {
-    taskId_ = "";
-  }
-  public static final com.google.protobuf.Descriptors.Descriptor
-      getDescriptor() {
-    return cn.com.unary.initcopy.grpc.entity.IC_Entity.internal_static_cn_com_unary_initcopy_grpc_entity_QueryTask_descriptor;
-  }
-
-  protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-      internalGetFieldAccessorTable() {
-    return cn.com.unary.initcopy.grpc.entity.IC_Entity.internal_static_cn_com_unary_initcopy_grpc_entity_QueryTask_fieldAccessorTable
-        .ensureFieldAccessorsInitialized(
-            cn.com.unary.initcopy.grpc.entity.QueryTask.class, cn.com.unary.initcopy.grpc.entity.QueryTask.Builder.class);
-  }
-
-  public static final int TASKID_FIELD_NUMBER = 1;
   private QueryTask(
       com.google.protobuf.CodedInputStream input,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -75,6 +60,23 @@ public  final class QueryTask extends
     }
   }
 
+    private volatile java.lang.Object taskId_;
+
+    private QueryTask() {
+        taskId_ = "";
+    }
+
+    public static final com.google.protobuf.Descriptors.Descriptor
+    getDescriptor() {
+        return cn.com.unary.initcopy.grpc.entity.IC_Entity.internal_static_cn_com_unary_initcopy_grpc_entity_QueryTask_descriptor;
+    }
+
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+    internalGetFieldAccessorTable() {
+        return cn.com.unary.initcopy.grpc.entity.IC_Entity.internal_static_cn_com_unary_initcopy_grpc_entity_QueryTask_fieldAccessorTable
+                .ensureFieldAccessorsInitialized(
+                        cn.com.unary.initcopy.grpc.entity.QueryTask.class, cn.com.unary.initcopy.grpc.entity.QueryTask.Builder.class);
+    }
   /**
    * <code>optional string taskId = 1;</code>
    */
@@ -244,6 +246,7 @@ public  final class QueryTask extends
     Builder builder = new Builder(parent);
     return builder;
   }
+
   /**
    * Protobuf type {@code cn.com.unary.initcopy.grpc.entity.QueryTask}
    */
@@ -377,7 +380,6 @@ public  final class QueryTask extends
       onChanged();
       return this;
     }
-
     /**
      * <code>optional string taskId = 1;</code>
      */
@@ -397,25 +399,11 @@ public  final class QueryTask extends
     /**
      * <code>optional string taskId = 1;</code>
      */
-    public Builder setTaskId(
-        java.lang.String value) {
-      if (value == null) {
-    throw new NullPointerException();
-  }
-
-      taskId_ = value;
-      onChanged();
-      return this;
-    }
-
-    /**
-     * <code>optional string taskId = 1;</code>
-     */
     public com.google.protobuf.ByteString
         getTaskIdBytes() {
       java.lang.Object ref = taskId_;
       if (ref instanceof String) {
-        com.google.protobuf.ByteString b =
+          com.google.protobuf.ByteString b =
             com.google.protobuf.ByteString.copyFromUtf8(
                 (java.lang.String) ref);
         taskId_ = b;
@@ -429,16 +417,30 @@ public  final class QueryTask extends
      * <code>optional string taskId = 1;</code>
      */
     public Builder setTaskIdBytes(
-        com.google.protobuf.ByteString value) {
-      if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
+            com.google.protobuf.ByteString value) {
+        if (value == null) {
+            throw new NullPointerException();
+        }
+        checkByteStringIsUtf8(value);
 
-      taskId_ = value;
-      onChanged();
-      return this;
+        taskId_ = value;
+        onChanged();
+        return this;
     }
+
+      /**
+       * <code>optional string taskId = 1;</code>
+       */
+      public Builder setTaskId(
+              java.lang.String value) {
+          if (value == null) {
+              throw new NullPointerException();
+          }
+
+          taskId_ = value;
+          onChanged();
+          return this;
+      }
 
     /**
      * <code>optional string taskId = 1;</code>

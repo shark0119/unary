@@ -87,7 +87,7 @@ public interface FileManager {
     SyncTaskDO queryTask(String taskId);
 
     /**
-     * 根据任务Id 删除该任务的相关配置信息，及
+     * 根据任务Id 删除任务信息实体,及任务相关的文件实体信息
      *
      * @param taskId 任务Id
      */

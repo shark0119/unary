@@ -715,25 +715,6 @@ public  final class ExecResult extends
         return (java.lang.String) ref;
       }
     }
-
-    /**
-     * <pre>
-     * 任务 Id
-     * </pre>
-     *
-     * <code>optional string taskId = 4;</code>
-     */
-    public Builder setTaskId(
-        java.lang.String value) {
-      if (value == null) {
-    throw new NullPointerException();
-  }
-
-      taskId_ = value;
-      onChanged();
-      return this;
-    }
-
     /**
      * <pre>
      * 任务 Id
@@ -745,7 +726,7 @@ public  final class ExecResult extends
         getTaskIdBytes() {
       java.lang.Object ref = taskId_;
       if (ref instanceof String) {
-        com.google.protobuf.ByteString b =
+          com.google.protobuf.ByteString b =
             com.google.protobuf.ByteString.copyFromUtf8(
                 (java.lang.String) ref);
         taskId_ = b;
@@ -763,16 +744,34 @@ public  final class ExecResult extends
      * <code>optional string taskId = 4;</code>
      */
     public Builder setTaskIdBytes(
-        com.google.protobuf.ByteString value) {
-      if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
+            com.google.protobuf.ByteString value) {
+        if (value == null) {
+            throw new NullPointerException();
+        }
+        checkByteStringIsUtf8(value);
 
-      taskId_ = value;
-      onChanged();
-      return this;
+        taskId_ = value;
+        onChanged();
+        return this;
     }
+
+      /**
+       * <pre>
+       * 任务 Id
+       * </pre>
+       *
+       * <code>optional string taskId = 4;</code>
+       */
+      public Builder setTaskId(
+              java.lang.String value) {
+          if (value == null) {
+              throw new NullPointerException();
+          }
+
+          taskId_ = value;
+          onChanged();
+          return this;
+      }
 
     /**
      * <pre>

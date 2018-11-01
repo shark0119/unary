@@ -4,6 +4,7 @@ import cn.com.unary.initcopy.common.AbstractLoggable;
 import cn.com.unary.initcopy.grpc.InitCopyGrpc;
 import cn.com.unary.initcopy.grpc.entity.DeleteTask;
 import cn.com.unary.initcopy.grpc.entity.ExecResult;
+import cn.com.unary.initcopy.grpc.entity.ModifyTask;
 import cn.com.unary.initcopy.grpc.entity.QueryTask;
 import cn.com.unary.initcopy.grpc.entity.SyncTask;
 import cn.com.unary.initcopy.grpc.entity.TaskState;
@@ -45,6 +46,10 @@ public class InitCopyGrpcClient extends AbstractLoggable implements Closeable {
 
     public ExecResult delete(DeleteTask task) {
         return blockingStub.delete(task);
+    }
+
+    public ExecResult modify(ModifyTask task) {
+        return blockingStub.modify(task);
     }
 
     @Override

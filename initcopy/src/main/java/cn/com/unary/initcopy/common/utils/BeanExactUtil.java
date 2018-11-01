@@ -154,7 +154,8 @@ public class BeanExactUtil {
         }
         return taskDO;
     }
-    public static TransmitParams takeFromTaskDO (SyncTaskDO taskDO) {
+
+    public static TransmitParams takeFromTransmitParamTaskDO(SyncTaskDO taskDO) {
         TransmitParams params = new TransmitParams();
         params.setSpeedLimit(taskDO.getSpeedLimit());
         params.setCompressType(taskDO.getCompressType());

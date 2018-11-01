@@ -1,4 +1,4 @@
-package cn.com.unary.initcopy.service.transmitadapter;
+package cn.com.unary.initcopy.service.transmit;
 
 /**
  * 针对于传输模块的数据处理适配器

@@ -3,8 +3,9 @@ package cn.com.unary.initcopy;
 import cn.com.unary.initcopy.common.AbstractLoggable;
 import cn.com.unary.initcopy.common.ExecExceptionsHandler;
 import cn.com.unary.initcopy.grpc.GrpcServiceStarter;
+import cn.com.unary.initcopy.service.ResourceDirector;
 import cn.com.unary.initcopy.service.filecopy.ServerFileCopy;
-import cn.com.unary.initcopy.service.transmitadapter.TransmitServerAdapter;
+import cn.com.unary.initcopy.service.transmit.TransmitServerAdapter;
 import io.grpc.BindableService;
 import lombok.Setter;
 import org.apache.commons.lang3.concurrent.BasicThreadFactory;
@@ -43,6 +44,7 @@ public class InitCopyContext extends AbstractLoggable implements Closeable, Appl
     public static final int SERVER_CORE_POOL_SIZE = 2;
     public static final int SERVER_MAX_POOL_SIZE = 30;
     public static final int UUID_LEN = UUID.randomUUID().toString().getBytes(InitCopyContext.CHARSET).length;
+    public static final Long RESOURCE_TIME_OUT = 30000L;
 
     private final Object lock;
     /**
@@ -105,6 +107,8 @@ public class InitCopyContext extends AbstractLoggable implements Closeable, Appl
                             new LinkedBlockingQueue<Runnable>(3),
                             executorThreadFactory);
                     this.serverInit().clientInit();
+                    ResourceDirector director = applicationContext.getBean(ResourceDirector.class);
+                    exec.execute(director);
                     exec.shutdown();
                     isActive = Boolean.TRUE;
                 }

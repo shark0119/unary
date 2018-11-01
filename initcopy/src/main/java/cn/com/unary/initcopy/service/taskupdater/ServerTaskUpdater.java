@@ -3,12 +3,10 @@ package cn.com.unary.initcopy.service.taskupdater;
 import cn.com.unary.initcopy.common.AbstractLoggable;
 import cn.com.unary.initcopy.common.utils.ValidateUtils;
 import cn.com.unary.initcopy.dao.FileManager;
-import cn.com.unary.initcopy.entity.Constants;
 import cn.com.unary.initcopy.entity.FileInfoDO;
 import cn.com.unary.initcopy.entity.SyncTaskDO;
 import cn.com.unary.initcopy.exception.TaskFailException;
 import cn.com.unary.initcopy.grpc.entity.DeleteTask;
-import cn.com.unary.initcopy.grpc.entity.ModifyTask;
 import cn.com.unary.initcopy.grpc.entity.ProgressInfo;
 import cn.com.unary.initcopy.grpc.entity.TaskState;
 import cn.com.unary.initcopy.service.filecopy.ServerFileCopy;
@@ -23,6 +21,7 @@ import java.util.List;
 
 /**
  * 目标端的任务修改器
+ * 线程安全
  *
  * @author Shark.Yin
  * @since 1.0
@@ -51,6 +50,9 @@ public class ServerTaskUpdater extends AbstractLoggable {
         } catch (IOException e) {
             throw new TaskFailException(e);
         }
+        if (task.getDeleteFile()) {
+            // TODO delete server files.
+        }
         // 删除任务相关信息
         fm.deleteFileInfoByTaskId(task.getTaskId());
     }
@@ -58,26 +60,10 @@ public class ServerTaskUpdater extends AbstractLoggable {
     /**
      * 修改任务相关信息实体
      *
-     * @param task 任务实体
+     * @param taskId 任务 ID
      */
-    public void modify(ModifyTask task) throws TaskFailException {
-        Constants.UpdateType updateType;
-        switch (task.getModifyType()) {
-            case START:
-                updateType = Constants.UpdateType.RESUME;
-                break;
-            case PAUSE:
-                updateType = Constants.UpdateType.PAUSE;
-                break;
-            case SPEED_LIMIT:
-            default:
-                throw new TaskFailException("unSupport operation " + task.getModifyType());
-        }
-        try {
-            fileCopy.updateTask(task.getTaskId(), updateType);
-        } catch (IOException e) {
-            throw new TaskFailException(e);
-        }
+    public void resume(String taskId) throws TaskFailException {
+        fileCopy.resume(taskId);
     }
 
     public TaskState query(String taskId) throws TaskFailException {

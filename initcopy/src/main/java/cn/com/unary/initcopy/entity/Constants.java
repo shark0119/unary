@@ -60,8 +60,4 @@ public final class Constants {
         }
     }
 
-    public enum UpdateType {
-        PAUSE,
-        RESUME,
-    }
 }

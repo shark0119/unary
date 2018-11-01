@@ -4,33 +4,41 @@
 package cn.com.unary.initcopy.grpc.entity;
 
 public final class TC_Entity {
+    static final
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+            internal_static_cn_com_unary_initcopy_grpc_entity_BaseFileInfo_fieldAccessorTable;
+    static final
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+            internal_static_cn_com_unary_initcopy_grpc_entity_ClientInitReq_fieldAccessorTable;
+    static final
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+            internal_static_cn_com_unary_initcopy_grpc_entity_DiffFileChunk_fieldAccessorTable;
   static final com.google.protobuf.Descriptors.Descriptor
     internal_static_cn_com_unary_initcopy_grpc_entity_BaseFileInfo_descriptor;
   static final
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-      internal_static_cn_com_unary_initcopy_grpc_entity_BaseFileInfo_fieldAccessorTable;
+          internal_static_cn_com_unary_initcopy_grpc_entity_DiffFileInfo_fieldAccessorTable;
   static final com.google.protobuf.Descriptors.Descriptor
     internal_static_cn_com_unary_initcopy_grpc_entity_ClientInitReq_descriptor;
   static final
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-      internal_static_cn_com_unary_initcopy_grpc_entity_ClientInitReq_fieldAccessorTable;
+          internal_static_cn_com_unary_initcopy_grpc_entity_ServerInitResp_fieldAccessorTable;
   static final com.google.protobuf.Descriptors.Descriptor
     internal_static_cn_com_unary_initcopy_grpc_entity_DiffFileChunk_descriptor;
-  static final
-    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-      internal_static_cn_com_unary_initcopy_grpc_entity_DiffFileChunk_fieldAccessorTable;
+    static final com.google.protobuf.Descriptors.Descriptor
+            internal_static_cn_com_unary_initcopy_grpc_entity_SyncProcess_descriptor;
   static final com.google.protobuf.Descriptors.Descriptor
     internal_static_cn_com_unary_initcopy_grpc_entity_DiffFileInfo_descriptor;
   static final
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-      internal_static_cn_com_unary_initcopy_grpc_entity_DiffFileInfo_fieldAccessorTable;
+          internal_static_cn_com_unary_initcopy_grpc_entity_SyncProcess_fieldAccessorTable;
   static final com.google.protobuf.Descriptors.Descriptor
     internal_static_cn_com_unary_initcopy_grpc_entity_ServerInitResp_descriptor;
+    static final com.google.protobuf.Descriptors.Descriptor
+            internal_static_cn_com_unary_initcopy_grpc_entity_ResumeTask_descriptor;
   static final
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-      internal_static_cn_com_unary_initcopy_grpc_entity_ServerInitResp_fieldAccessorTable;
-  private static  com.google.protobuf.Descriptors.FileDescriptor
-      descriptor;
+          internal_static_cn_com_unary_initcopy_grpc_entity_ResumeTask_fieldAccessorTable;
 
   static {
     java.lang.String[] descriptorData = {
@@ -53,9 +61,13 @@ public final class TC_Entity {
       "\n\016ServerInitResp\022A\n\nexecResult\030\001 \001(\0132-.c" +
       "n.com.unary.initcopy.grpc.entity.ExecRes" +
       "ult\022F\n\rdiffFileInfos\030\002 \003(\0132/.cn.com.unar" +
-      "y.initcopy.grpc.entity.DiffFileInfoB0\n!c",
-      "n.com.unary.initcopy.grpc.entityB\tTC_Ent" +
-      "ityP\001b\006proto3"
+              "y.initcopy.grpc.entity.DiffFileInfo\"\204\001\n\013",
+            "SyncProcess\022A\n\nexecResult\030\001 \001(\0132-.cn.com" +
+                    ".unary.initcopy.grpc.entity.ExecResult\022\016" +
+                    "\n\006fileId\030\002 \001(\t\022\017\n\007filePos\030\003 \001(\022\022\021\n\tpackI" +
+                    "ndex\030\004 \001(\005\"\034\n\nResumeTask\022\016\n\006taskId\030\001 \001(\t" +
+                    "B0\n!cn.com.unary.initcopy.grpc.entityB\tT" +
+                    "C_EntityP\001b\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -101,6 +113,18 @@ public final class TC_Entity {
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_cn_com_unary_initcopy_grpc_entity_ServerInitResp_descriptor,
         new java.lang.String[] { "ExecResult", "DiffFileInfos", });
+      internal_static_cn_com_unary_initcopy_grpc_entity_SyncProcess_descriptor =
+              getDescriptor().getMessageTypes().get(5);
+      internal_static_cn_com_unary_initcopy_grpc_entity_SyncProcess_fieldAccessorTable = new
+              com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+              internal_static_cn_com_unary_initcopy_grpc_entity_SyncProcess_descriptor,
+              new java.lang.String[]{"ExecResult", "FileId", "FilePos", "PackIndex",});
+      internal_static_cn_com_unary_initcopy_grpc_entity_ResumeTask_descriptor =
+              getDescriptor().getMessageTypes().get(6);
+      internal_static_cn_com_unary_initcopy_grpc_entity_ResumeTask_fieldAccessorTable = new
+              com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+              internal_static_cn_com_unary_initcopy_grpc_entity_ResumeTask_descriptor,
+              new java.lang.String[]{"TaskId",});
     cn.com.unary.initcopy.grpc.constant.IC_Constant.getDescriptor();
     cn.com.unary.initcopy.grpc.entity.IC_Entity.getDescriptor();
   }
@@ -115,6 +139,9 @@ public final class TC_Entity {
     registerAllExtensions(
         (com.google.protobuf.ExtensionRegistryLite) registry);
   }
+
+    private static com.google.protobuf.Descriptors.FileDescriptor
+            descriptor;
 
   public static com.google.protobuf.Descriptors.FileDescriptor
       getDescriptor() {

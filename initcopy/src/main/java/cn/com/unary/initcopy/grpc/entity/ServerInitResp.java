@@ -23,22 +23,6 @@ public  final class ServerInitResp extends
   getUnknownFields() {
     return com.google.protobuf.UnknownFieldSet.getDefaultInstance();
   }
-  public static final int EXECRESULT_FIELD_NUMBER = 1;
-  public static final com.google.protobuf.Descriptors.Descriptor
-      getDescriptor() {
-    return cn.com.unary.initcopy.grpc.entity.TC_Entity.internal_static_cn_com_unary_initcopy_grpc_entity_ServerInitResp_descriptor;
-  }
-
-  protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-      internalGetFieldAccessorTable() {
-    return cn.com.unary.initcopy.grpc.entity.TC_Entity.internal_static_cn_com_unary_initcopy_grpc_entity_ServerInitResp_fieldAccessorTable
-        .ensureFieldAccessorsInitialized(
-            cn.com.unary.initcopy.grpc.entity.ServerInitResp.class, cn.com.unary.initcopy.grpc.entity.ServerInitResp.Builder.class);
-  }
-
-  private int bitField0_;
-  public static final int DIFFFILEINFOS_FIELD_NUMBER = 2;
-  private cn.com.unary.initcopy.grpc.entity.ExecResult execResult_;
   private ServerInitResp(
       com.google.protobuf.CodedInputStream input,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -96,26 +80,40 @@ public  final class ServerInitResp extends
     }
   }
 
+    public static final int EXECRESULT_FIELD_NUMBER = 1;
+    public static final int DIFFFILEINFOS_FIELD_NUMBER = 2;
+    private int bitField0_;
+    private cn.com.unary.initcopy.grpc.entity.ExecResult execResult_;
+
+    public static final com.google.protobuf.Descriptors.Descriptor
+    getDescriptor() {
+        return cn.com.unary.initcopy.grpc.entity.TC_Entity.internal_static_cn_com_unary_initcopy_grpc_entity_ServerInitResp_descriptor;
+    }
   /**
    * <code>optional .cn.com.unary.initcopy.grpc.entity.ExecResult execResult = 1;</code>
    */
   public boolean hasExecResult() {
     return execResult_ != null;
   }
-
   /**
    * <code>optional .cn.com.unary.initcopy.grpc.entity.ExecResult execResult = 1;</code>
    */
   public cn.com.unary.initcopy.grpc.entity.ExecResult getExecResult() {
     return execResult_ == null ? cn.com.unary.initcopy.grpc.entity.ExecResult.getDefaultInstance() : execResult_;
   }
-
   /**
    * <code>optional .cn.com.unary.initcopy.grpc.entity.ExecResult execResult = 1;</code>
    */
   public cn.com.unary.initcopy.grpc.entity.ExecResultOrBuilder getExecResultOrBuilder() {
     return getExecResult();
   }
+
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+    internalGetFieldAccessorTable() {
+        return cn.com.unary.initcopy.grpc.entity.TC_Entity.internal_static_cn_com_unary_initcopy_grpc_entity_ServerInitResp_fieldAccessorTable
+                .ensureFieldAccessorsInitialized(
+                        cn.com.unary.initcopy.grpc.entity.ServerInitResp.class, cn.com.unary.initcopy.grpc.entity.ServerInitResp.Builder.class);
+    }
   private java.util.List<cn.com.unary.initcopy.grpc.entity.DiffFileInfo> diffFileInfos_;
   /**
    * <code>repeated .cn.com.unary.initcopy.grpc.entity.DiffFileInfo diffFileInfos = 2;</code>
@@ -306,6 +304,7 @@ public  final class ServerInitResp extends
     Builder builder = new Builder(parent);
     return builder;
   }
+
   /**
    * Protobuf type {@code cn.com.unary.initcopy.grpc.entity.ServerInitResp}
    */
@@ -341,7 +340,8 @@ public  final class ServerInitResp extends
         getDiffFileInfosFieldBuilder();
       }
     }
-    private cn.com.unary.initcopy.grpc.entity.ExecResult execResult_ = null;
+
+      private int bitField0_;
 
     public com.google.protobuf.Descriptors.Descriptor
         getDescriptorForType() {
@@ -359,8 +359,8 @@ public  final class ServerInitResp extends
       }
       return result;
     }
-    private com.google.protobuf.SingleFieldBuilderV3<
-        cn.com.unary.initcopy.grpc.entity.ExecResult, cn.com.unary.initcopy.grpc.entity.ExecResult.Builder, cn.com.unary.initcopy.grpc.entity.ExecResultOrBuilder> execResultBuilder_;
+
+      private cn.com.unary.initcopy.grpc.entity.ExecResult execResult_ = null;
 
     public Builder clone() {
       return (Builder) super.clone();
@@ -397,6 +397,9 @@ public  final class ServerInitResp extends
       }
     }
 
+      private com.google.protobuf.SingleFieldBuilderV3<
+              cn.com.unary.initcopy.grpc.entity.ExecResult, cn.com.unary.initcopy.grpc.entity.ExecResult.Builder, cn.com.unary.initcopy.grpc.entity.ExecResultOrBuilder> execResultBuilder_;
+
     public Builder clear() {
       super.clear();
       if (execResultBuilder_ == null) {
@@ -413,29 +416,6 @@ public  final class ServerInitResp extends
       }
       return this;
     }
-
-    public final boolean isInitialized() {
-      return true;
-    }
-
-    public Builder mergeFrom(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      cn.com.unary.initcopy.grpc.entity.ServerInitResp parsedMessage = null;
-      try {
-        parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
-      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        parsedMessage = (cn.com.unary.initcopy.grpc.entity.ServerInitResp) e.getUnfinishedMessage();
-        throw e.unwrapIOException();
-      } finally {
-        if (parsedMessage != null) {
-          mergeFrom(parsedMessage);
-        }
-      }
-      return this;
-    }
-    private int bitField0_;
 
     public cn.com.unary.initcopy.grpc.entity.ServerInitResp buildPartial() {
       cn.com.unary.initcopy.grpc.entity.ServerInitResp result = new cn.com.unary.initcopy.grpc.entity.ServerInitResp(this);
@@ -495,6 +475,27 @@ public  final class ServerInitResp extends
       return this;
     }
 
+      public final boolean isInitialized() {
+          return true;
+      }
+
+      public Builder mergeFrom(
+              com.google.protobuf.CodedInputStream input,
+              com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+              throws java.io.IOException {
+          cn.com.unary.initcopy.grpc.entity.ServerInitResp parsedMessage = null;
+          try {
+              parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+          } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+              parsedMessage = (cn.com.unary.initcopy.grpc.entity.ServerInitResp) e.getUnfinishedMessage();
+              throw e.unwrapIOException();
+          } finally {
+              if (parsedMessage != null) {
+                  mergeFrom(parsedMessage);
+              }
+          }
+          return this;
+      }
     /**
      * <code>optional .cn.com.unary.initcopy.grpc.entity.ExecResult execResult = 1;</code>
      */
@@ -511,22 +512,6 @@ public  final class ServerInitResp extends
         return execResultBuilder_.getMessage();
       }
     }
-
-    /**
-     * <code>optional .cn.com.unary.initcopy.grpc.entity.ExecResult execResult = 1;</code>
-     */
-    public Builder setExecResult(
-        cn.com.unary.initcopy.grpc.entity.ExecResult.Builder builderForValue) {
-      if (execResultBuilder_ == null) {
-        execResult_ = builderForValue.build();
-        onChanged();
-      } else {
-        execResultBuilder_.setMessage(builderForValue.build());
-      }
-
-      return this;
-    }
-
     /**
      * <code>optional .cn.com.unary.initcopy.grpc.entity.ExecResult execResult = 1;</code>
      */
@@ -544,7 +529,22 @@ public  final class ServerInitResp extends
       return this;
     }
 
-    /**
+      /**
+       * <code>optional .cn.com.unary.initcopy.grpc.entity.ExecResult execResult = 1;</code>
+       */
+      public Builder setExecResult(
+              cn.com.unary.initcopy.grpc.entity.ExecResult.Builder builderForValue) {
+          if (execResultBuilder_ == null) {
+              execResult_ = builderForValue.build();
+              onChanged();
+          } else {
+              execResultBuilder_.setMessage(builderForValue.build());
+          }
+
+          return this;
+      }
+
+      /**
      * <code>optional .cn.com.unary.initcopy.grpc.entity.ExecResult execResult = 1;</code>
      */
     public Builder mergeExecResult(cn.com.unary.initcopy.grpc.entity.ExecResult value) {

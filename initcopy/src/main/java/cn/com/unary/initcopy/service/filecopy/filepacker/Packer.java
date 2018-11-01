@@ -2,7 +2,7 @@ package cn.com.unary.initcopy.service.filecopy.filepacker;
 
 import cn.com.unary.initcopy.entity.Constants.PackerType;
 import cn.com.unary.initcopy.exception.InfoPersistenceException;
-import cn.com.unary.initcopy.service.transmitadapter.TransmitClientAdapter;
+import cn.com.unary.initcopy.service.transmit.TransmitClientAdapter;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -51,8 +51,8 @@ public interface Packer extends Closeable {
     PackerType getPackType();
 
     /**
-     * 不会立刻关闭当前任务。此方法只会将关闭标志位置为 {@code true}
-     * 待打包进程觉得合适时，保存当前打包进度，并停止打包。
+     * 不会立刻关闭当前任务。此方法只会将关闭标志位置为 true
+     * 待时机合适时，保存当前打包进度，并停止打包。
      *
      * @throws IOException 关闭失败则抛出 IO 异常
      */

@@ -28,6 +28,6 @@ enum PackType { //打包类型
 
 enum ModifyType {
 	PAUSE = 0; //暂停
-	START = 1; //重启
+    RESUME = 1; //重启
 	SPEED_LIMIT = 2; // 限速
 }

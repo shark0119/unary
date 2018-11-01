@@ -4,26 +4,23 @@
 package cn.com.unary.initcopy.grpc;
 
 public final class TC_Service {
-  private static  com.google.protobuf.Descriptors.FileDescriptor
-      descriptor;
-
   static {
     java.lang.String[] descriptorData = {
       "\n\022task_control.proto\022\032cn.com.unary.initc" +
       "opy.grpc\032\026init_copy_entity.proto\032\031task_c" +
-      "ontrol_entity.proto2\267\003\n\013ControlTask\022m\n\004I" +
+              "ontrol_entity.proto2\270\003\n\013ControlTask\022m\n\004I" +
       "nit\0220.cn.com.unary.initcopy.grpc.entity." +
       "ClientInitReq\0321.cn.com.unary.initcopy.gr" +
       "pc.entity.ServerInitResp\"\000\022h\n\006Delete\022-.c" +
       "n.com.unary.initcopy.grpc.entity.DeleteT" +
       "ask\032-.cn.com.unary.initcopy.grpc.entity." +
-      "ExecResult\"\000\022h\n\006Modify\022-.cn.com.unary.in" +
-      "itcopy.grpc.entity.ModifyTask\032-.cn.com.u",
-      "nary.initcopy.grpc.entity.ExecResult\"\000\022e" +
-      "\n\005Query\022,.cn.com.unary.initcopy.grpc.ent" +
-      "ity.QueryTask\032,.cn.com.unary.initcopy.gr" +
-      "pc.entity.TaskState\"\000B*\n\032cn.com.unary.in" +
-      "itcopy.grpcB\nTC_ServiceP\001b\006proto3"
+              "ExecResult\"\000\022i\n\006Resume\022-.cn.com.unary.in" +
+              "itcopy.grpc.entity.ResumeTask\032..cn.com.u",
+            "nary.initcopy.grpc.entity.SyncProcess\"\000\022" +
+                    "e\n\005Query\022,.cn.com.unary.initcopy.grpc.en" +
+                    "tity.QueryTask\032,.cn.com.unary.initcopy.g" +
+                    "rpc.entity.TaskState\"\000B*\n\032cn.com.unary.i" +
+                    "nitcopy.grpcB\nTC_ServiceP\001b\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -42,7 +39,6 @@ public final class TC_Service {
     cn.com.unary.initcopy.grpc.entity.IC_Entity.getDescriptor();
     cn.com.unary.initcopy.grpc.entity.TC_Entity.getDescriptor();
   }
-
   private TC_Service() {}
 
   public static void registerAllExtensions(
@@ -54,6 +50,9 @@ public final class TC_Service {
     registerAllExtensions(
         (com.google.protobuf.ExtensionRegistryLite) registry);
   }
+
+    private static com.google.protobuf.Descriptors.FileDescriptor
+            descriptor;
 
   public static com.google.protobuf.Descriptors.FileDescriptor
       getDescriptor() {

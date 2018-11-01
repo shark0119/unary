@@ -37,3 +37,11 @@ message ServerInitResp {
 	cn.com.unary.initcopy.grpc.entity.ExecResult execResult = 1;
 	repeated DiffFileInfo diffFileInfos = 2;
 }
+message SyncProcess {
+    cn.com.unary.initcopy.grpc.entity.ExecResult execResult = 1;
+    string fileId = 2; // 上次已同步的文件名
+    sint64 filePos = 3; // 上次已同步的文件位置
+}
+message ResumeTask {
+    string taskId = 1;
+}
