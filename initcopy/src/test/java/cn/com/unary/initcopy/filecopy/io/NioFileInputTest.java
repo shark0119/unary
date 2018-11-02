@@ -1,14 +1,14 @@
 package cn.com.unary.initcopy.filecopy.io;
 
-import cn.com.unary.initcopy.service.filecopy.io.JavaNioFileInput;
+import cn.com.unary.initcopy.service.filecopy.io.NioFileInput;
 import org.junit.Test;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
-public class JavaNioFileInputTest {
+public class NioFileInputTest {
 
-    JavaNioFileInput input = new JavaNioFileInput();
+    NioFileInput input = new NioFileInput();
     @Test
     public void read() throws IOException {
         input.openFile("C:\\Users\\shark\\Desktop\\文件\\Shadowsocks-4.0.10.zip");

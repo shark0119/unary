@@ -60,4 +60,27 @@ public final class Constants {
         }
     }
 
+    public enum THREAD_STATE {
+        /**
+         * 准备好了，可以接受数据
+         */
+        READY,
+        /**
+         * 正在运行中
+         */
+        RUNNING,
+        /**
+         * 挂起状态，等待数据
+         */
+        WAITING,
+        /**
+         * 被关闭但还在运行，不会继续接受数据
+         */
+        SHUTDOWN,
+        /**
+         * 线程结束
+         */
+        DEAD,
+    }
+
 }

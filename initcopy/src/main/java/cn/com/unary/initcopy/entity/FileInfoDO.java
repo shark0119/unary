@@ -2,7 +2,6 @@ package cn.com.unary.initcopy.entity;
 
 import cn.com.unary.initcopy.entity.Constants.FileType;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
@@ -19,12 +18,13 @@ import java.beans.Transient;
 @ToString(callSuper = true)
 public class FileInfoDO extends BaseFileInfoDO {
     private static final long serialVersionUID = 7000233780395813428L;
+    private STATE state;
     private String taskId;
+    private FileAttr attr;
+    private Long syncDoneTime;
     private FileType fileType;
     private Integer beginPackIndex;
     private Integer finishPackIndex;
-    private FileAttr attr;
-    private STATE state;
 
     public FileInfoDO(BaseFileInfoDO bfi) {
         this.setFileSize(bfi.getFileSize());

@@ -100,4 +100,12 @@ public interface FileManager {
      * @return 返回持久化后的对象
      */
     SyncTaskDO saveTask(SyncTaskDO task);
+
+    /**
+     * 给定一个文件 Id，将该任务中在此文件之后同步的文件全部置位为同步
+     *
+     * @param taskId 任务 Id
+     * @param fileId 文件 Id
+     */
+    void updatePreviousFilesToUnSync(String taskId, String fileId);
 }

@@ -30,12 +30,19 @@ public interface Resolver extends Closeable {
     PackerType getPackType();
 
     /**
-     * 支持从上次解析的包继续解析的方法
+     * 暂停当前任务并返回当前进度
      *
      * @return 同步进度信息
      * @throws IOException 关闭相关资源失败
      */
     SyncProcess pause() throws IOException;
+
+    /**
+     * 从暂停状态中唤醒
+     *
+     * @throws IOException 唤醒失败抛出 IO 异常
+     */
+    void resume() throws IOException;
 
     /**
      * 初始化相关参数
@@ -44,4 +51,5 @@ public interface Resolver extends Closeable {
      * @param backupPath 解析器对应的备份路径
      */
     void init(String taskId, String backupPath);
+
 }

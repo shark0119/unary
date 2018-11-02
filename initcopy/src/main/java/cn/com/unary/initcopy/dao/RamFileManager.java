@@ -87,14 +87,14 @@ public class RamFileManager extends AbstractLoggable implements FileManager {
 
     @Override
     public List<FileInfoDO> queryUnSyncFileByTaskId(String taskId) {
-        List<FileInfoDO> fileInfos = new ArrayList<>();
+        List<FileInfoDO> fileInfoList = new ArrayList<>();
         for (Map.Entry<String, FileInfoDO> entry : fiMap.entrySet()) {
             if (entry.getValue().getTaskId().equals(taskId)
                     && !entry.getValue().getStateEnum().equals(FileInfoDO.STATE.SYNCED)) {
-                fileInfos.add(entry.getValue());
+                fileInfoList.add(entry.getValue());
             }
         }
-        return fileInfos;
+        return fileInfoList;
     }
 
     @Override
@@ -140,5 +140,27 @@ public class RamFileManager extends AbstractLoggable implements FileManager {
             fis.add(fi);
         }
         return fis;
+    }
+
+    @Override
+    public void updatePreviousFilesToUnSync(String taskId, String fileId) {
+        FileInfoDO fi = fiMap.get(fileId);
+        if (!FileInfoDO.STATE.SYNCED.equals(fi.getState())) {
+            return;
+        }
+        for (Map.Entry<String, FileInfoDO> entry : fiMap.entrySet()) {
+            if (!taskId.equals(entry.getValue().getTaskId())) {
+                continue;
+            }
+            if (!FileInfoDO.STATE.SYNCED.equals(entry.getValue().getState())) {
+                continue;
+            }
+            if (entry.getValue().getSyncDoneTime() > fi.getSyncDoneTime()) {
+                entry.getValue().setState(FileInfoDO.STATE.WAIT);
+                entry.getValue().setSyncDoneTime(null);
+            }
+        }
+        fi.setSyncDoneTime(null);
+        fi.setState(FileInfoDO.STATE.SYNCING);
     }
 }

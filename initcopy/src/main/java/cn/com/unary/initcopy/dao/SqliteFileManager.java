@@ -30,6 +30,11 @@ public class SqliteFileManager extends AbstractLoggable implements FileManager {
     private DruidDataSource dds;
 
     @Override
+    public void updatePreviousFilesToUnSync(String taskId, String fileId) {
+
+    }
+
+    @Override
     public List<FileInfoDO> queryByIds(String... fileIds) throws InfoPersistenceException {
         ValidateUtils.requireNotEmpty(fileIds);
 

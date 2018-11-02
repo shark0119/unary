@@ -23,6 +23,11 @@ public class RsyncResolver implements Resolver{
 	}
 
 	@Override
+	public void resume() throws IOException {
+
+	}
+
+	@Override
 	public void process(byte[] data) {
 
 	}

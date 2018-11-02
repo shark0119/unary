@@ -8,6 +8,7 @@ import cn.com.unary.initcopy.entity.SyncTaskDO;
 import cn.com.unary.initcopy.exception.TaskFailException;
 import cn.com.unary.initcopy.grpc.entity.DeleteTask;
 import cn.com.unary.initcopy.grpc.entity.ProgressInfo;
+import cn.com.unary.initcopy.grpc.entity.SyncProcess;
 import cn.com.unary.initcopy.grpc.entity.TaskState;
 import cn.com.unary.initcopy.service.filecopy.ServerFileCopy;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,8 +63,8 @@ public class ServerTaskUpdater extends AbstractLoggable {
      *
      * @param taskId 任务 ID
      */
-    public void resume(String taskId) throws TaskFailException {
-        fileCopy.resume(taskId);
+    public SyncProcess resume(String taskId) {
+        return fileCopy.resume(taskId);
     }
 
     public TaskState query(String taskId) throws TaskFailException {

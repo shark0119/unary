@@ -6,7 +6,8 @@ import cn.com.unary.initcopy.entity.Constants.PackerType;
 import cn.com.unary.initcopy.entity.FileInfoDO;
 import cn.com.unary.initcopy.exception.InfoPersistenceException;
 import cn.com.unary.initcopy.grpc.entity.DiffFileInfo;
-import cn.com.unary.initcopy.service.filecopy.io.AbstractFileInput;
+import cn.com.unary.initcopy.grpc.entity.SyncProcess;
+import cn.com.unary.initcopy.service.filecopy.io.NioFileInput;
 import cn.com.unary.initcopy.service.transmit.TransmitClientAdapter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -33,8 +34,8 @@ public class RsyncPacker implements SyncDiffPacker {
     private final Map<String, DiffFileInfo> dfiMap = new HashMap<>();
     private final List<String> readFileIds = new ArrayList<>();
     @Autowired
-    @Qualifier("JavaNioFileInput")
-    private AbstractFileInput afi;
+    @Qualifier("NioFileInput")
+    private NioFileInput afi;
     @Autowired
     private FileManager fm;
     private TransmitClientAdapter transmitClient;
@@ -70,6 +71,11 @@ public class RsyncPacker implements SyncDiffPacker {
     @Override
     public PackerType getPackType() {
         return PackerType.RSYNC_JAVA;
+    }
+
+    @Override
+    public void setServerSyncProcess(SyncProcess serverSyncProcess) {
+
     }
 
     @Override

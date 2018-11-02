@@ -4,18 +4,18 @@ import cn.com.unary.initcopy.InitCopyContext;
 import cn.com.unary.initcopy.common.AbstractLoggable;
 import cn.com.unary.initcopy.common.ExecExceptionsHandler;
 import cn.com.unary.initcopy.common.utils.BeanExactUtil;
+import cn.com.unary.initcopy.common.utils.ValidateUtils;
 import cn.com.unary.initcopy.dao.FileManager;
 import cn.com.unary.initcopy.entity.FileInfoDO;
 import cn.com.unary.initcopy.exception.InfoPersistenceException;
 import cn.com.unary.initcopy.exception.TaskFailException;
-import cn.com.unary.initcopy.grpc.constant.ModifyType;
 import cn.com.unary.initcopy.grpc.entity.DiffFileInfo;
+import cn.com.unary.initcopy.grpc.entity.SyncProcess;
 import cn.com.unary.initcopy.grpc.entity.SyncTask;
 import cn.com.unary.initcopy.service.filecopy.filepacker.Packer;
 import cn.com.unary.initcopy.service.filecopy.filepacker.SyncDiffPacker;
 import cn.com.unary.initcopy.service.filecopy.init.ClientFileCopyInit;
 import cn.com.unary.initcopy.service.transmit.TransmitClientAdapter;
-import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.concurrent.BasicThreadFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +38,8 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import static cn.com.unary.initcopy.entity.Constants.THREAD_STATE;
+
 /**
  * 文件复制模块，负责与外部通讯。将内部三个模块与外部组合起来。
  * 线程安全
@@ -50,18 +52,17 @@ import java.util.concurrent.TimeUnit;
 public class ClientFileCopy extends AbstractLoggable implements ApplicationContextAware, Closeable {
 
     private final Object lock;
+    private final ThreadPoolExecutor exec;
+    private final Map<String, PackTask> execTaskMap;
     @Autowired
     protected ClientFileCopyInit init;
     @Autowired
     @Qualifier("clientFM")
     private FileManager fm;
     private boolean close;
-    private final ThreadPoolExecutor exec;
     @Setter
     private ApplicationContext applicationContext;
-    @Getter
     private Map<String, TransmitClientAdapter> transferMap;
-    private final Map<String, PackTask> execTaskMap;
 
     public ClientFileCopy() {
         ThreadFactory executorThreadFactory = new BasicThreadFactory.Builder()
@@ -79,30 +80,38 @@ public class ClientFileCopy extends AbstractLoggable implements ApplicationConte
         execTaskMap = new HashMap<>(InitCopyContext.TASK_NUMBER);
     }
 
-    /**
-     * 对任务进行 暂停、唤醒 操作
-     *
-     * @param taskId     任务Id
-     * @param modifyType 更新操作
-     * @throws IOException 任务关闭异常
-     */
-    public void updateTask(String taskId, ModifyType modifyType) throws IOException {
-        switch (modifyType) {
-            case PAUSE:
-                synchronized (lock) {
-                    execTaskMap.get(taskId).close();
-                }
-                break;
-            case RESUME:
-                TransmitClientAdapter transmitClient = applicationContext.getBean(TransmitClientAdapter.class);
-                startAllSync(transmitClient, taskId);
-                break;
-            case SPEED_LIMIT:
-                // TransmitClientAdapter client = fileCopy.getTransferMap().get(task.getTaskId())
-                // TODO speed limit
-                return;
-            default:
-                break;
+    public void speedLimit(String taskId, int speed) {
+        // TransmitClientAdapter clientAdapter = transferMap.get(taskId)
+        // TODO speed limit
+    }
+
+    public void resume(SyncProcess process) {
+        PackTask packTask;
+        synchronized (lock) {
+            packTask = execTaskMap.get(process.getExecResult().getTaskId());
+        }
+        if (THREAD_STATE.DEAD.equals(packTask.threadState)) {
+            logger.info(String.format("PackTask:%s finished.", packTask.toString()));
+        } else {
+            packTask.threadState = THREAD_STATE.READY;
+            if (ValidateUtils.isEmpty(process.getFileId())) {
+                packTask.serverSyncProcess = null;
+            } else {
+                fm.updatePreviousFilesToUnSync(process.getExecResult().getTaskId(), process.getFileId());
+                packTask.serverSyncProcess = process;
+            }
+            exec.execute(packTask);
+        }
+    }
+
+    public void pause(String taskId) throws IOException {
+        synchronized (lock) {
+            final PackTask packTask = execTaskMap.get(taskId);
+            if (packTask.isActive()) {
+                packTask.close();
+            } else {
+                logger.info(String.format("UnSupport operation to task:%s."));
+            }
         }
     }
 
@@ -167,7 +176,7 @@ public class ClientFileCopy extends AbstractLoggable implements ApplicationConte
      *
      * @param unaryTransferClient 传输模块
      * @param taskId              任务Id作为当前线程名
-     * @param diffFileInfoList       差异文件数据集合
+     * @param diffFileInfoList    差异文件数据集合
      */
     private void startDiffSync(TransmitClientAdapter unaryTransferClient, String taskId,
                                final List<DiffFileInfo> diffFileInfoList) {
@@ -176,25 +185,31 @@ public class ClientFileCopy extends AbstractLoggable implements ApplicationConte
         syncDiffPacker.setFileDiffInfos(diffFileInfoList);
         final PackTask packTask = new PackTask(taskId, syncDiffPacker, unaryTransferClient);
         synchronized (lock) {
-            execTaskMap.put(taskId, packTask);
+            PackTask oldTask = execTaskMap.put(taskId, packTask);
+            if (oldTask != null) {
+                logger.warn(String.format("Task %s be replaced", oldTask.toString()));
+            }
+            exec.execute(packTask);
         }
-        exec.execute(packTask);
     }
 
     /**
      * 开启一个全复制的任务
      *
      * @param client 传输模块
-     * @param taskId              任务Id作为当前线程名
+     * @param taskId 任务Id作为当前线程名
      */
     private void startAllSync(TransmitClientAdapter client, String taskId) {
         final Packer syncAllPacker =
                 applicationContext.getBean("SyncAllPacker", Packer.class);
         final PackTask packTask = new PackTask(taskId, syncAllPacker, client);
         synchronized (lock) {
-            execTaskMap.put(taskId, packTask);
+            PackTask oldTask = execTaskMap.put(taskId, packTask);
+            if (oldTask != null) {
+                logger.warn(String.format("Task %s be replaced", oldTask.toString()));
+            }
+            exec.execute(packTask);
         }
-        exec.execute(packTask);
     }
 
     @PreDestroy
@@ -215,25 +230,33 @@ public class ClientFileCopy extends AbstractLoggable implements ApplicationConte
         }
     }
 
-    class PackTask implements Runnable, Closeable {
+    class PackTask implements Runnable {
 
         private final String taskId;
         private final Packer packer;
+        private volatile THREAD_STATE threadState;
         private final TransmitClientAdapter transfer;
+        @Setter
+        private SyncProcess serverSyncProcess;
 
         private PackTask(String taskId, Packer packer, TransmitClientAdapter transfer) {
             this.taskId = taskId;
             this.packer = packer;
             this.transfer = transfer;
+            threadState = THREAD_STATE.READY;
         }
 
         @Override
         public void run() {
             Thread.currentThread().setName(Thread.currentThread().getName() + taskId);
             try {
+                threadState = THREAD_STATE.RUNNING;
+                if (serverSyncProcess != null) {
+                    packer.setServerSyncProcess(serverSyncProcess);
+                }
                 packer.start(taskId, transfer);
             } catch (IOException | InfoPersistenceException e) {
-                logger.error("Exception happened .", e);
+                logger.error("Packer start error .", e);
                 throw new IllegalStateException(e);
             } finally {
                 try {
@@ -241,15 +264,33 @@ public class ClientFileCopy extends AbstractLoggable implements ApplicationConte
                 } catch (IOException e) {
                     logger.error("packer shutdown error, taskId:" + taskId, e);
                 }
+                // 如果是正常执行结束
+                if (!threadState.equals(THREAD_STATE.SHUTDOWN)) {
+                    synchronized (ClientFileCopy.this.lock) {
+                        execTaskMap.remove(taskId);
+                        threadState = THREAD_STATE.DEAD;
+                    }
+                }
             }
         }
 
-        @Override
         public void close() throws IOException {
-            synchronized (ClientFileCopy.this.lock) {
-                execTaskMap.remove(taskId);
-            }
             packer.close();
+            threadState = THREAD_STATE.SHUTDOWN;
+        }
+
+        boolean isActive() {
+            return THREAD_STATE.RUNNING.equals(threadState)
+                    || THREAD_STATE.READY.equals(threadState)
+                    || THREAD_STATE.WAITING.equals(threadState);
+        }
+
+        @Override
+        public String toString() {
+            return "PackTask{" +
+                    "taskId='" + taskId + '\'' +
+                    ", threadState=" + threadState +
+                    '}';
         }
     }
 }

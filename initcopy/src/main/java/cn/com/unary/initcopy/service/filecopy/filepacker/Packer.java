@@ -2,6 +2,7 @@ package cn.com.unary.initcopy.service.filecopy.filepacker;
 
 import cn.com.unary.initcopy.entity.Constants.PackerType;
 import cn.com.unary.initcopy.exception.InfoPersistenceException;
+import cn.com.unary.initcopy.grpc.entity.SyncProcess;
 import cn.com.unary.initcopy.service.transmit.TransmitClientAdapter;
 
 import java.io.Closeable;
@@ -58,4 +59,11 @@ public interface Packer extends Closeable {
      */
     @Override
     void close() throws IOException;
+
+    /**
+     * 用于暂停后重新打包，从 SERVER 的进度开始。
+     *
+     * @param serverSyncProcess SERVER Resolver 的进度
+     */
+    void setServerSyncProcess(SyncProcess serverSyncProcess);
 }

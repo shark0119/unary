@@ -129,16 +129,15 @@ public class ControlTaskGrpcService extends ControlTaskGrpc.ControlTaskImplBase 
         if (ValidateUtils.isEmpty(task.getTaskId())) {
             throw new IllegalArgumentException(MSG_TASK_ID_NULL);
         }
-        SyncProcess.Builder builder = SyncProcess.newBuilder();
+        SyncProcess.Builder processBuilder = SyncProcess.newBuilder();
         ExecResult.Builder resultBuilder = ExecResult.newBuilder();
         try {
-            taskUpdater.resume(task.getTaskId());
-            resultBuilder.setHealthy(true).setMsg(MSG_TASK_SUCCESS);
+            processBuilder = taskUpdater.resume(task.getTaskId()).toBuilder();
         } catch (Exception e) {
             logger.error(MSG_TASK_FAIL, e);
             resultBuilder.setHealthy(false).setMsg(e.getMessage() == null ? "" : e.getMessage());
         }
-        return builder.setExecResult(resultBuilder).build();
+        return processBuilder.setExecResult(resultBuilder).build();
     }
 
 }

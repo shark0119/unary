@@ -12,8 +12,8 @@ import cn.com.unary.initcopy.entity.FileInfoDO;
 import cn.com.unary.initcopy.exception.InfoPersistenceException;
 import cn.com.unary.initcopy.grpc.entity.SyncProcess;
 import cn.com.unary.initcopy.service.filecopy.filepacker.SyncAllPacker;
-import cn.com.unary.initcopy.service.filecopy.io.AbstractFileOutput;
 import cn.com.unary.initcopy.service.filecopy.io.FileAttrProcessor;
+import cn.com.unary.initcopy.service.filecopy.io.NioFileOutput;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
@@ -50,27 +50,39 @@ public class SyncAllResolver extends AbstractLoggable implements Resolver {
      * 默认文件是连续的形式，分布在中间的包，应该是填充满的。
      */
     private int beginPackIndex, endPackIndex, beginPackSize, endPackSize;
+    private ByteBuffer fileInfo;
     @Autowired
-    private AbstractFileOutput output;
+    private NioFileOutput output;
     @Autowired
     private FileAttrProcessor faProcessor;
-    private ByteBuffer fileInfo;
     private ReadProcess stage = ReadProcess.FILE_DONE;
     /**
      * 当前读取的包序号
      */
     private int packIndex;
-    private String taskId, backUpPath;
+    private boolean suspend;
     private FileInfoDO currentFile;
+    private SyncProcess syncProcess;
+    private String taskId, backUpPath;
 
+    /**
+     * 在数据解析开始后的调用，无法保证其效果。
+     *
+     * @param taskId     当前解析器对应的任务 ID
+     * @param backupPath 解析器对应的备份路径
+     */
     @Override
-    public void init(String taskId, String backUpPath) {
+    public void init(String taskId, String backupPath) {
         this.taskId = taskId;
-        this.backUpPath = backUpPath;
+        this.backUpPath = backupPath;
+        suspend = false;
     }
 
     @Override
     public void process(byte[] data) throws IOException, InfoPersistenceException {
+        if (suspend) {
+            throw new IllegalStateException("A suspended resolver can't process data.");
+        }
         packIndex = CommonUtils.byteArrayToInt(data, InitCopyContext.UUID_LEN);
         logger.info(String.format("we got pack with index: %d", packIndex));
         // get pack info
@@ -291,7 +303,7 @@ public class SyncAllResolver extends AbstractLoggable implements Resolver {
     }
 
     /**
-     * 关闭后再次调用 process 则会默认从文件头开始解析。
+     * 关闭后的调用不保证结果
      *
      * @throws IOException 关闭失败抛出 IO 异常
      */
@@ -304,7 +316,20 @@ public class SyncAllResolver extends AbstractLoggable implements Resolver {
     }
 
     @Override
+    public void resume() throws IOException {
+        if (suspend) {
+            suspend = false;
+            output.openFile(currentFile.getFullName());
+            output.position(syncProcess.getFilePos());
+        }
+    }
+
+    @Override
     public SyncProcess pause() throws IOException {
+        if (suspend) {
+            return this.syncProcess;
+        }
+        suspend = true;
         if (output != null) {
             output.close();
         }
@@ -317,7 +342,10 @@ public class SyncAllResolver extends AbstractLoggable implements Resolver {
             filePos = ((long) packIndex - beginPackIndex) * ((long) PACK_SIZE - HEAD_LENGTH);
         }
         builder.setFilePos(filePos);
-        return builder.build();
+        syncProcess = builder.build();
+        logger.info(String.format("Task %s suspend. SyncProcess:%s. SyncingFile:%s."
+                , taskId, syncProcess, currentFile));
+        return syncProcess;
     }
 
     /**

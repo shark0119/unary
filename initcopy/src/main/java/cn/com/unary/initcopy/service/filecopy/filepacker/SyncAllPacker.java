@@ -10,10 +10,12 @@ import cn.com.unary.initcopy.entity.Constants.PackerType;
 import cn.com.unary.initcopy.entity.FileInfoDO;
 import cn.com.unary.initcopy.entity.SyncTaskDO;
 import cn.com.unary.initcopy.exception.InfoPersistenceException;
-import cn.com.unary.initcopy.service.filecopy.io.AbstractFileInput;
+import cn.com.unary.initcopy.grpc.entity.SyncProcess;
+import cn.com.unary.initcopy.service.filecopy.io.NioFileInput;
 import cn.com.unary.initcopy.service.transmit.TransmitClientAdapter;
 import com.alibaba.fastjson.JSON;
 import com.una.common.TransmitException;
+import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
@@ -89,15 +91,15 @@ public class SyncAllPacker extends AbstractLoggable implements Packer {
      * ----我来组成分割线，以下是 Spring 容器来管理的实体----
      */
     @Autowired
-    @Qualifier("JavaNioFileInput")
-    private AbstractFileInput input;
+    @Qualifier("NioFileInput")
+    private NioFileInput input;
     @Autowired
     @Qualifier("clientFM")
     private FileManager fm;
     private TransmitClientAdapter transfer;
     /**
      * ----我是另外一只分界线，以下是自定义全局变量----
-     *
+     * <p>
      * 待读取的文件列表
      */
     private Iterator<FileInfoDO> fiIterator;
@@ -109,6 +111,8 @@ public class SyncAllPacker extends AbstractLoggable implements Packer {
     private int packIndex = 0;
     private byte[] taskId;
     private volatile boolean pause;
+    @Setter
+    private SyncProcess serverSyncProcess;
 
     public SyncAllPacker() {
         pause = false;
@@ -205,6 +209,7 @@ public class SyncAllPacker extends AbstractLoggable implements Packer {
     private void takeToNextFile(ByteBuffer buffer) throws IOException, InfoPersistenceException {
         if (currentFileInfo != null) {
             currentFileInfo.setState(FileInfoDO.STATE.SYNCED);
+            currentFileInfo.setSyncDoneTime(System.currentTimeMillis());
             fm.save(currentFileInfo);
         }
         if (fiIterator.hasNext()) {
