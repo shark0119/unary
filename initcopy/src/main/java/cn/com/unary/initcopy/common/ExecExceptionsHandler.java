@@ -21,7 +21,7 @@ public class ExecExceptionsHandler extends AbstractLoggable implements Thread.Un
         try {
             resource.close();
         } catch (Exception e1) {
-            logger.error("resource shutdown error.", e1);
+            logger.error("resource pause error.", e1);
         } finally {
             logger.error(t.getName(), e);
         }

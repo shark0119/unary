@@ -4,7 +4,6 @@ import cn.com.unary.initcopy.common.utils.ValidateUtils;
 import cn.com.unary.initcopy.dao.FileManager;
 import cn.com.unary.initcopy.entity.Constants.PackerType;
 import cn.com.unary.initcopy.entity.FileInfoDO;
-import cn.com.unary.initcopy.exception.InfoPersistenceException;
 import cn.com.unary.initcopy.grpc.entity.DiffFileInfo;
 import cn.com.unary.initcopy.grpc.entity.SyncProcess;
 import cn.com.unary.initcopy.service.filecopy.io.NioFileInput;
@@ -19,7 +18,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * 采用 rsync 算法实现的文件差异复制打包与解析
@@ -31,22 +29,33 @@ import java.util.Objects;
 public class RsyncPacker implements SyncDiffPacker {
 
     private final Map<String, FileInfoDO> fiMap = new HashMap<>();
+
+    @Autowired
+    @Qualifier("clientFM")
+    private FileManager fm;
+
+    @Override
+    public void init(String taskId, SyncProcess process) {
+
+    }
+
     private final Map<String, DiffFileInfo> dfiMap = new HashMap<>();
     private final List<String> readFileIds = new ArrayList<>();
     @Autowired
     @Qualifier("NioFileInput")
     private NioFileInput afi;
-    @Autowired
-    private FileManager fm;
+
+    @Override
+    public byte[] pack() {
+        return new byte[0];
+    }
     private TransmitClientAdapter transmitClient;
 
     private boolean ready = false;
 
     @Override
-    public void start(String taskId, TransmitClientAdapter transfer) throws InfoPersistenceException {
-        Objects.requireNonNull(transfer);
+    public void init(String taskId) {
         if (ready) {
-            this.transmitClient = transfer;
             for (FileInfoDO fi : fm.queryByTaskId(taskId)) {
                 fiMap.put(fi.getFileId(), fi);
             }
@@ -71,11 +80,6 @@ public class RsyncPacker implements SyncDiffPacker {
     @Override
     public PackerType getPackType() {
         return PackerType.RSYNC_JAVA;
-    }
-
-    @Override
-    public void setServerSyncProcess(SyncProcess serverSyncProcess) {
-
     }
 
     @Override

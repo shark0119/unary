@@ -40,7 +40,7 @@ import java.util.concurrent.TimeUnit;
 public class InitCopyContext extends AbstractLoggable implements Closeable, ApplicationContextAware {
     public static final int TASK_NUMBER = 10;
     public static final Charset CHARSET = StandardCharsets.UTF_8;
-    public static final int MAX_PACK_SIZE = 8 * 1024 * 1024;
+    public static final int MAX_PACK_SIZE = 1024 * 1024;
     public static final int SERVER_CORE_POOL_SIZE = 2;
     public static final int SERVER_MAX_POOL_SIZE = 30;
     public static final int UUID_LEN = UUID.randomUUID().toString().getBytes(InitCopyContext.CHARSET).length;
@@ -99,15 +99,15 @@ public class InitCopyContext extends AbstractLoggable implements Closeable, Appl
                     this.grpcPort = grpcPort;
                     this.innerGrpcPort = innerGrpcPort;
                     ThreadFactory executorThreadFactory = new BasicThreadFactory.Builder()
-                            .namingPattern("init-copy-context-executor-%d")
                             .uncaughtExceptionHandler(new ExecExceptionsHandler(this))
                             .build();
-                    exec = new ThreadPoolExecutor(3,
-                            3, 1000L, TimeUnit.MILLISECONDS,
-                            new LinkedBlockingQueue<Runnable>(3),
+                    exec = new ThreadPoolExecutor(4,
+                            4, 1000L, TimeUnit.MILLISECONDS,
+                            new LinkedBlockingQueue<Runnable>(5),
                             executorThreadFactory);
                     this.serverInit().clientInit();
                     ResourceDirector director = applicationContext.getBean(ResourceDirector.class);
+                    director.setThreadName("InitCopyContext-ResourceDirector");
                     exec.execute(director);
                     exec.shutdown();
                     isActive = Boolean.TRUE;
@@ -135,6 +135,7 @@ public class InitCopyContext extends AbstractLoggable implements Closeable, Appl
         exec.execute(new Runnable() {
             @Override
             public void run() {
+                Thread.currentThread().setName("InitCopyContext-InitCopyService");
                 try {
                     clientStarter.start();
                 } catch (Exception e) {
@@ -148,23 +149,14 @@ public class InitCopyContext extends AbstractLoggable implements Closeable, Appl
 
     private InitCopyContext serverInit() {
         final ServerFileCopy fileCopy = applicationContext.getBean("ServerFileCopy", ServerFileCopy.class);
-        // 启动和初始化传输模块（目标端）
-        exec.execute(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    server.start(getTransPort(), fileCopy);
-                } catch (IOException e) {
-                    throw new IllegalStateException(e);
-                }
-            }
-        });
         serverStarter = new GrpcServiceStarter(ctGrpcService, innerGrpcPort);
         // 启动内部控制任务信息的 GRPC 服务（目标端）
         exec.execute(new Runnable() {
             @Override
             public void run() {
+                Thread.currentThread().setName("InitCopyContext-TaskControlGrpcService");
                 try {
+                    server.start(getTransPort(), fileCopy);
                     serverStarter.start();
                 } catch (Exception e) {
                     throw new IllegalStateException(e);

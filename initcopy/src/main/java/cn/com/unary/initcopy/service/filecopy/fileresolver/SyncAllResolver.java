@@ -66,7 +66,7 @@ public class SyncAllResolver extends AbstractLoggable implements Resolver {
     private String taskId, backUpPath;
 
     /**
-     * 在数据解析开始后的调用，无法保证其效果。
+     * 如果调用发生在数据解析开始后，无法保证其效果。
      *
      * @param taskId     当前解析器对应的任务 ID
      * @param backupPath 解析器对应的备份路径
@@ -116,6 +116,13 @@ public class SyncAllResolver extends AbstractLoggable implements Resolver {
                 break;
             default:
                 throw new IllegalStateException("Program error. Unexpected state " + stage);
+        }
+        // 挂起之后，如果当前文件未读取到数据。则抛弃已读取的文件元信息
+        if (suspend) {
+            if (syncProcess.getFilePos() == 0L) {
+                stage = ReadProcess.FILE_INFO_LENGTH;
+                fileInfoLenBuf.clear();
+            }
         }
     }
 
@@ -205,7 +212,7 @@ public class SyncAllResolver extends AbstractLoggable implements Resolver {
      * @return 当前文件为 普通文件（二进制或文本文件）返回 true，否则返回 false
      */
     private boolean initCopyFile(int remainingSize) throws IOException, InfoPersistenceException {
-        logger.debug("A file info json start transfer to FileInfo");
+        logger.debug("A file info json init transfer to FileInfo");
         currentFile = CommonUtils.deSerFromJson(fileInfo.array(), FileInfoDO.class);
         if (!ValidateUtils.isEmpty(currentFile.getBackUpPath())) {
             backUpPath = currentFile.getBackUpPath();
@@ -319,7 +326,7 @@ public class SyncAllResolver extends AbstractLoggable implements Resolver {
     public void resume() throws IOException {
         if (suspend) {
             suspend = false;
-            output.openFile(currentFile.getFullName());
+            output.openFile(PathMapperUtil.sourcePathMapper(backUpPath, currentFile.getFullName()));
             output.position(syncProcess.getFilePos());
         }
     }
@@ -339,12 +346,13 @@ public class SyncAllResolver extends AbstractLoggable implements Resolver {
         if (packIndex >= endPackIndex) {
             filePos = currentFile.getFileSize();
         } else {
-            filePos = ((long) packIndex - beginPackIndex) * ((long) PACK_SIZE - HEAD_LENGTH);
+            filePos = ((long) packIndex - beginPackIndex)
+                    * ((long) PACK_SIZE - HEAD_LENGTH) + beginPackSize;
         }
         builder.setFilePos(filePos);
         syncProcess = builder.build();
         logger.info(String.format("Task %s suspend. SyncProcess:%s. SyncingFile:%s."
-                , taskId, syncProcess, currentFile));
+                , taskId, CommonUtils.formatGrpcEntity(syncProcess), currentFile));
         return syncProcess;
     }
 

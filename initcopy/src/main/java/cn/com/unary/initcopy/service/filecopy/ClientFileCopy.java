@@ -108,9 +108,10 @@ public class ClientFileCopy extends AbstractLoggable implements ApplicationConte
         synchronized (lock) {
             final PackTask packTask = execTaskMap.get(taskId);
             if (packTask.isActive()) {
-                packTask.close();
+                packTask.pause();
             } else {
-                logger.info(String.format("UnSupport operation to task:%s."));
+                logger.info(String.format("UnSupport operation to task:%s. State:%s."
+                        , taskId, packTask.threadState.toString()));
             }
         }
     }
@@ -127,7 +128,7 @@ public class ClientFileCopy extends AbstractLoggable implements ApplicationConte
             fm.saveTask(BeanExactUtil.takeFromGrpc(task, null));
             synchronized (lock) {
                 if (close) {
-                    throw new TaskFailException("file copy already shutdown");
+                    throw new TaskFailException("file copy already pause");
                 }
             }
             logger.debug("Start File Copy Init.");
@@ -234,8 +235,8 @@ public class ClientFileCopy extends AbstractLoggable implements ApplicationConte
 
         private final String taskId;
         private final Packer packer;
-        private volatile THREAD_STATE threadState;
         private final TransmitClientAdapter transfer;
+        private volatile THREAD_STATE threadState;
         @Setter
         private SyncProcess serverSyncProcess;
 
@@ -250,33 +251,53 @@ public class ClientFileCopy extends AbstractLoggable implements ApplicationConte
         public void run() {
             Thread.currentThread().setName(Thread.currentThread().getName() + taskId);
             try {
+                transfer.start(BeanExactUtil.takeTransmitParamFromTaskDO(fm.queryTask(taskId)));
                 threadState = THREAD_STATE.RUNNING;
-                if (serverSyncProcess != null) {
-                    packer.setServerSyncProcess(serverSyncProcess);
+                packer.init(taskId, serverSyncProcess);
+                serverSyncProcess = null;
+                byte[] pack;
+                while ((pack = packer.pack()) != null) {
+                    logger.debug(String.format("Pass %d bytes to transfer.", pack.length));
+                    this.transfer.sendData(pack);
                 }
-                packer.start(taskId, transfer);
             } catch (IOException | InfoPersistenceException e) {
-                logger.error("Packer start error .", e);
+                logger.error("Packer init error .", e);
                 throw new IllegalStateException(e);
             } finally {
-                try {
-                    this.close();
-                } catch (IOException e) {
-                    logger.error("packer shutdown error, taskId:" + taskId, e);
-                }
                 // 如果是正常执行结束
                 if (!threadState.equals(THREAD_STATE.SHUTDOWN)) {
+                    try {
+                        this.close();
+                    } catch (IOException e) {
+                        logger.error("PackTask close error.", e);
+                    }
                     synchronized (ClientFileCopy.this.lock) {
                         execTaskMap.remove(taskId);
                         threadState = THREAD_STATE.DEAD;
                     }
                 }
+                try {
+                    this.pause();
+                } catch (IOException e) {
+                    logger.error("packer pause error, taskId:" + taskId, e);
+                }
             }
         }
 
-        public void close() throws IOException {
+        public void pause() throws IOException {
+            if (!isActive()) {
+                return;
+            }
             packer.close();
             threadState = THREAD_STATE.SHUTDOWN;
+        }
+
+        public void close() throws IOException {
+            if (THREAD_STATE.DEAD.equals(threadState)) {
+                return;
+            }
+            packer.close();
+            threadState = THREAD_STATE.DEAD;
         }
 
         boolean isActive() {

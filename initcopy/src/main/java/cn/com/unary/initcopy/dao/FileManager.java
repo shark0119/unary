@@ -22,6 +22,15 @@ public interface FileManager {
     List<FileInfoDO> queryByIds(String... fileIds) throws InfoPersistenceException;
 
     /**
+     * 根据文件 Id 查询文件信息实体
+     *
+     * @param fileId 文件Id
+     * @return 文件信息实体，如无，则返回 null
+     * @throws InfoPersistenceException 持久层异常
+     */
+    FileInfoDO queryById(String fileId) throws InfoPersistenceException;
+
+    /**
      * 保存文件实体信息
      *
      * @param fi 文件信息实体
@@ -55,20 +64,21 @@ public interface FileManager {
     void deleteByIds(String... fileIds) throws InfoPersistenceException;
 
     /**
+     * 查询某个任务中未同步的文件信息集合
+     *
+     * @param taskId 任务Id
+     * @param state  文件的同步状态
+     * @return 实体集合
+     */
+    List<FileInfoDO> queryFileByTaskIdAndState(String taskId, FileInfoDO.STATE state);
+
+    /**
      * 根据任务 Id 来查询文件信息实体
      *
      * @param taskId 任务 Id
      * @return 文件信息实体集合
      */
     List<FileInfoDO> queryByTaskId(String taskId);
-
-    /**
-     * 查询某个任务中未同步的文件信息集合
-     *
-     * @param taskId 任务Id
-     * @return 实体集合
-     */
-    List<FileInfoDO> queryUnSyncFileByTaskId(String taskId);
 
     /**
      * 如果完成返回 true

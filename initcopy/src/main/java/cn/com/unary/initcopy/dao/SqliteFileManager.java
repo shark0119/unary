@@ -60,6 +60,11 @@ public class SqliteFileManager extends AbstractLoggable implements FileManager {
     }
 
     @Override
+    public FileInfoDO queryById(String fileId) {
+        return null;
+    }
+
+    @Override
     public FileInfoDO save(FileInfoDO fi) throws InfoPersistenceException {
         Objects.requireNonNull(fi);
         try (
@@ -105,13 +110,13 @@ public class SqliteFileManager extends AbstractLoggable implements FileManager {
     }
 
     @Override
-    public List<FileInfoDO> queryByTaskId(String taskId) {
-        // TODO
+    public List<FileInfoDO> queryFileByTaskIdAndState(String taskId, FileInfoDO.STATE state) {
         return null;
     }
 
     @Override
-    public List<FileInfoDO> queryUnSyncFileByTaskId(String taskId) {
+    public List<FileInfoDO> queryByTaskId(String taskId) {
+        // TODO
         return null;
     }
 

@@ -2,20 +2,15 @@ package cn.com.unary.initcopy.service.filecopy.filepacker;
 
 import cn.com.unary.initcopy.InitCopyContext;
 import cn.com.unary.initcopy.common.AbstractLoggable;
-import cn.com.unary.initcopy.common.utils.BeanExactUtil;
 import cn.com.unary.initcopy.common.utils.CommonUtils;
 import cn.com.unary.initcopy.dao.FileManager;
 import cn.com.unary.initcopy.entity.Constants;
 import cn.com.unary.initcopy.entity.Constants.PackerType;
 import cn.com.unary.initcopy.entity.FileInfoDO;
-import cn.com.unary.initcopy.entity.SyncTaskDO;
 import cn.com.unary.initcopy.exception.InfoPersistenceException;
 import cn.com.unary.initcopy.grpc.entity.SyncProcess;
 import cn.com.unary.initcopy.service.filecopy.io.NioFileInput;
-import cn.com.unary.initcopy.service.transmit.TransmitClientAdapter;
 import com.alibaba.fastjson.JSON;
-import com.una.common.TransmitException;
-import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
@@ -23,7 +18,6 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.channels.ClosedChannelException;
 import java.util.Iterator;
 import java.util.List;
 
@@ -96,7 +90,6 @@ public class SyncAllPacker extends AbstractLoggable implements Packer {
     @Autowired
     @Qualifier("clientFM")
     private FileManager fm;
-    private TransmitClientAdapter transfer;
     /**
      * ----我是另外一只分界线，以下是自定义全局变量----
      * <p>
@@ -108,69 +101,62 @@ public class SyncAllPacker extends AbstractLoggable implements Packer {
      * 文件信息数据
      */
     private ByteBuffer fileInfoBuffer;
-    private int packIndex = 0;
     private byte[] taskId;
-    private volatile boolean pause;
-    @Setter
-    private SyncProcess serverSyncProcess;
+    private int packIndex = 0;
+    private volatile boolean close;
 
-    public SyncAllPacker() {
-        pause = false;
+    @Override
+    public void init(String taskId)
+            throws IOException, InfoPersistenceException {
+        this.init(taskId, null);
     }
 
     /**
-     * 会读取当前任务同步进度，从断点处续传。
-     * 粒度目前在文件级。未传完的文件会从头传输
-     *
-     * @param taskId   任务Id
-     * @param transfer 传输模块客户端
-     * @throws IOException              IO 异常
-     * @throws InfoPersistenceException 持久化层异常
+     * @see Packer#init(String, SyncProcess)
+     * 依赖于 FileManager 中存储的文件信息的相关实体
      */
     @Override
-    public void start(String taskId, TransmitClientAdapter transfer)
-            throws IOException, InfoPersistenceException {
-        this.taskId = taskId.getBytes(InitCopyContext.CHARSET);
-        List<FileInfoDO> list = fm.queryUnSyncFileByTaskId(taskId);
-        fiIterator = list.iterator();
-        byte[] packData;
-        SyncTaskDO task = fm.queryTask(taskId);
-        try {
-            transfer.start(BeanExactUtil.takeFromTransmitParamTaskDO(task));
-        } catch (IOException e) {
-            throw new IOException(String.format("Transfer connect error. ip:%s, port:%d."
-                    , task.getIp(), task.getTransferPort()), e);
-        }
-        this.transfer = transfer;
-        while (true) {
-            try {
-                packData = CommonUtils.extractBytes(pack());
-            } catch (ClosedChannelException e) {
-                logger.warn("packer stop because channel shutdown.");
-                return;
+    public void init(String taskId, SyncProcess process) throws IOException, InfoPersistenceException {
+        close = false;
+        List<FileInfoDO> fiList = fm.queryFileByTaskIdAndState(taskId, FileInfoDO.STATE.WAIT);
+        if (process == null) {
+            this.taskId = taskId.getBytes(InitCopyContext.CHARSET);
+        } else {
+            packIndex = process.getPackIndex();
+            currentFileInfo = fm.queryById(process.getFileId());
+            if (currentFileInfo == null) {
+                throw new IOException("File not found:" + taskId);
             }
-            if (packData.length <= HEAD_LENGTH) {
-                logger.warn(String.format("Pack %d ignore, cause it's empty, size %d."
-                        , packIndex, packData.length));
-                break;
-            }
-            logger.debug(String.format("Pass %d bytes to Transfer.", packData.length));
-            try {
-                this.transfer.sendData(packData);
-            } catch (TransmitException e) {
-                throw new IOException(e);
+            input.openFile(currentFileInfo.getFullName());
+            input.position(process.getFilePos());
+            // 不会续传文件元信息数据
+            fileInfoBuffer.position(fileInfoBuffer.limit());
+            if (0L == process.getFilePos()) {
+                // 如果当前文件未同步到文件内容，则抛弃当前文件的同步进度，作为一个新文件开始同步
+                currentFileInfo.setState(FileInfoDO.STATE.WAIT);
+                fiList.add(0, currentFileInfo);
+                currentFileInfo = null;
+                fileInfoBuffer = null;
             }
         }
+        fiIterator = fiList.iterator();
     }
 
-    /**
-     * 将文件数据打包
-     *
-     * @return 如无数据，返回长度为 0 的字节数组
-     */
-    private ByteBuffer pack() throws IOException, InfoPersistenceException {
-        if (pause) {
-            return ByteBuffer.allocate(0);
+    @Override
+    public byte[] pack() throws IOException, InfoPersistenceException {
+
+        // -- debug code
+        try {
+            // sleep 10 seconds for test
+            Thread.sleep(10000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        // -- end debug code
+
+        if (close) {
+            logger.info(String.format("Packer already closed."));
+            return null;
         }
         ByteBuffer buffer;
         buffer = ByteBuffer.allocate(PACK_SIZE);
@@ -195,8 +181,14 @@ public class SyncAllPacker extends AbstractLoggable implements Packer {
                 takeToNextFile(buffer);
             }
         }
-        logger.info(String.format("Pack Done. PackIndex:%d, PackSize:%d.", packIndex, buffer.position()));
-        return buffer;
+        if (buffer.position() <= HEAD_LENGTH) {
+            logger.info(String.format("Pack %d ignore, cause it's empty, size %d."
+                    , packIndex, buffer.position()));
+            return null;
+        } else {
+            logger.info(String.format("Pack Done. PackIndex:%d, PackSize:%d.", packIndex, buffer.position()));
+            return CommonUtils.extractBytes(buffer);
+        }
     }
 
     /**
@@ -235,7 +227,7 @@ public class SyncAllPacker extends AbstractLoggable implements Packer {
             packFileInfo(buffer);
         } else {
             currentFileInfo = null;
-            logger.info("we have no file anymore.");
+            logger.info("We have no file anymore.");
             fileInfoBuffer = ByteBuffer.allocate(0);
         }
     }
@@ -268,13 +260,13 @@ public class SyncAllPacker extends AbstractLoggable implements Packer {
 
     @Override
     public void close() throws IOException {
-        if (pause) {
+        if (close) {
             return;
         }
         if (input != null) {
             input.close();
         }
-        transfer.close();
-        pause = true;
+        close = true;
     }
+
 }

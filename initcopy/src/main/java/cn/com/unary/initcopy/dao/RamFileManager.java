@@ -75,22 +75,22 @@ public class RamFileManager extends AbstractLoggable implements FileManager {
     @Override
     public List<FileInfoDO> queryByTaskId(String taskId) {
         Objects.requireNonNull(taskId);
-        List<FileInfoDO> fileInfos = new ArrayList<>();
+        List<FileInfoDO> fileInfoList = new ArrayList<>();
         for (Map.Entry<String, FileInfoDO> entry : fiMap.entrySet()) {
             if (fiMap.get(entry.getKey()).getTaskId().equals(taskId)) {
-                fileInfos.add(entry.getValue());
+                fileInfoList.add(entry.getValue());
             }
         }
-        logger.info(String.format("%d file in task:%s", fileInfos.size(), taskId));
-        return fileInfos;
+        logger.info(String.format("%d file in task:%s", fileInfoList.size(), taskId));
+        return fileInfoList;
     }
 
     @Override
-    public List<FileInfoDO> queryUnSyncFileByTaskId(String taskId) {
+    public List<FileInfoDO> queryFileByTaskIdAndState(String taskId, FileInfoDO.STATE state) {
         List<FileInfoDO> fileInfoList = new ArrayList<>();
         for (Map.Entry<String, FileInfoDO> entry : fiMap.entrySet()) {
             if (entry.getValue().getTaskId().equals(taskId)
-                    && !entry.getValue().getStateEnum().equals(FileInfoDO.STATE.SYNCED)) {
+                    && entry.getValue().getStateEnum().equals(state)) {
                 fileInfoList.add(entry.getValue());
             }
         }
@@ -140,6 +140,16 @@ public class RamFileManager extends AbstractLoggable implements FileManager {
             fis.add(fi);
         }
         return fis;
+    }
+
+    @Override
+    public FileInfoDO queryById(String fileId) {
+        List<FileInfoDO> fiList = this.queryByIds(fileId);
+        if (fiList.isEmpty()) {
+            return null;
+        } else {
+            return fiList.get(0);
+        }
     }
 
     @Override

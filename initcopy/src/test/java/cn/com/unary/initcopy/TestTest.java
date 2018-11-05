@@ -13,6 +13,7 @@ import java.math.RoundingMode;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.locks.Condition;
@@ -90,30 +91,54 @@ public class TestTest {
         b.test();
     }
 
+    @Test
+    public void test6() {
+        List<Integer> list = new ArrayList<>();
+        list.add(1);
+        list.add(3);
+        list.add(5);
+        Iterator<Integer> iterator = list.iterator();
+        while (iterator.hasNext()) {
+            Integer i = iterator.next();
+            if (i == 3) {
+                iterator.remove();
+            } else {
+                System.out.println(i);
+            }
+        }
+    }
+
     static class A {
         int a = 1;
+
         A() {
             print(this);
         }
+
         void print(A a) {
             System.out.println(a.a);
             this.overrideMtd();
         }
-        void overrideMtd () {
+
+        void overrideMtd() {
             System.out.println("overrideMtd");
         }
     }
-    static class B extends A{
+
+    static class B extends A {
         int a = 2;
-        void test () {
+
+        void test() {
             print(this);
             System.out.println(a);
         }
+
         @Override
         void overrideMtd() {
             System.out.println("overrideMtd in subclass");
         }
     }
+
     private static class Task implements Runnable {
         private ReentrantLock lock = new ReentrantLock();
         private Condition ready = lock.newCondition();

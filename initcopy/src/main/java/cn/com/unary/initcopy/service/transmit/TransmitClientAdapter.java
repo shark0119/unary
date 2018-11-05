@@ -71,8 +71,12 @@ public class TransmitClientAdapter extends AbstractLoggable implements Closeable
         }
     }
 
-    public void sendData(byte[] data) throws TransmitException {
-        communication.sendData(data);
+    public void sendData(byte[] data) throws IOException {
+        try {
+            communication.sendData(data);
+        } catch (TransmitException e) {
+            throw new IOException(e);
+        }
     }
 
     public void setDataHandler(final DataHandlerAdapter dataHandlerAdapter) {

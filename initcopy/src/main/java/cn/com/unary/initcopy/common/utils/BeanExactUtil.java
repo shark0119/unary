@@ -49,7 +49,7 @@ public class BeanExactUtil {
         return fis;
     }
     public static String serToSql (FileInfoDO fi) {
-        StringBuilder sb = new StringBuilder ("");
+        StringBuilder sb = new StringBuilder();
 
         return sb.toString();
     }
@@ -155,7 +155,7 @@ public class BeanExactUtil {
         return taskDO;
     }
 
-    public static TransmitParams takeFromTransmitParamTaskDO(SyncTaskDO taskDO) {
+    public static TransmitParams takeTransmitParamFromTaskDO(SyncTaskDO taskDO) {
         TransmitParams params = new TransmitParams();
         params.setSpeedLimit(taskDO.getSpeedLimit());
         params.setCompressType(taskDO.getCompressType());

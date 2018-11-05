@@ -33,7 +33,7 @@ public class GrpcServiceStarter extends AbstractLoggable implements Closeable {
         server = ServerBuilder.forPort(port)
                 .addService(service)
                 .build().start();
-        logger.debug("service start...");
+        logger.debug("service init...");
         Runtime.getRuntime().addShutdownHook(new Thread() {
             @Override
             public void run() {

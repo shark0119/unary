@@ -3,7 +3,6 @@ package cn.com.unary.initcopy.service.filecopy.filepacker;
 import cn.com.unary.initcopy.entity.Constants.PackerType;
 import cn.com.unary.initcopy.exception.InfoPersistenceException;
 import cn.com.unary.initcopy.grpc.entity.SyncProcess;
-import cn.com.unary.initcopy.service.transmit.TransmitClientAdapter;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -38,12 +37,30 @@ public interface Packer extends Closeable {
      * 会读取任务的进度继续开始。
      *
      * @param taskId   任务Id
-     * @param transfer 传输模块客户端
      * @throws IOException              IO 异常
      * @throws InfoPersistenceException 相关信息在持久化层发生异常
      */
-    void start(String taskId, TransmitClientAdapter transfer) throws IOException, InfoPersistenceException;
+    void init(String taskId) throws IOException, InfoPersistenceException;
 
+    /**
+     * 开始文件读取打包，并向目标端发送数据包
+     * 会读取任务的进度继续开始。
+     *
+     * @param taskId   任务Id
+     * @param process 复制进度
+     * @throws IOException              IO 异常
+     * @throws InfoPersistenceException 相关信息在持久化层发生异常
+     */
+    void init(String taskId, SyncProcess process) throws IOException, InfoPersistenceException;
+
+    /**
+     * 获取数据包，如被关闭或打包至文件尾，则返回 null
+     *
+     * @return 数据包
+     * @throws IOException              IO异常
+     * @throws InfoPersistenceException 持久层异常
+     */
+    byte[] pack() throws IOException, InfoPersistenceException;
     /**
      * 返回打包种类
      *
@@ -59,11 +76,4 @@ public interface Packer extends Closeable {
      */
     @Override
     void close() throws IOException;
-
-    /**
-     * 用于暂停后重新打包，从 SERVER 的进度开始。
-     *
-     * @param serverSyncProcess SERVER Resolver 的进度
-     */
-    void setServerSyncProcess(SyncProcess serverSyncProcess);
 }

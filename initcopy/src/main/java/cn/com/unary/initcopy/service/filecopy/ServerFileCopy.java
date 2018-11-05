@@ -57,7 +57,7 @@ public class ServerFileCopy extends AbstractLoggable implements DataHandlerAdapt
     private final ThreadPoolExecutor fileCopyExec;
     private final Object lock;
     /**
-     * 存放待执行的任务列表
+     * 存放待执行的任务列表，包括新建的任务与挂起的任务
      */
     private final Map<String, CopyTask> taskMap;
     /**
@@ -65,7 +65,7 @@ public class ServerFileCopy extends AbstractLoggable implements DataHandlerAdapt
      */
     private final Map<String, CopyTask> execTaskMap;
     @Autowired
-    @Qualifier("clientFM")
+    @Qualifier("serverFM")
     private FileManager fm;
     @Autowired
     private ServerFileCopyInit init;
@@ -91,20 +91,20 @@ public class ServerFileCopy extends AbstractLoggable implements DataHandlerAdapt
 
     /**
      * 先根据包信息来确定属于哪个任务。
-     * 如任务已被停止，则直接返回
+     * 如已被关闭，则直接返回
      *
      * @param data 数据包
      */
     @Override
     public void handle(byte[] data) {
         if (close) {
-            logger.warn("FileCopy already shutdown.");
+            logger.warn("FileCopy already pause.");
             return;
         }
         String taskId = new String(data, 0, InitCopyContext.UUID_LEN, InitCopyContext.CHARSET);
         synchronized (lock) {
             if (close) {
-                logger.warn("FileCopy already shutdown.");
+                logger.warn("FileCopy already pause.");
                 return;
             }
             if (execTaskMap.containsKey(taskId)) {
@@ -132,7 +132,7 @@ public class ServerFileCopy extends AbstractLoggable implements DataHandlerAdapt
     public ServerInitResp startInit(ClientInitReq req) throws TaskFailException {
         synchronized (lock) {
             if (close) {
-                throw new TaskFailException("FileCopy already shutdown.");
+                throw new TaskFailException("FileCopy already pause.");
             }
         }
         final CopyTask task = new CopyTask(req.getTaskId(), req.getBackUpPath());
@@ -181,13 +181,14 @@ public class ServerFileCopy extends AbstractLoggable implements DataHandlerAdapt
                     throw new IllegalStateException(String.format("Task not found:%s", taskId));
                 }
             }
+            task.shutdownNow();
             logger.info(String.format("Task delete:%s", task.toString()));
         }
     }
 
     /**
      * 检查在线程池中执行的任务列表，如果超时未接受到数据，
-     * 默认为客户端断开连接，则暂停该任务并放入待执行任务列表中
+     * 默认为客户端断开连接，则暂停该任务
      */
     public void clean() {
         synchronized (lock) {
@@ -197,7 +198,6 @@ public class ServerFileCopy extends AbstractLoggable implements DataHandlerAdapt
             while (iterator.hasNext()) {
                 entry = iterator.next();
                 if (currentTime - entry.getValue().timeStamp > RESOURCE_TIME_OUT) {
-                    iterator.remove();
                     entry.getValue().shutdown();
                 }
             }
@@ -226,6 +226,7 @@ public class ServerFileCopy extends AbstractLoggable implements DataHandlerAdapt
                 if (task.syncProcess == null) {
                     resultBuilder.setMsg("Task is ready. No syncProcess found.").setHealthy(true);
                 } else {
+                    resultBuilder.setMsg("Task success.").setHealthy(true);
                     processBuilder = task.syncProcess.toBuilder();
                 }
             }
@@ -270,6 +271,13 @@ public class ServerFileCopy extends AbstractLoggable implements DataHandlerAdapt
         @Override
         public void run() {
             threadState = THREAD_STATE.RUNNING;
+            try {
+                if (resolver != null) {
+                    resolver.resume();
+                }
+            } catch (IOException e) {
+                throw new IllegalStateException(e);
+            }
             Thread.currentThread().setName(Thread.currentThread().getName() + taskId);
             byte[] pack;
             boolean taskFinished = false;
@@ -284,7 +292,7 @@ public class ServerFileCopy extends AbstractLoggable implements DataHandlerAdapt
                             break;
                         }
                         try {
-                            logger.info(String.format("%d's wait when pack null, state."
+                            logger.info(String.format("%d's wait when pack null, state：%s."
                                     , tempWait.incrementAndGet(), threadState));
                             tempTime = System.currentTimeMillis();
                             threadState = THREAD_STATE.WAITING;
@@ -309,8 +317,9 @@ public class ServerFileCopy extends AbstractLoggable implements DataHandlerAdapt
                 syncProcess = null;
                 logger.warn(String.format("Task %s. Resolver pause failed.", taskId), e);
             }
-            threadState = THREAD_STATE.DEAD;
             synchronized (ServerFileCopy.this.lock) {
+                // 对于 threadState 和 TASK_MAP 同时访问时，必须获取到 ServerFileCopy.this.lock
+                threadState = THREAD_STATE.DEAD;
                 if (taskFinished) {
                     ServerFileCopy.this.execTaskMap.remove(taskId);
                     logger.info(String.format("Task %s remove from map.", taskId));
@@ -375,21 +384,22 @@ public class ServerFileCopy extends AbstractLoggable implements DataHandlerAdapt
             if (!isActive()) {
                 return;
             }
-            synchronized (lock) {
-                if (!isActive()) {
-                    return;
-                }
-                // 如果当前线程
-                if (THREAD_STATE.WAITING.equals(threadState)) {
-                    logger.info(tempNotify.incrementAndGet() + "'s notify when pack arrive.");
-                    waitTime += System.currentTimeMillis() - tempTime;
-                    threadState = THREAD_STATE.SHUTDOWN;
+            if (!isActive()) {
+                return;
+            }
+            // 如果当前线程正在等待数据包
+            if (THREAD_STATE.WAITING.equals(threadState)) {
+                threadState = THREAD_STATE.SHUTDOWN;
+                logger.info(tempNotify.incrementAndGet() + "'s notify when pack shutdown.");
+                waitTime += System.currentTimeMillis() - tempTime;
+                synchronized (lock) {
                     lock.notify();
                 }
-                threadState = THREAD_STATE.SHUTDOWN;
-                if (!lazy) {
-                    packs.clear();
-                }
+            }
+            threadState = THREAD_STATE.SHUTDOWN;
+            // 直接清空即可，无需获取锁
+            if (!lazy) {
+                packs.clear();
             }
         }
 
