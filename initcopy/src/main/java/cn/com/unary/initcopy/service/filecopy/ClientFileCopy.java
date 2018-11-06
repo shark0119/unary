@@ -113,16 +113,23 @@ public class ClientFileCopy extends AbstractLoggable implements ApplicationConte
         return resultBuilder.setHealthy(true).build();
     }
 
-    public void pause(String taskId) throws IOException {
+    public ExecResult pause(String taskId) {
+        ExecResult.Builder builder = ExecResult.newBuilder();
         synchronized (lock) {
             final PackTask packTask = execTaskMap.get(taskId);
+            if (packTask == null) {
+                return builder.setMsg(String.format("Task %s not found in task map. Maybe already finished.", taskId))
+                        .setHealthy(false).build();
+            }
             if (packTask.isActive()) {
                 packTask.pause();
+                builder.setHealthy(true).setMsg(String.format("Task %s pause success.", taskId));
             } else {
-                logger.info(String.format("UnSupport operation to task:%s. State:%s."
+                builder.setHealthy(true).setMsg(String.format("UnSupport operation to task:%s. State:%s."
                         , taskId, packTask.threadState.toString()));
             }
         }
+        return builder.build();
     }
 
     /**
@@ -281,6 +288,7 @@ public class ClientFileCopy extends AbstractLoggable implements ApplicationConte
                     try {
                         // 留作备用。当客户端的被停止，而服务端的任务还在运行时，按照客户端的复制进度来启动任务
                         serverSyncProcess = packer.close();
+                        transfer.close();
                     } catch (IOException e) {
                         logger.error("Packer close error.", e);
                     }
@@ -316,6 +324,7 @@ public class ClientFileCopy extends AbstractLoggable implements ApplicationConte
                 return;
             }
             packer.close();
+            transfer.close();
             threadState = THREAD_STATE.DEAD;
         }
 

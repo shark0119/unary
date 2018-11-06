@@ -216,17 +216,25 @@ public class ServerFileCopy extends AbstractLoggable implements DataHandlerAdapt
             ExecResult.Builder resultBuilder = ExecResult.newBuilder().setTaskId(taskId);
             SyncProcess.Builder processBuilder = SyncProcess.newBuilder();
             if (task == null) {
-                if (!execTaskMap.containsKey(taskId)) {
-                    resultBuilder.setMsg("Server Task don't exist.").setHealthy(false);
+                if (execTaskMap.containsKey(taskId)) {
+                    resultBuilder
+                            .setMsg(String.format("Task %s is running on server", taskId))
+                            .setHealthy(true);
                 } else {
-                    resultBuilder.setMsg("Server Task is running").setHealthy(true);
+                    resultBuilder
+                            .setMsg(String.format("Task %s not found in server. May have been completed. ", taskId))
+                            .setHealthy(false);
                 }
             } else {
                 task.threadState = THREAD_STATE.READY;
                 if (task.syncProcess == null) {
-                    resultBuilder.setMsg("Server Task is ready. No syncProcess found.").setHealthy(true);
+                    resultBuilder
+                            .setMsg(String.format("Task %s is ready on server. No syncProcess found.", taskId))
+                            .setHealthy(true);
                 } else {
-                    resultBuilder.setMsg("Server Task resume success.").setHealthy(true);
+                    resultBuilder
+                            .setMsg(String.format("Task %s resume success on server.", taskId))
+                            .setHealthy(true);
                     processBuilder = task.syncProcess.toBuilder();
                 }
             }

@@ -55,8 +55,8 @@ public class InvokeGrpcTest {
         /*TaskState state = client.query(queryBuilder.setTaskId("eb4d9484-3fa1-40fa-9094-3a684155376c").build());
         System.out.println("State:" + CommonUtils.formatGrpcEntity(state));*/
         // modify-task
-        /*ExecResult execResult = client.modify(modifyBuilder.setTaskId("f53b22ae-f33e-46a8-bf95-cdf9cd04facb").build());
-        System.out.println(CommonUtils.formatGrpcEntity(execResult));*/
+        ExecResult execResult = client.modify(modifyBuilder.setTaskId("f53b22ae-f33e-46a8-bf95-cdf9cd04facb").build());
+        System.out.println(CommonUtils.formatGrpcEntity(execResult));
 
         client.close();
         while (!client.isTerminated()) {

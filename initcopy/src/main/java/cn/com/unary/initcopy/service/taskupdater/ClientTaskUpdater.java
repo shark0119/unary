@@ -12,8 +12,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
-
 /**
  * 客户端的任务修改器
  * 线程安全
@@ -33,11 +31,7 @@ public class ClientTaskUpdater extends AbstractLoggable {
 
     public void delete(DeleteTask task) throws TaskFailException {
         // 停止源端同步任务
-        try {
-            fileCopy.pause(task.getTaskId());
-        } catch (IOException e) {
-            throw new TaskFailException(e);
-        }
+        fileCopy.pause(task.getTaskId());
         // 通知目标端删除任务
         SyncTaskDO taskDO = fm.queryTask(task.getTaskId());
         if (taskDO == null) {
@@ -75,12 +69,7 @@ public class ClientTaskUpdater extends AbstractLoggable {
                 }
                 break;
             case PAUSE:
-                try {
-                    fileCopy.pause(task.getTaskId());
-                    resultBuilder.setMsg(String.format("Task %s pause success.", task.getTaskId()));
-                } catch (IOException e) {
-                    throw new TaskFailException(String.format("Task %s pause failed.", task.getTaskId()));
-                }
+                resultBuilder = fileCopy.pause(task.getTaskId()).toBuilder();
                 break;
             case SPEED_LIMIT:
                 fileCopy.speedLimit(task.getTaskId(), task.getSpeedLimit());

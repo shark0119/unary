@@ -72,12 +72,6 @@ public class TransmitClientAdapter extends AbstractLoggable implements Closeable
     }
 
     public void sendData(byte[] data) throws IOException {
-        // debug code, analog network delay
-        /*try {
-            Thread.sleep(5000);
-        } catch (InterruptedException e) {
-            logger.error(e);
-        }*/
         try {
             communication.sendData(data);
         } catch (TransmitException e) {
