@@ -10,6 +10,7 @@ import cn.com.unary.initcopy.entity.FileInfoDO;
 import cn.com.unary.initcopy.exception.InfoPersistenceException;
 import cn.com.unary.initcopy.exception.TaskFailException;
 import cn.com.unary.initcopy.grpc.entity.DiffFileInfo;
+import cn.com.unary.initcopy.grpc.entity.ExecResult;
 import cn.com.unary.initcopy.grpc.entity.SyncProcess;
 import cn.com.unary.initcopy.grpc.entity.SyncTask;
 import cn.com.unary.initcopy.service.filecopy.filepacker.Packer;
@@ -52,14 +53,17 @@ import static cn.com.unary.initcopy.entity.Constants.THREAD_STATE;
 public class ClientFileCopy extends AbstractLoggable implements ApplicationContextAware, Closeable {
 
     private final Object lock;
-    private final ThreadPoolExecutor exec;
+    /**
+     * 所有正在执行和挂起的任务均存在此集合
+     */
     private final Map<String, PackTask> execTaskMap;
+    private final ThreadPoolExecutor exec;
+    private volatile boolean close;
     @Autowired
     protected ClientFileCopyInit init;
     @Autowired
     @Qualifier("clientFM")
     private FileManager fm;
-    private boolean close;
     @Setter
     private ApplicationContext applicationContext;
     private Map<String, TransmitClientAdapter> transferMap;
@@ -85,23 +89,28 @@ public class ClientFileCopy extends AbstractLoggable implements ApplicationConte
         // TODO speed limit
     }
 
-    public void resume(SyncProcess process) {
+    public ExecResult resume(SyncProcess process) {
         PackTask packTask;
+        ExecResult.Builder resultBuilder = ExecResult.newBuilder();
         synchronized (lock) {
             packTask = execTaskMap.get(process.getExecResult().getTaskId());
         }
-        if (THREAD_STATE.DEAD.equals(packTask.threadState)) {
-            logger.info(String.format("PackTask:%s finished.", packTask.toString()));
+        if (packTask.isActive()) {
+            resultBuilder.setMsg(String.format("PackTask:%s is running, state:%s."
+                    , packTask.toString(), packTask.threadState.toString()));
         } else {
             packTask.threadState = THREAD_STATE.READY;
             if (ValidateUtils.isEmpty(process.getFileId())) {
-                packTask.serverSyncProcess = null;
+                resultBuilder = process.getExecResult().toBuilder();
+                resultBuilder.setMsg("Server task resume failed. " + resultBuilder.getMsg());
             } else {
                 fm.updatePreviousFilesToUnSync(process.getExecResult().getTaskId(), process.getFileId());
                 packTask.serverSyncProcess = process;
+                resultBuilder.setMsg(String.format("Task %s resume success.", packTask.taskId));
             }
             exec.execute(packTask);
         }
+        return resultBuilder.setHealthy(true).build();
     }
 
     public void pause(String taskId) throws IOException {
@@ -219,7 +228,7 @@ public class ClientFileCopy extends AbstractLoggable implements ApplicationConte
         synchronized (lock) {
             // 关闭已执行的任务
             for (String key : execTaskMap.keySet()) {
-                execTaskMap.get(key).close();
+                execTaskMap.get(key).pause();
             }
             // 关闭相应的传输模块
             for (String key : transferMap.keySet()) {
@@ -259,39 +268,49 @@ public class ClientFileCopy extends AbstractLoggable implements ApplicationConte
                 while ((pack = packer.pack()) != null) {
                     logger.debug(String.format("Pass %d bytes to transfer.", pack.length));
                     this.transfer.sendData(pack);
+                    if (!isActive()) {
+                        break;
+                    }
                 }
             } catch (IOException | InfoPersistenceException e) {
                 logger.error("Packer init error .", e);
                 throw new IllegalStateException(e);
             } finally {
-                // 如果是正常执行结束
-                if (!threadState.equals(THREAD_STATE.SHUTDOWN)) {
+                if (threadState.equals(THREAD_STATE.SHUTDOWN)) {
+                    logger.info(String.format("Task:%s suspend.", taskId));
                     try {
-                        this.close();
+                        // 留作备用。当客户端的被停止，而服务端的任务还在运行时，按照客户端的复制进度来启动任务
+                        serverSyncProcess = packer.close();
                     } catch (IOException e) {
-                        logger.error("PackTask close error.", e);
+                        logger.error("Packer close error.", e);
                     }
+                } else {
+                    logger.info(String.format("Task:%s shutdown, remove from task map.", taskId));
+                    // 如果不是被暂停的任务，从任务 Map 中移除并关闭该任务
                     synchronized (ClientFileCopy.this.lock) {
                         execTaskMap.remove(taskId);
-                        threadState = THREAD_STATE.DEAD;
+                        try {
+                            this.close();
+                        } catch (IOException e) {
+                            logger.error("PackTask close error.", e);
+                        }
                     }
-                }
-                try {
-                    this.pause();
-                } catch (IOException e) {
-                    logger.error("packer pause error, taskId:" + taskId, e);
                 }
             }
         }
 
-        public void pause() throws IOException {
+        public void pause() {
             if (!isActive()) {
                 return;
             }
-            packer.close();
             threadState = THREAD_STATE.SHUTDOWN;
         }
 
+        /**
+         * 强制关闭，可能会导致 {@link Packer#pack()} 的异常退出
+         *
+         * @throws IOException IO 异常
+         */
         public void close() throws IOException {
             if (THREAD_STATE.DEAD.equals(threadState)) {
                 return;
@@ -314,4 +333,5 @@ public class ClientFileCopy extends AbstractLoggable implements ApplicationConte
                     '}';
         }
     }
+
 }

@@ -217,16 +217,16 @@ public class ServerFileCopy extends AbstractLoggable implements DataHandlerAdapt
             SyncProcess.Builder processBuilder = SyncProcess.newBuilder();
             if (task == null) {
                 if (!execTaskMap.containsKey(taskId)) {
-                    resultBuilder.setMsg("Task don't exist.").setHealthy(false);
+                    resultBuilder.setMsg("Server Task don't exist.").setHealthy(false);
                 } else {
-                    resultBuilder.setMsg("Task is running").setHealthy(true);
+                    resultBuilder.setMsg("Server Task is running").setHealthy(true);
                 }
             } else {
                 task.threadState = THREAD_STATE.READY;
                 if (task.syncProcess == null) {
-                    resultBuilder.setMsg("Task is ready. No syncProcess found.").setHealthy(true);
+                    resultBuilder.setMsg("Server Task is ready. No syncProcess found.").setHealthy(true);
                 } else {
-                    resultBuilder.setMsg("Task success.").setHealthy(true);
+                    resultBuilder.setMsg("Server Task resume success.").setHealthy(true);
                     processBuilder = task.syncProcess.toBuilder();
                 }
             }
@@ -322,7 +322,7 @@ public class ServerFileCopy extends AbstractLoggable implements DataHandlerAdapt
                 threadState = THREAD_STATE.DEAD;
                 if (taskFinished) {
                     ServerFileCopy.this.execTaskMap.remove(taskId);
-                    logger.info(String.format("Task %s remove from map.", taskId));
+                    logger.info(String.format("Task %s finished, remove from map.", taskId));
                 } else {
                     ServerFileCopy.this.taskMap.put(taskId,
                             ServerFileCopy.this.execTaskMap.remove(taskId));

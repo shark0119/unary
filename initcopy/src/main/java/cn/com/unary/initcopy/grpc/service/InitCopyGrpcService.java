@@ -149,8 +149,7 @@ public class InitCopyGrpcService extends InitCopyGrpc.InitCopyImplBase {
         } else {
             resultBuilder.setTaskId(task.getTaskId());
             try {
-                updater.modify(task);
-                resultBuilder.setHealthy(true).setMsg(Msg.MSG_TASK_SUCCESS);
+                resultBuilder = updater.modify(task).toBuilder();
             } catch (Exception e) {
                 logger.error(Msg.MSG_TASK_FAIL, e);
                 resultBuilder.setMsg(e.getMessage() == null ? "" : e.getMessage()).setHealthy(false);
@@ -158,4 +157,5 @@ public class InitCopyGrpcService extends InitCopyGrpc.InitCopyImplBase {
         }
         return resultBuilder.build();
     }
+
 }

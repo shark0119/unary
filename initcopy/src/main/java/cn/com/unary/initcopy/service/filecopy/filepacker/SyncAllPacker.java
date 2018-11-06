@@ -103,7 +103,9 @@ public class SyncAllPacker extends AbstractLoggable implements Packer {
     private ByteBuffer fileInfoBuffer;
     private byte[] taskId;
     private int packIndex = 0;
+    private final Object lock = new Object();
     private volatile boolean close;
+    private SyncProcess syncProcess;
 
     @Override
     public void init(String taskId)
@@ -144,16 +146,6 @@ public class SyncAllPacker extends AbstractLoggable implements Packer {
 
     @Override
     public byte[] pack() throws IOException, InfoPersistenceException {
-
-        // -- debug code
-        try {
-            // sleep 10 seconds for test
-            Thread.sleep(10000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        // -- end debug code
-
         if (close) {
             logger.info(String.format("Packer already closed."));
             return null;
@@ -184,6 +176,7 @@ public class SyncAllPacker extends AbstractLoggable implements Packer {
         if (buffer.position() <= HEAD_LENGTH) {
             logger.info(String.format("Pack %d ignore, cause it's empty, size %d."
                     , packIndex, buffer.position()));
+            buffer.clear();
             return null;
         } else {
             logger.info(String.format("Pack Done. PackIndex:%d, PackSize:%d.", packIndex, buffer.position()));
@@ -259,14 +252,20 @@ public class SyncAllPacker extends AbstractLoggable implements Packer {
     }
 
     @Override
-    public void close() throws IOException {
-        if (close) {
-            return;
+    public SyncProcess close() throws IOException {
+        if (!close) {
+            close = true;
+            if (input != null) {
+                if (currentFileInfo != null) {
+                    syncProcess = SyncProcess.newBuilder()
+                            .setFileId(currentFileInfo.getFileId())
+                            .setPackIndex(packIndex)
+                            .setFilePos(input.position()).build();
+                }
+                input.close();
+            }
         }
-        if (input != null) {
-            input.close();
-        }
-        close = true;
+        return this.syncProcess;
     }
 
 }

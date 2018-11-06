@@ -50,6 +50,10 @@ public class NioFileInput extends AbstractLoggable implements Closeable {
         currentFileChannel.position(position);
     }
 
+    public long position() throws IOException {
+        return currentFileChannel.position();
+    }
+
     /**
      * 打开文件，如果上个文件没有读完，关闭资源并做日志记录。
      *

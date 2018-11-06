@@ -83,9 +83,10 @@ public class RsyncPacker implements SyncDiffPacker {
     }
 
     @Override
-    public void close() throws IOException {
+    public SyncProcess close() throws IOException {
         if (afi != null) {
             afi.close();
         }
+        return null;
     }
 }

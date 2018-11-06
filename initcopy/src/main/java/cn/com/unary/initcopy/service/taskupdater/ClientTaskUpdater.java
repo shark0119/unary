@@ -1,7 +1,6 @@
 package cn.com.unary.initcopy.service.taskupdater;
 
 import cn.com.unary.initcopy.common.AbstractLoggable;
-import cn.com.unary.initcopy.common.utils.ValidateUtils;
 import cn.com.unary.initcopy.dao.FileManager;
 import cn.com.unary.initcopy.entity.SyncTaskDO;
 import cn.com.unary.initcopy.exception.TaskFailException;
@@ -55,12 +54,13 @@ public class ClientTaskUpdater extends AbstractLoggable {
         }
     }
 
-    public void modify(ModifyTask task) throws TaskFailException {
+    public ExecResult modify(ModifyTask task) throws TaskFailException {
         SyncTaskDO taskDO = fm.queryTask(task.getTaskId());
         if (taskDO == null) {
             throw new TaskFailException(String.format("Task not found:%s", task.getTaskId()));
         }
         SyncProcess process;
+        ExecResult.Builder resultBuilder = ExecResult.newBuilder().setHealthy(true);
         switch (task.getModifyType()) {
             case RESUME:
                 ControlTaskGrpcClientPool.ControlTaskGrpcClient client =
@@ -68,27 +68,28 @@ public class ClientTaskUpdater extends AbstractLoggable {
                 ResumeTask resumeTask = ResumeTask.newBuilder().setTaskId(task.getTaskId()).build();
                 process = client.invokeGrpcResume(resumeTask);
                 if (!process.getExecResult().getHealthy()) {
-                    throw new TaskFailException(String.format("Server update task fail. %s", process.getExecResult().getMsg()));
+                    logger.info(String.format("Server task resume fail. %s", process.getExecResult().getMsg()));
+                    resultBuilder = process.getExecResult().toBuilder();
                 } else {
-                    if (ValidateUtils.isEmpty(process.getFileId())) {
-                        break;
-                    }
+                    resultBuilder = fileCopy.resume(process).toBuilder();
                 }
-                fileCopy.resume(process);
                 break;
             case PAUSE:
                 try {
                     fileCopy.pause(task.getTaskId());
+                    resultBuilder.setMsg(String.format("Task %s pause success.", task.getTaskId()));
                 } catch (IOException e) {
                     throw new TaskFailException(String.format("Task %s pause failed.", task.getTaskId()));
                 }
                 break;
             case SPEED_LIMIT:
                 fileCopy.speedLimit(task.getTaskId(), task.getSpeedLimit());
+                resultBuilder.setMsg(String.format("Task %s speed limit success.", task.getTaskId()));
                 break;
             default:
                 break;
         }
+        return resultBuilder.build();
     }
 
     public TaskState query(QueryTask task) throws TaskFailException {

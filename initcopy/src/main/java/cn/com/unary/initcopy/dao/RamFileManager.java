@@ -102,7 +102,7 @@ public class RamFileManager extends AbstractLoggable implements FileManager {
         List<FileInfoDO> fis = queryByTaskId(taskId);
         for (FileInfoDO fi : fis) {
             if (!FileInfoDO.STATE.SYNCED.equals(fi.getStateEnum())) {
-                logger.info(String.format("fi:%s", fi.toString()));
+                logger.info(fi.toString());
                 return false;
             }
         }

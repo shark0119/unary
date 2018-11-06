@@ -4,7 +4,6 @@ import cn.com.unary.initcopy.entity.Constants.PackerType;
 import cn.com.unary.initcopy.exception.InfoPersistenceException;
 import cn.com.unary.initcopy.grpc.entity.SyncProcess;
 
-import java.io.Closeable;
 import java.io.IOException;
 
 /**
@@ -31,7 +30,7 @@ import java.io.IOException;
  *
  * @author shark
  */
-public interface Packer extends Closeable {
+public interface Packer {
     /**
      * 开始文件读取打包，并向目标端发送数据包
      * 会读取任务的进度继续开始。
@@ -72,8 +71,8 @@ public interface Packer extends Closeable {
      * 不会立刻关闭当前任务。此方法只会将关闭标志位置为 true
      * 待时机合适时，保存当前打包进度，并停止打包。
      *
+     * @return 当前任务的同步进度
      * @throws IOException 关闭失败则抛出 IO 异常
      */
-    @Override
-    void close() throws IOException;
+    SyncProcess close() throws IOException;
 }
